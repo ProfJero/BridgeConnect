@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BridgeConnect · Community Platform</title>
+  <!-- Tailwind + FontAwesome -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    body { background: #f1f5f9; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 1rem; }
+    .bridge-card {
+      max-width: 1200px;
+      width: 100%;
+      background: white;
+      border-radius: 2.5rem;
+      box-shadow: 0 30px 60px -20px rgba(0,0,0,0.3);
+      overflow: hidden;
+      transition: all 0.2s ease;
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 820px) {
+      .bridge-card {
+        grid-template-columns: 1fr 1fr;
+        border-radius: 3rem;
+      }
+    }
+    .dot-active { background: #1e3a8a; width: 0.75rem; height: 0.75rem; }
+    .dot-inactive { background: #cbd5e1; width: 0.75rem; height: 0.75rem; }
+    .slide-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hero-slide { 
+      transition: opacity 0.6s ease-in-out;
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+    }
+    .hero-slide.active {
+      opacity: 1;
+    }
+    .slide-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 2rem 1.5rem 5rem;
+      background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+      color: white;
+    }
+    @media (min-width: 768px) {
+      .slide-content {
+        padding: 3rem 2.5rem 6rem;
+      }
+    }
+    .slide-content h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .slide-content p {
+      font-size: 0.95rem;
+      opacity: 0.95;
+      max-width: 90%;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    @media (min-width: 820px) {
+      .slide-content h3 { font-size: 1.75rem; }
+      .slide-content p { font-size: 1rem; }
+    }
+    .slide-counter {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(8px);
+      padding: 0.35rem 0.9rem;
+      border-radius: 9999px;
+      color: white;
+      font-size: 0.8rem;
+      font-weight: 600;
+      z-index: 10;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    /* Mobile dots container */
+    .mobile-dots {
+      display: flex;
+      gap: 0.5rem;
+      margin: 1.5rem 0 1rem;
+    }
+    .mobile-dots span {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 9999px;
+      transition: all 0.3s ease;
+    }
+    .mobile-dots .dot-active { background: #1e3a8a; width: 1.5rem; }
+    .mobile-dots .dot-inactive { background: #cbd5e1; }
+    /* Button hover effects */
+    .btn-primary {
+      background: #1e3a8a;
+      transition: all 0.2s ease;
+    }
+    .btn-primary:hover {
+      background: #1e2a6a;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 25px -8px rgba(30, 58, 138, 0.4);
+    }
+    .btn-secondary {
+      border: 2px solid #bfdbfe;
+      transition: all 0.2s ease;
+    }
+    .btn-secondary:hover {
+      border-color: #60a5fa;
+      background: #f0f7ff;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+
+<div class="bridge-card" id="app">
+
+  <!-- LEFT SIDE: SLIDESHOW -->
+  <div class="relative bg-gradient-to-br from-blue-50 to-indigo-100/40 flex items-center justify-center p-0 overflow-hidden min-h-[350px] md:min-h-full">
+    <!-- Slides container -->
+    <div class="absolute inset-0 w-full h-full">
+      <!-- Slide 1 -->
+      <div class="hero-slide active" data-index="0">
+        <img class="slide-img" src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Community connection" />
+      </div>
+      <!-- Slide 2 -->
+      <div class="hero-slide" data-index="1">
+        <img class="slide-img" src="https://images.unsplash.com/photo-1558002038-1055907df827?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Local business" />   
+      </div>
+      <!-- Slide 3 -->
+      <div class="hero-slide" data-index="2">
+        <img class="slide-img" src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Events" />
+      </div>
+      <!-- Slide 4 -->
+      <div class="hero-slide" data-index="3">
+        <img class="slide-img" src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Jobs" />
+      </div>
+      <!-- Slide 5 -->
+      <div class="hero-slide" data-index="4">
+        <img class="slide-img" src="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Health" />
+      </div>
+      <!-- Slide 6 -->
+      <div class="hero-slide" data-index="5">
+        <img class="slide-img" src="https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Marketplace" />
+        <!--
+        <div class="slide-content">
+          <h3><i class="fas fa-shopping-bag text-purple-300 mr-2"></i> Buy & Sell in Your Area</h3>
+          <p>List products, find deals, and trade with neighbors in your community marketplace.</p>
+        </div>
+      -->
+      </div>
+      
+      <!-- Slide counter -->
+      <div class="slide-counter" id="slideCounter">1 / 6</div>
+    </div>
+
+    <!-- Slide indicator dots (desktop) 
+    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-10" id="desktopDots">
+      <span class="dot-active rounded-full transition-all cursor-pointer" data-index="0"></span>
+      <span class="dot-inactive rounded-full transition-all cursor-pointer" data-index="1"></span>
+      <span class="dot-inactive rounded-full transition-all cursor-pointer" data-index="2"></span>
+      <span class="dot-inactive rounded-full transition-all cursor-pointer" data-index="3"></span>
+      <span class="dot-inactive rounded-full transition-all cursor-pointer" data-index="4"></span>
+      <span class="dot-inactive rounded-full transition-all cursor-pointer" data-index="5"></span>
+    </div>
+    -->
+
+    <!-- Arrow controls (desktop) -->
+    <button class="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all backdrop-blur-sm border border-white/10 hidden md:flex" id="prevSlide">
+      <i class="fas fa-chevron-left text-sm"></i>
+    </button>
+    <button class="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all backdrop-blur-sm border border-white/10 hidden md:flex" id="nextSlide">
+      <i class="fas fa-chevron-right text-sm"></i>
+    </button>
+  </div>
+
+  <!-- RIGHT SIDE: CONTENT -->
+  <div class="flex flex-col p-6 sm:p-10 md:p-12 lg:p-14 bg-white">
+    <!-- Logo + Brand -->
+    <div class="flex items-center gap-3 mb-4 md:mb-6">
+      <div class="flex items-end relative">
+        <i class="fas fa-people-arrows text-blue-500 text-2xl"></i>
+        <i class="fas fa-handshake text-blue-700 text-3xl mx-0.5 mb-0.5"></i>
+        <i class="fas fa-city text-green-500 text-2xl"></i>
+        <svg class="absolute -bottom-1 left-0 w-full h-3" viewBox="0 0 60 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 10 Q 30 2 56 10 L 56 12 L 4 12 Z" fill="#1D4ED8" />
+          <path d="M6 10 Q 30 4 54 10 L 54 12 L 6 12 Z" fill="#2563EB" />
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">
+          <span class="text-blue-700">Bridge</span><span class="text-green-600">Connect</span>
+        </h1>
+        <p class="text-xs text-gray-400 font-medium -mt-0.5">Connecting Communities. Empowering Lives.</p>
+      </div>
+    </div>
+
+    <!-- Main text that changes with slides -->
+    <div class="mt-2 md:mt-0" id="mainContent">
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-800 leading-tight" id="mainTitle">
+        Welcome to <span class="text-blue-700">Bridge</span><span class="text-green-600">Connect</span>!
+      </h2>
+      <p class="text-gray-500 text-sm md:text-base leading-relaxed mt-3 max-w-sm" id="mainDescription">
+        Your all-in-one community platform for local services, opportunities, updates, and connections that matter.
+      </p>
+    </div>
+
+    <!-- Mobile dots -->
+    <div class="mobile-dots" id="mobileDots">
+      <span class="dot-active" data-index="0"></span>
+      <span class="dot-inactive" data-index="1"></span>
+      <span class="dot-inactive" data-index="2"></span>
+      <span class="dot-inactive" data-index="3"></span>
+      <span class="dot-inactive" data-index="4"></span>
+      <span class="dot-inactive" data-index="5"></span>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col gap-4 mt-2 w-full max-w-sm">
+      <a href="signup.html" class="btn-primary text-white font-semibold py-3.5 px-6 rounded-2xl flex items-center justify-between group shadow-md hover:shadow-lg">
+        <span>Get Started</span>
+        <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+      </a>
+      <a href="login.html" class="btn-secondary text-blue-700 font-semibold py-3.5 px-6 rounded-2xl flex items-center justify-center gap-3">
+        <i class="fas fa-sign-in-alt"></i>
+        <span>Sign In</span>
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-8 text-xs text-gray-400 flex items-center gap-2 border-t border-gray-100 pt-5">
+      <i class="fas fa-shield-alt text-blue-500"></i>
+      <span>Trusted by 20+ communities · DBI initiative</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const slides = [
+      {
+        title: 'Welcome to <span class="text-blue-700">Bridge</span><span class="text-green-600">Connect</span>!',
+        description: 'Your all-in-one community platform for local services, opportunities, updates, and connections that matter.'
+      },
+      {
+        title: '🏪 Support Local Businesses',
+        description: 'Find shops, services, and vacancies from verified businesses in your area. Shop local, grow together.'
+      },
+      {
+        title: '📅 Discover Events & Activities',
+        description: 'Stay updated with community gatherings, workshops, and cultural festivals. Never miss out on what\'s happening.'
+      },
+      {
+        title: '💼 Find Jobs & Opportunities',
+        description: 'Access job postings, career opportunities, and skill development programs. Build your future in your community.'
+      },
+      {
+        title: '🏥 Health & Emergency Alerts',
+        description: 'Get real-time health information and emergency notifications from verified sources. Stay safe and informed.'
+      },
+      {
+        title: '🛒 Buy & Sell in Your Area',
+        description: 'List products, find deals, and trade with neighbors in your community marketplace. Support the local economy.'
+      }
+    ];
+
+    let current = 0;
+    const totalSlides = slides.length;
+    const slideElements = document.querySelectorAll('.hero-slide');
+    const desktopDots = document.querySelectorAll('#desktopDots span');
+    const mobileDots = document.querySelectorAll('#mobileDots span');
+    const mainTitle = document.getElementById('mainTitle');
+    const mainDescription = document.getElementById('mainDescription');
+    const slideCounter = document.getElementById('slideCounter');
+    const prevBtn = document.getElementById('prevSlide');
+    const nextBtn = document.getElementById('nextSlide');
+
+    function updateSlide(index) {
+      // Update current index (loop)
+      current = (index + totalSlides) % totalSlides;
+      
+      // Update slides
+      slideElements.forEach((slide, i) => {
+        slide.classList.toggle('active', i === current);
+      });
+
+      // Update desktop dots
+      desktopDots.forEach((dot, i) => {
+        dot.className = i === current ? 'dot-active rounded-full transition-all cursor-pointer' : 'dot-inactive rounded-full transition-all cursor-pointer';
+      });
+
+      // Update mobile dots
+      mobileDots.forEach((dot, i) => {
+        dot.className = i === current ? 'dot-active' : 'dot-inactive';
+      });
+
+      // Update main content text
+      mainTitle.innerHTML = slides[current].title;
+      mainDescription.textContent = slides[current].description;
+
+      // Update counter
+      slideCounter.textContent = `${current + 1} / ${totalSlides}`;
+    }
+
+    // Next/Previous functions
+    function nextSlide() {
+      updateSlide(current + 1);
+      resetAutoPlay();
+    }
+
+    function prevSlide() {
+      updateSlide(current - 1);
+      resetAutoPlay();
+    }
+
+    // Auto-play
+    let autoPlayInterval = setInterval(nextSlide, 5000);
+
+    function resetAutoPlay() {
+      clearInterval(autoPlayInterval);
+      autoPlayInterval = setInterval(nextSlide, 5000);
+    }
+
+    // Event listeners for dots
+    desktopDots.forEach((dot) => {
+      dot.addEventListener('click', function() {
+        const index = parseInt(this.dataset.index);
+        updateSlide(index);
+        resetAutoPlay();
+      });
+    });
+
+    mobileDots.forEach((dot) => {
+      dot.addEventListener('click', function() {
+        const index = parseInt(this.dataset.index);
+        updateSlide(index);
+        resetAutoPlay();
+      });
+    });
+
+    // Arrow buttons
+    if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+    if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key === 'ArrowRight') nextSlide();
+    });
+
+    // Pause on hover
+    const card = document.querySelector('.bridge-card');
+    card.addEventListener('mouseenter', () => clearInterval(autoPlayInterval));
+    card.addEventListener('mouseleave', () => {
+      clearInterval(autoPlayInterval);
+      autoPlayInterval = setInterval(nextSlide, 5000);
+    });
+
+    // Initialize
+    updateSlide(0);
+
+    // Expose for debugging
+    window.bridgeSlides = { updateSlide, nextSlide, prevSlide };
+  })();
+</script>
+</body>
+</html>

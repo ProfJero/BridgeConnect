@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Reports & Moderation - BridgeConnect Admin Portal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzAOMVoTR5YTrZlzedypz_KqQT-lotI1o",
+            authDomain: "bridgeconnect-5b8bd.firebaseapp.com",
+            projectId: "bridgeconnect-5b8bd",
+            storageBucket: "bridgeconnect-5b8bd.firebasestorage.app",
+            messagingSenderId: "231684985335",
+            appId: "1:231684985335:web:3f3bfdf7f2708f0ae81ef2",
+            measurementId: "G-C8QJH73MC0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        db.enablePersistence().catch(err => console.warn('Firestore persistence error:', err));
+    </script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdbca",
+                        "secondary-fixed": "#71f8e4",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#6df5e1",
+                        "on-surface-variant": "#434654",
+                        "on-primary-fixed": "#001848",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-fixed-dim": "#ffb690",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-fixed-dim": "#4fdbc8",
+                        "on-error-container": "#93000a",
+                        "primary-container": "#0052cc",
+                        "surface-container-high": "#e6e8ea",
+                        "inverse-surface": "#2d3133",
+                        "on-tertiary-container": "#ffc8ac",
+                        "surface-variant": "#e0e3e5",
+                        "on-background": "#191c1e",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#0c56d0",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#006b5f",
+                        "on-secondary-fixed": "#00201c",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary-fixed-variant": "#783200",
+                        "inverse-primary": "#b2c5ff",
+                        "primary": "#003d9b",
+                        "tertiary": "#732f00",
+                        "surface": "#f7f9fb",
+                        "background": "#f7f9fb",
+                        "outline-variant": "#c3c6d6",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#984100",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "on-secondary-fixed-variant": "#005048",
+                        "on-secondary-container": "#006f64",
+                        "on-primary-fixed-variant": "#0040a2",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-bright": "#f7f9fb",
+                        "outline": "#737685",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#c4d2ff",
+                        "primary-fixed": "#dae2ff",
+                        "surface-container": "#eceef0",
+                        "on-surface": "#191c1e"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "gutter": "1.5rem",
+                        "container-margin": "2rem",
+                        "sidebar-width": "260px",
+                        "card-padding": "1.25rem",
+                        "section-gap": "2rem"
+                    },
+                    fontFamily: {
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-md": ["18px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .card-shadow { box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04); }
+        .table-row-hover:hover { background-color: #f8fafc; }
+        
+        /* Sidebar collapse styles */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar.collapsed {
+            width: 72px;
+            min-width: 72px;
+        }
+        .sidebar.collapsed .logo-text,
+        .sidebar.collapsed .dbi-text,
+        .sidebar.collapsed .link-text,
+        .sidebar.collapsed .notif-badge,
+        .sidebar.collapsed .sidebar-footer .link-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-dbi {
+            padding: 6px;
+            justify-content: center;
+        }
+        .sidebar.collapsed .sidebar-dbi .dbi-text {
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-link {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-link i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-logo {
+            justify-content: center;
+            padding: 12px 0;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 {
+            width: 36px;
+            height: 36px;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-footer {
+            padding: 8px;
+        }
+        .sidebar.collapsed .sidebar-footer a {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-footer a i {
+            font-size: 18px;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 1023px) {
+            .sidebar-container {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                width: 280px;
+                z-index: 1000;
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 4px 0 30px rgba(0,0,0,0.15);
+            }
+            .sidebar-container.mobile-open {
+                left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 999;
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .mobile-header {
+                display: flex !important;
+            }
+            .desktop-header {
+                display: none !important;
+            }
+            .main-content {
+                padding: 1rem !important;
+            }
+            .sidebar.collapsed {
+                width: 280px !important;
+                min-width: 280px !important;
+            }
+            .sidebar.collapsed .logo-text,
+            .sidebar.collapsed .dbi-text,
+            .sidebar.collapsed .link-text,
+            .sidebar.collapsed .notif-badge,
+            .sidebar.collapsed .sidebar-footer .link-text {
+                opacity: 1 !important;
+                display: block !important;
+                width: auto !important;
+            }
+            .sidebar.collapsed .sidebar-link {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-logo {
+                justify-content: flex-start !important;
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer {
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer a {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-dbi {
+                padding: 12px !important;
+                justify-content: flex-start !important;
+            }
+            .sidebar.collapsed .sidebar-dbi .dbi-text {
+                display: block !important;
+            }
+            .sidebar-toggle-btn {
+                display: none !important;
+            }
+            
+            .grid-cols-7 {
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 0.75rem !important;
+            }
+            .flex.gap-6 {
+                flex-direction: column;
+            }
+            .w-80 {
+                width: 100% !important;
+            }
+            .md\\:col-span-2 {
+                grid-column: span 1 !important;
+            }
+            .md\\:grid-cols-5 {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .grid-cols-7 {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            .flex.gap-6 {
+                flex-direction: column;
+            }
+            .w-80 {
+                width: 100% !important;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .mobile-header {
+                display: none !important;
+            }
+            .sidebar-overlay {
+                display: none !important;
+            }
+        }
+        
+        /* Status Badge Styles */
+        .status-badge { @apply px-3 py-1 rounded-full text-xs font-medium; }
+        .severity-high { background-color: #fee2e2; color: #b91c1c; }
+        .severity-medium { background-color: #ffedd5; color: #9a3412; }
+        .severity-low { background-color: #dcfce7; color: #15803d; }
+        .status-investigation { background-color: #e0f2fe; color: #0369a1; }
+        .status-pending { background-color: #fef3c7; color: #92400e; }
+        .status-escalated { background-color: #f3e8ff; color: #6b21a8; }
+        .status-resolved { background-color: #dcfce7; color: #15803d; }
+        
+        /* Toast styles */
+        .toast {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<div class="flex h-screen overflow-hidden">
+    
+    <!-- MOBILE OVERLAY -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer" class="sidebar-container"></div>
+    
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        
+        <!-- Mobile Header -->
+        <header class="mobile-header bg-surface h-16 border-b border-outline-variant flex items-center justify-between px-4 flex-shrink-0 z-10">
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuBtn" class="text-on-surface-variant hover:text-on-surface text-xl p-1">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center text-primary">
+                        <i class="fas fa-flag text-sm"></i>
+                    </div>
+                    <span class="font-bold text-primary text-sm">Reports</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="relative text-on-surface-variant">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full text-[9px] text-white flex items-center justify-center font-bold">8</span>
+                </button>
+                <img id="mobileUserAvatar" alt="User" class="w-7 h-7 rounded-full object-cover border-2 border-white shadow-sm" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=32"/>
+            </div>
+        </header>
+        
+        <!-- Desktop TopNavBar -->
+        <header class="desktop-header bg-surface sticky top-0 z-40 flex justify-between items-center w-full px-container-margin py-4 max-w-full border-b border-outline-variant">
+            <div class="flex items-center flex-1 max-w-xl">
+                <div class="relative w-full max-w-md mr-4">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-outline"></i>
+                    <input id="globalSearch" class="w-full bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-body-md font-body-md focus:ring-2 focus:ring-primary/20" placeholder="Search users, businesses, reports, communities..." type="text"/>
+                </div>
+                <button id="communityFilterBtn" class="flex items-center px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                    <span class="font-label-md text-label-md mr-1">All Communities</span>
+                    <i class="fas fa-chevron-down text-sm"></i>
+                </button>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high relative">
+                    <i class="fas fa-bell text-on-surface-variant"></i>
+                    <span class="absolute top-2 right-2 w-4 h-4 bg-error text-white text-[10px] flex items-center justify-center rounded-full border-2 border-surface">8</span>
+                </button>
+                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high relative">
+                    <i class="fas fa-comment-dots text-on-surface-variant"></i>
+                    <span class="absolute top-2 right-2 w-4 h-4 bg-error text-white text-[10px] flex items-center justify-center rounded-full border-2 border-surface">5</span>
+                </button>
+                <div class="h-8 w-px bg-outline-variant mx-2"></div>
+                <div class="flex items-center space-x-3 ml-2 group cursor-pointer">
+                    <div class="text-right hidden sm:block">
+                        <p class="font-label-md text-label-md text-on-surface font-bold" id="headerUserName">Loading...</p>
+                        <p class="text-[11px] text-outline" id="headerUserRole">Loading...</p>
+                    </div>
+                    <img id="desktopUserAvatar" class="w-10 h-10 rounded-full object-cover border-2 border-primary/10" alt="User Avatar" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=40"/>
+                    <i class="fas fa-chevron-down text-outline"></i>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-6 custom-scrollbar main-content">
+            
+            <!-- Page Header -->
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-on-surface">Reports &amp; Moderation</h2>
+                <p class="text-sm text-outline">Review, investigate and take action on platform reports</p>
+            </div>
+            
+            <!-- Metrics Cards -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4 mb-6" id="metricCards">
+                <!-- Stats will be populated dynamically -->
+            </div>
+            
+            <div class="flex flex-col lg:flex-row gap-6">
+                <!-- Left Column -->
+                <div class="flex-1 min-w-0">
+                    <!-- Report Management Container -->
+                    <div class="bg-surface rounded-xl shadow-sm border border-outline-variant overflow-hidden mb-6 card-shadow">
+                        <!-- Tabs -->
+                        <div class="border-b border-outline-variant overflow-x-auto">
+                            <nav class="flex px-4 whitespace-nowrap" id="tabNav">
+                                <button class="tab-btn px-4 py-4 text-sm font-semibold border-b-2 border-primary text-primary" data-tab="all">All Reports</button>
+                                <button class="tab-btn px-4 py-4 text-sm font-medium text-outline hover:text-on-surface border-b-2 border-transparent" data-tab="fraud">Fraud</button>
+                                <button class="tab-btn px-4 py-4 text-sm font-medium text-outline hover:text-on-surface border-b-2 border-transparent" data-tab="spam">Spam</button>
+                                <button class="tab-btn px-4 py-4 text-sm font-medium text-outline hover:text-on-surface border-b-2 border-transparent" data-tab="user">Users</button>
+                                <button class="tab-btn px-4 py-4 text-sm font-medium text-outline hover:text-on-surface border-b-2 border-transparent" data-tab="product">Products</button>
+                                <button class="tab-btn px-4 py-4 text-sm font-medium text-outline hover:text-on-surface border-b-2 border-transparent" data-tab="business">Businesses</button>
+                                <button class="tab-btn px-4 py-4 text-sm font-medium text-outline hover:text-on-surface border-b-2 border-transparent" data-tab="resolved">Resolved</button>
+                            </nav>
+                        </div>
+                        
+                        <!-- Filters -->
+                        <div class="p-4 bg-surface-container-low/30 border-b border-outline-variant flex flex-wrap items-center gap-4">
+                            <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-outline uppercase">Report Type</label>
+                                    <select id="typeFilter" class="w-full text-xs border border-outline-variant rounded-lg bg-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none h-9 px-2">
+                                        <option value="all">All Types</option>
+                                        <option value="fraud">Fraud</option>
+                                        <option value="spam">Spam</option>
+                                        <option value="user">User</option>
+                                        <option value="product">Product</option>
+                                        <option value="business">Business</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-outline uppercase">Community</label>
+                                    <select id="communityFilter" class="w-full text-xs border border-outline-variant rounded-lg bg-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none h-9 px-2">
+                                        <option value="all">All Communities</option>
+                                        <!-- Communities will be populated dynamically -->
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-outline uppercase">Status</label>
+                                    <select id="statusFilter" class="w-full text-xs border border-outline-variant rounded-lg bg-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none h-9 px-2">
+                                        <option value="all">All Status</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="investigation">Under Investigation</option>
+                                        <option value="escalated">Escalated</option>
+                                        <option value="resolved">Resolved</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-outline uppercase">Severity</label>
+                                    <select id="severityFilter" class="w-full text-xs border border-outline-variant rounded-lg bg-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none h-9 px-2">
+                                        <option value="all">All Severity</option>
+                                        <option value="high">High</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="low">Low</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-outline uppercase">Date Range</label>
+                                    <div class="relative">
+                                        <input id="dateRange" class="w-full text-xs border border-outline-variant rounded-lg bg-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none h-9 px-2 pr-8" type="text" placeholder="Select dates"/>
+                                        <i class="fas fa-calendar absolute right-2 top-1/2 -translate-y-1/2 text-outline"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-end gap-2 pt-5">
+                                <button id="filterBtn" class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg bg-surface text-xs font-semibold text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                                    <i class="fas fa-filter"></i> Filters
+                                </button>
+                                <button id="exportBtn" class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg bg-surface text-xs font-semibold text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                                <button id="clearFiltersBtn" class="text-xs font-medium text-outline hover:text-on-surface px-2 transition-colors">Clear</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Data Table -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-surface-container-low/30 border-b border-outline-variant text-outline uppercase font-bold">
+                                    <tr>
+                                        <th class="px-4 py-3 w-10"><input id="selectAll" class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></th>
+                                        <th class="px-4 py-3">Report ID</th>
+                                        <th class="px-4 py-3">Type</th>
+                                        <th class="px-4 py-3">Reported Item</th>
+                                        <th class="px-4 py-3">Reporter</th>
+                                        <th class="px-4 py-3">Community</th>
+                                        <th class="px-4 py-3">Date</th>
+                                        <th class="px-4 py-3">Severity</th>
+                                        <th class="px-4 py-3">Status</th>
+                                        <th class="px-4 py-3">Moderator</th>
+                                        <th class="px-4 py-3 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportsTableBody">
+                                    <tr>
+                                        <td colspan="11" class="text-center py-8 text-outline">
+                                            <i class="fas fa-spinner fa-spin text-2xl"></i>
+                                            <p class="mt-2">Loading reports...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Pagination -->
+                        <div class="px-4 py-4 bg-surface border-t border-outline-variant flex flex-wrap items-center justify-between gap-4">
+                            <p class="text-[10px] text-outline font-medium" id="paginationInfo">Showing 0 reports</p>
+                            <div class="flex items-center gap-2 flex-wrap" id="paginationControls">
+                                <!-- Pagination will be rendered dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Sidebar -->
+                <aside class="w-full lg:w-80 space-y-6">
+                    <!-- Investigation Summary -->
+                    <div class="bg-surface p-5 rounded-xl shadow-sm border border-outline-variant card-shadow">
+                        <h4 class="text-xs font-bold text-on-surface uppercase mb-4">Investigation Summary</h4>
+                        <div id="investigationSummary" class="space-y-4">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Moderator Activity -->
+                    <div class="bg-surface p-5 rounded-xl shadow-sm border border-outline-variant card-shadow">
+                        <h4 class="text-xs font-bold text-on-surface uppercase mb-4">Recent Moderator Activity</h4>
+                        <div id="moderatorActivity" class="space-y-5">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <!-- Pending High Priority Cases -->
+                    <div class="bg-surface p-5 rounded-xl shadow-sm border border-outline-variant card-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-xs font-bold text-on-surface uppercase">Pending High Priority</h4>
+                            <button id="viewAllHighPriorityBtn" class="text-[10px] font-bold text-primary hover:underline cursor-pointer">View all</button>
+                        </div>
+                        <div id="highPriorityCases" class="space-y-3">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                        <button id="viewAllHighPriorityBtn2" class="w-full mt-4 py-2 border border-outline-variant text-primary text-[10px] font-bold rounded-lg hover:bg-surface-container-low transition-colors">View All High Priority Cases</button>
+                    </div>
+                </aside>
+            </div>
+            
+            <!-- Bottom Analytics Panels -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mt-6">
+                <!-- Reports Trend -->
+                <div class="md:col-span-2 bg-surface p-5 rounded-xl shadow-sm border border-outline-variant card-shadow">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h4 class="text-xs font-bold text-on-surface uppercase">Reports Trend</h4>
+                            <p class="text-[10px] text-outline mt-1" id="trendPeriod">This Month</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xl font-bold" id="trendTotal">0</p>
+                            <p class="text-[10px] text-green-500 font-bold" id="trendChange">↑ 0%</p>
+                        </div>
+                    </div>
+                    <div id="trendChart" class="h-48 w-full flex items-end gap-1 relative overflow-hidden">
+                        <!-- Chart will be rendered dynamically -->
+                    </div>
+                </div>
+                
+                <!-- Reports by Category -->
+                <div class="bg-surface p-5 rounded-xl shadow-sm border border-outline-variant card-shadow">
+                    <h4 class="text-xs font-bold text-on-surface uppercase mb-4">Reports by Category</h4>
+                    <div class="flex flex-col items-center">
+                        <div id="categoryChart" class="relative w-32 h-32 mb-6">
+                            <!-- Chart will be rendered dynamically -->
+                        </div>
+                        <div id="categoryLegend" class="w-full space-y-2">
+                            <!-- Legend will be rendered dynamically -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Moderator Performance -->
+                <div class="bg-surface p-5 rounded-xl shadow-sm border border-outline-variant card-shadow">
+                    <h4 class="text-xs font-bold text-on-surface uppercase mb-4">Moderator Performance</h4>
+                    <table class="w-full text-left text-[10px]">
+                        <thead class="text-outline border-b border-gray-100 uppercase">
+                            <tr>
+                                <th class="pb-2 font-bold">Moderator</th>
+                                <th class="pb-2 font-bold text-right">Resolved</th>
+                                <th class="pb-2 font-bold text-right">Avg Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="moderatorPerformance" class="divide-y divide-gray-50">
+                            <!-- Will be populated dynamically -->
+                        </tbody>
+                    </table>
+                    <button id="viewAllModeratorsBtn" class="w-full mt-4 text-center text-primary text-[10px] font-bold hover:underline">View All Moderators</button>
+                </div>
+                
+                <!-- Top Communities & Safety Score -->
+                <div class="space-y-6">
+                    <!-- Top Communities -->
+                    <div class="bg-surface p-5 rounded-xl shadow-sm border border-outline-variant card-shadow">
+                        <h4 class="text-xs font-bold text-on-surface uppercase mb-4">Top Communities by Reports</h4>
+                        <div id="topCommunities" class="space-y-3">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                        <button id="viewAllCommunitiesBtn" class="w-full mt-4 text-center text-primary text-[10px] font-bold hover:underline">View All Communities</button>
+                    </div>
+                    
+                    <!-- Community Safety Score -->
+                    <div class="bg-surface p-5 rounded-xl shadow-sm border border-outline-variant card-shadow">
+                        <h4 class="text-xs font-bold text-on-surface uppercase mb-2">Community Safety Score</h4>
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-3xl font-black text-on-surface" id="safetyScore">0%</span>
+                            <span class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded" id="safetyStatus">Good</span>
+                        </div>
+                        <p class="text-[10px] text-outline mb-4" id="safetyChange"><span class="text-green-500 font-bold">↑ 0%</span> vs last month</p>
+                        <div id="safetyChart" class="h-16 flex items-end gap-1">
+                            <!-- Chart will be rendered dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<!-- Modal Container -->
+<div id="modalContainer"></div>
+
+<!-- JavaScript -->
+<script src="js/context-manager.js"></script>
+<script src="js/reports.js"></script>
+
+</body>
+</html>

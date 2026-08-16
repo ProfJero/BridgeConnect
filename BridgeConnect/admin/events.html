@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Events Management - BridgeConnect Admin Portal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzAOMVoTR5YTrZlzedypz_KqQT-lotI1o",
+            authDomain: "bridgeconnect-5b8bd.firebaseapp.com",
+            projectId: "bridgeconnect-5b8bd",
+            storageBucket: "bridgeconnect-5b8bd.firebasestorage.app",
+            messagingSenderId: "231684985335",
+            appId: "1:231684985335:web:3f3bfdf7f2708f0ae81ef2",
+            measurementId: "G-C8QJH73MC0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        db.enablePersistence().catch(err => console.warn('Firestore persistence error:', err));
+    </script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0052cc',
+                        surface: '#f7f9fb',
+                        'surface-dim': '#d8dadc',
+                        'surface-low': '#f2f4f6',
+                        'surface-container-lowest': '#ffffff',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'eight': '8px',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+        }
+        
+        .table-fixed-header th {
+            position: sticky;
+            top: 0;
+            background-color: #f8fafc;
+            z-index: 10;
+        }
+        .status-badge {
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .category-badge {
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        
+        /* Sidebar collapse styles */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar.collapsed {
+            width: 72px;
+            min-width: 72px;
+        }
+        .sidebar.collapsed .logo-text,
+        .sidebar.collapsed .dbi-text,
+        .sidebar.collapsed .link-text,
+        .sidebar.collapsed .notif-badge,
+        .sidebar.collapsed .sidebar-footer .link-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-dbi {
+            padding: 6px;
+            justify-content: center;
+        }
+        .sidebar.collapsed .sidebar-dbi .dbi-text {
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-link {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-link i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-logo {
+            justify-content: center;
+            padding: 12px 0;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 {
+            width: 36px;
+            height: 36px;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-footer {
+            padding: 8px;
+        }
+        .sidebar.collapsed .sidebar-footer a {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-footer a i {
+            font-size: 18px;
+        }
+
+        @media (max-width: 1023px) {
+            .sidebar-container {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                width: 280px;
+                z-index: 1000;
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 4px 0 30px rgba(0,0,0,0.15);
+            }
+            .sidebar-container.mobile-open {
+                left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 999;
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .mobile-header {
+                display: flex !important;
+            }
+            .desktop-header {
+                display: none !important;
+            }
+            .main-content {
+                padding: 1rem !important;
+            }
+            .sidebar.collapsed {
+                width: 280px !important;
+                min-width: 280px !important;
+            }
+            .sidebar.collapsed .logo-text,
+            .sidebar.collapsed .dbi-text,
+            .sidebar.collapsed .link-text,
+            .sidebar.collapsed .notif-badge,
+            .sidebar.collapsed .sidebar-footer .link-text {
+                opacity: 1 !important;
+                display: block !important;
+                width: auto !important;
+            }
+            .sidebar.collapsed .sidebar-link {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-logo {
+                justify-content: flex-start !important;
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer {
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer a {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-dbi {
+                padding: 12px !important;
+                justify-content: flex-start !important;
+            }
+            .sidebar.collapsed .sidebar-dbi .dbi-text {
+                display: block !important;
+            }
+            .sidebar-toggle-btn {
+                display: none !important;
+            }
+            .right-sidebar {
+                display: none !important;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .mobile-header {
+                display: none !important;
+            }
+            .sidebar-overlay {
+                display: none !important;
+            }
+        }
+        
+        .toast {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="bg-surface font-sans text-gray-800 antialiased h-screen overflow-hidden">
+<div class="flex h-full">
+    
+    <!-- MOBILE OVERLAY -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer" class="sidebar-container"></div>
+    
+    <!-- Main Workspace -->
+    <div class="flex-1 flex flex-col min-w-0">
+        
+        <!-- Mobile Header -->
+        <header class="mobile-header bg-white h-16 border-b border-gray-200 flex items-center justify-between px-4 flex-shrink-0 z-10">
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuBtn" class="text-gray-600 hover:text-gray-900 text-xl p-1">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center text-primary">
+                        <i class="fas fa-calendar text-sm"></i>
+                    </div>
+                    <span class="font-bold text-primary text-sm">BridgeConnect</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="relative text-gray-600">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="notif-count absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full text-[9px] text-white flex items-center justify-center font-bold">0</span>
+                </button>
+                <img id="mobileUserAvatar" alt="User" class="w-7 h-7 rounded-full object-cover border-2 border-white shadow-sm" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=32"/>
+            </div>
+        </header>
+        
+        <!-- TopNavBar -->
+        <header class="desktop-header h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8" data-purpose="top-navigation">
+            <div class="flex items-center flex-1 max-w-xl">
+                <div class="relative w-full">
+                    <i class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 fas fa-search"></i>
+                    <input id="globalSearch" class="w-full pl-10 pr-4 py-2 bg-gray-50 focus:ring-primary focus:bg-white border-gray-200 rounded-lg text-sm" placeholder="Search users, businesses, organizations, events..." type="text"/>
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-mono border border-gray-200 px-1 rounded">⌘K</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-2 text-sm text-gray-600 border border-gray-200 rounded-lg px-3 py-1.5 bg-gray-50 cursor-pointer" id="regionSelector">
+                    <i class="fas fa-map-pin text-gray-400"></i>
+                    <span id="currentRegionLabel">All Regions</span>
+                    <i class="fas fa-chevron-down text-gray-400 ml-2"></i>
+                </div>
+                <div class="flex items-center gap-4 border-l border-gray-200 pl-6">
+                    <button class="relative text-gray-500 hover:text-primary notification-btn">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="notif-count absolute -top-1 -right-1 bg-red-500 text-white text-[8px] px-1 rounded-full">0</span>
+                    </button>
+                    <button class="relative text-gray-500 hover:text-primary">
+                        <i class="fas fa-comment-dots text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-green-500 text-white text-[8px] px-1 rounded-full">0</span>
+                    </button>
+                </div>
+                <div class="flex items-center gap-3 ml-2" id="userProfileBtn">
+                    <div class="text-right">
+                        <p class="text-sm font-semibold text-gray-900 leading-none" id="userNameDisplay">User</p>
+                        <p class="text-[10px] text-gray-500 mt-1 uppercase" id="userRoleDisplay">Loading...</p>
+                    </div>
+                    <img id="desktopUserAvatar" alt="Avatar" class="w-10 h-10 rounded-full border-2 border-gray-100 object-cover" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=40"/>
+                    <i class="fas fa-chevron-down text-gray-400"></i>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Content Layout -->
+        <main class="flex-1 flex overflow-hidden">
+            <!-- CentralContentArea -->
+            <div class="flex-1 overflow-y-auto p-8 main-content" data-purpose="events-manager-main">
+                <!-- Header & Action -->
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Events Management</h2>
+                        <p class="text-sm text-gray-500 mt-1">Manage and monitor all community events across the platform.</p>
+                    </div>
+                    <button class="bg-primary hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-medium shadow-sm transition-all" id="createEventBtn">
+                        <i class="fas fa-plus"></i>
+                        Create Event
+                    </button>
+                </div>
+                
+                <!-- FilterSection -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 space-y-4">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input id="eventSearch" class="w-full pl-10 pr-4 py-2 border-gray-200 rounded-lg text-sm focus:ring-primary" placeholder="Search events by title, organizer or community..." type="text"/>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                        <select id="filterRegion" class="text-xs border-gray-200 rounded-lg bg-gray-50 focus:bg-white">
+                            <option value="">Region (All)</option>
+                        </select>
+                        <select id="filterDistrict" class="text-xs border-gray-200 rounded-lg bg-gray-50 focus:bg-white">
+                            <option value="">District (All)</option>
+                        </select>
+                        <select id="filterCommunity" class="text-xs border-gray-200 rounded-lg bg-gray-50 focus:bg-white">
+                            <option value="">Community (All)</option>
+                        </select>
+                        <select id="filterCategory" class="text-xs border-gray-200 rounded-lg bg-gray-50 focus:bg-white">
+                            <option value="">Category (All)</option>
+                            <option value="Education">Education</option>
+                            <option value="Agriculture">Agriculture</option>
+                            <option value="Health">Health</option>
+                            <option value="Business">Business</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Arts">Arts & Culture</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Community">Community</option>
+                        </select>
+                        <select id="filterStatus" class="text-xs border-gray-200 rounded-lg bg-gray-50 focus:bg-white">
+                            <option value="">Status (All)</option>
+                            <option value="approved">Approved</option>
+                            <option value="pending">Pending</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="cancelled">Cancelled</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                        <div class="relative">
+                            <input id="filterDate" class="text-xs border-gray-200 rounded-lg bg-gray-50 w-full pr-8" type="date"/>
+                            <i class="fas fa-calendar absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button id="clearFilters" class="text-xs text-gray-500 hover:text-primary transition-colors">Clear Filters</button>
+                    </div>
+                </div>
+                
+                <!-- EventsTable -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+                        <h3 class="font-semibold text-gray-700">All Events <span class="text-gray-400 font-normal ml-1" id="eventCount">(0)</span></h3>
+                        <div class="flex items-center gap-2">
+                            <button id="refreshEvents" class="text-gray-400 hover:text-primary transition-colors p-1">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-gray-50 text-[11px] uppercase text-gray-500 font-semibold tracking-wider">
+                                <tr>
+                                    <th class="px-6 py-4">Event Banner</th>
+                                    <th class="px-4 py-4">Event Title</th>
+                                    <th class="px-4 py-4">Organizer</th>
+                                    <th class="px-4 py-4">Community</th>
+                                    <th class="px-4 py-4 text-center">Category</th>
+                                    <th class="px-4 py-4">Date &amp; Time</th>
+                                    <th class="px-4 py-4 text-center">Registrations</th>
+                                    <th class="px-4 py-4">Status</th>
+                                    <th class="px-4 py-4">Visibility</th>
+                                    <th class="px-6 py-4 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="eventsTableBody" class="divide-y divide-gray-100">
+                                <!-- Events will be rendered here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination Footer -->
+                    <div class="p-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                        <span class="text-xs text-gray-500" id="paginationInfo">Showing 0 to 0 of 0 events</span>
+                        <div class="flex items-center gap-2">
+                            <button id="prevPage" class="p-1 text-gray-400 hover:bg-gray-200 rounded disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div id="paginationButtons" class="flex items-center gap-1">
+                                <!-- Pagination buttons rendered here -->
+                            </div>
+                            <button id="nextPage" class="p-1 text-gray-400 hover:bg-gray-200 rounded disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <select id="pageSizeSelect" class="ml-4 text-xs border-gray-300 rounded focus:ring-primary py-1">
+                                <option value="8">8 / page</option>
+                                <option value="15">15 / page</option>
+                                <option value="25">25 / page</option>
+                                <option value="50">50 / page</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- RightSidebar -->
+            <aside class="right-sidebar w-80 border-l border-gray-200 bg-white overflow-y-auto flex-shrink-0" data-purpose="events-summary-sidebar">
+                <!-- Mini Calendar Section -->
+                <div class="p-6 border-b border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <button id="prevMonth" class="p-1 text-gray-400 hover:text-primary transition-colors">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h4 class="font-bold text-gray-800 text-sm" id="calendarMonth">June 2025</h4>
+                        <button id="nextMonth" class="p-1 text-gray-400 hover:text-primary transition-colors">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-semibold text-gray-400 mb-2">
+                        <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+                    </div>
+                    <div id="calendarDays" class="grid grid-cols-7 gap-1 text-center">
+                        <!-- Calendar days rendered here -->
+                    </div>
+                </div>
+                
+                <!-- Upcoming Events Section -->
+                <div class="p-6 border-b border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-bold text-gray-800 text-sm">Upcoming Events</h4>
+                        <a class="text-[10px] font-bold text-primary hover:underline cursor-pointer" id="viewAllUpcoming">View all</a>
+                    </div>
+                    <div id="upcomingEvents" class="space-y-4">
+                        <!-- Upcoming events rendered here -->
+                    </div>
+                </div>
+                
+                <!-- Awaiting Approval Section -->
+                <div class="p-6 border-b border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-bold text-gray-800 text-sm">Events Awaiting Approval</h4>
+                        <a class="text-[10px] font-bold text-primary hover:underline cursor-pointer" id="viewAllPending">View all</a>
+                    </div>
+                    <div id="pendingEvents" class="space-y-4">
+                        <!-- Pending events rendered here -->
+                    </div>
+                </div>
+                
+                <!-- Event Statistics Section -->
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-bold text-gray-800 text-sm">Event Statistics</h4>
+                        <select id="statsPeriod" class="text-[10px] bg-transparent border-none focus:ring-0 font-bold text-gray-500">
+                            <option value="month">This Month</option>
+                            <option value="quarter">This Quarter</option>
+                            <option value="year">This Year</option>
+                        </select>
+                    </div>
+                    <div id="eventStats" class="grid grid-cols-2 gap-4">
+                        <!-- Stats rendered here -->
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<!-- Load the context manager -->
+<script src="js/context-manager.js"></script>
+
+<!-- Load the events page -->
+<script src="js/events.js"></script>
+</body>
+</html>

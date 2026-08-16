@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>BridgeConnect · Community</title>
+    
+    <!-- Font Setup -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzAOMVoTR5YTrZlzedypz_KqQT-lotI1o",
+            authDomain: "bridgeconnect-5b8bd.firebaseapp.com",
+            projectId: "bridgeconnect-5b8bd",
+            storageBucket: "bridgeconnect-5b8bd.firebasestorage.app",
+            messagingSenderId: "231684985335",
+            appId: "1:231684985335:web:3f3bfdf7f2708f0ae81ef2",
+            measurementId: "G-C8QJH73MC0"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        db.enablePersistence().catch(err => console.warn('Firestore persistence error:', err));
+    </script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: {
+                        brand: { primary: '#0056b3', green: '#00a859', light: '#f0f3ff' }
+                    },
+                    borderRadius: { custom: '8px', 'custom-lg': '16px', 'custom-full': '9999px' }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f9f9ff;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+        /* Bottom Nav */
+        .bottom-nav-wrapper {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 94%;
+            max-width: 480px;
+            z-index: 1000;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        .bottom-nav-wrapper nav { pointer-events: auto; }
+
+        .bottom-nav-glass {
+            background: rgba(255, 255, 255, 0.25) !important;
+            backdrop-filter: blur(18px) saturate(1.4) !important;
+            -webkit-backdrop-filter: blur(18px) saturate(1.4) !important;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            padding: 8px 10px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            position: relative;
+        }
+        .bottom-nav-glass::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 42px;
+            padding: 2px;
+            background: repeating-linear-gradient(90deg, rgba(0,86,179,0.08) 0px, rgba(0,86,179,0.08) 6px, transparent 6px, transparent 10px);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0px;
+            padding: 4px 8px;
+            border-radius: 30px;
+            transition: all 0.2s ease;
+            position: relative;
+            min-width: 44px;
+            text-decoration: none;
+            color: #9ca3af;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-family: inherit;
+        }
+        .nav-item .nav-icon { font-size: 20px; transition: all 0.2s ease; }
+        .nav-item .nav-label { font-size: 9px; font-weight: 600; letter-spacing: 0.2px; margin-top: 1px; }
+        .nav-item.active { color: #0056b3; }
+        .nav-item.active .nav-icon { transform: translateY(-2px); }
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 3px;
+            border-radius: 4px;
+            background: #0056b3;
+        }
+        .fab-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: -14px;
+        }
+        .fab-button {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00a859, #008f4a);
+            border: 3px solid rgba(255,255,255,0.9);
+            box-shadow: 0 8px 24px rgba(0,168,89,0.30);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+        }
+        .fab-button:hover { transform: scale(1.06); }
+        .fab-button:active { transform: scale(0.92); }
+        .fab-label { font-size: 9px; font-weight: 600; color: #9ca3af; margin-top: 2px; letter-spacing: 0.2px; }
+
+        /* Desktop */
+        @media (min-width: 1024px) {
+            .mobile-container {
+                max-width: 1200px;
+                margin: 20px auto;
+                border-radius: 32px;
+                min-height: 90vh;
+                max-height: 950px;
+                background: white;
+                box-shadow: 0 25px 60px -15px rgba(0,0,0,0.08);
+                overflow: hidden;
+                display: block;
+                padding: 0;
+                position: relative;
+            }
+            .main-content {
+                padding: 1.5rem 2.2rem 5rem 2.2rem;
+                overflow-y: auto;
+                max-height: 90vh;
+                background: white;
+            }
+            .mobile-header { display: none !important; }
+            .bottom-nav-wrapper {
+                max-width: 560px;
+                bottom: 12px;
+                width: 92%;
+            }
+            .bottom-nav-glass {
+                padding: 10px 14px;
+                border-radius: 48px;
+                background: rgba(255, 255, 255, 0.20) !important;
+                backdrop-filter: blur(22px) saturate(1.5) !important;
+                -webkit-backdrop-filter: blur(22px) saturate(1.5) !important;
+                border: 1px solid rgba(255, 255, 255, 0.5);
+            }
+            .nav-item .nav-icon { font-size: 22px; }
+            .nav-item .nav-label { font-size: 10px; }
+            .fab-button { width: 60px; height: 60px; font-size: 26px; }
+        }
+
+        @media (max-width: 1023px) {
+            .main-content {
+                padding: 0 0 100px 0;
+                background: white;
+                overflow: visible;
+            }
+            .mobile-header {
+                display: flex !important;
+                position: sticky;
+                top: 0;
+                background: rgba(255,255,255,0.92);
+                backdrop-filter: blur(8px);
+                z-index: 50;
+                padding: 12px 16px;
+                border-bottom: 1px solid #f0f0f0;
+                justify-content: space-between !important;
+                align-items: center !important;
+            }
+            .bottom-nav-wrapper {
+                bottom: 12px;
+                width: 96%;
+            }
+            .bottom-nav-glass {
+                background: rgba(255, 255, 255, 0.22) !important;
+                backdrop-filter: blur(18px) saturate(1.4) !important;
+                -webkit-backdrop-filter: blur(18px) saturate(1.4) !important;
+            }
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            padding: 12px 24px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            z-index: 9999;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast-success { background: #006e25; }
+        .toast-error { background: #ba1a1a; }
+        .toast-info { background: #003f87; }
+
+        /* Dropdown */
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+        }
+        .dropdown-menu.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .dropdown-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 40;
+            display: none;
+        }
+        .dropdown-overlay.active { display: block; }
+
+        /* Badge pulse */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .badge-pulse { animation: pulse 2s ease-in-out infinite; }
+
+        /* Filter pills */
+        .filter-pill {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .filter-pill:hover { transform: translateY(-1px); }
+        .filter-pill.active {
+            background: #0056b3;
+            color: white;
+            border-color: #0056b3;
+        }
+
+        /* Post cards */
+        .post-card {
+            transition: all 0.2s ease;
+        }
+        .post-card:hover { transform: translateY(-2px); }
+        .post-card:active { transform: scale(0.99); }
+
+        #nav-placeholder { display: block; }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Placeholder -->
+<div id="nav-placeholder"></div>
+
+<!-- Dropdown Overlay -->
+<div id="dropdownOverlay" class="dropdown-overlay"></div>
+
+<!-- Main Container -->
+<div class="mobile-container">
+    <div class="main-content">
+        
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <div class="flex items-center gap-2">
+                <div class="flex flex-col">
+                    <div class="flex items-center gap-1 text-brand-primary font-bold text-xl leading-none">
+                        <i class="fa-solid fa-users text-brand-primary"></i> BridgeConnect
+                    </div>
+                    <span class="text-[8px] text-brand-green font-medium">Connecting Communities. Empowering Lives.</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="notificationBtn" class="relative text-gray-600 hover:text-brand-primary transition-colors">
+                    <i class="fa-regular fa-bell text-xl"></i>
+                    <span id="notificationBadge" class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-white badge-pulse">3</span>
+                </button>
+                <div class="relative">
+                    <img id="profileImage" alt="User" class="h-9 w-9 rounded-full object-cover border-2 border-white shadow-sm cursor-pointer" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=200"/>
+                    <div class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 border border-white"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Header -->
+        <section class="px-4 pt-5 pb-2 flex items-start justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                    <i class="fa-solid fa-people-group text-brand-primary"></i> Community
+                </h1>
+                <p class="text-sm text-gray-500">Stay connected with your community</p>
+            </div>
+            <button id="locationBtn" class="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200 text-sm font-medium text-gray-700 shadow-sm active:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-location-dot text-brand-primary text-xs"></i>
+                <span id="locationText">Kwamankese</span>
+                <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 ml-1"></i>
+            </button>
+        </section>
+
+        <!-- Location Dropdown -->
+        <div id="locationDropdown" class="dropdown-menu absolute z-50 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden" style="display:none;">
+            <div class="py-1">
+                <button class="location-option w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2" data-location="kwamankese">
+                    <i class="fa-solid fa-location-dot text-brand-primary text-xs"></i> Kwamankese
+                </button>
+                <button class="location-option w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2" data-location="abura">
+                    <i class="fa-solid fa-location-dot text-brand-primary text-xs"></i> Abura
+                </button>
+                <button class="location-option w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2" data-location="asebu">
+                    <i class="fa-solid fa-location-dot text-brand-primary text-xs"></i> Asebu
+                </button>
+                <button class="location-option w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2" data-location="all">
+                    <i class="fa-solid fa-globe text-brand-primary text-xs"></i> All Communities
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter Pills -->
+        <section class="px-4 py-3">
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 hide-scrollbar">
+                <button class="filter-pill active px-4 py-1.5 rounded-full text-sm font-medium bg-brand-primary text-white border border-brand-primary whitespace-nowrap" data-filter="all">
+                    <i class="fa-solid fa-th-large mr-1.5"></i> All
+                </button>
+                <button class="filter-pill px-4 py-1.5 rounded-full text-sm font-medium bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 whitespace-nowrap" data-filter="announcement">
+                    <i class="fa-solid fa-bullhorn mr-1.5"></i> Announcements
+                </button>
+                <button class="filter-pill px-4 py-1.5 rounded-full text-sm font-medium bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 whitespace-nowrap" data-filter="event">
+                    <i class="fa-solid fa-calendar-days mr-1.5"></i> Events
+                </button>
+                <button class="filter-pill px-4 py-1.5 rounded-full text-sm font-medium bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 whitespace-nowrap" data-filter="news">
+                    <i class="fa-solid fa-newspaper mr-1.5"></i> News
+                </button>
+                <button class="filter-pill px-4 py-1.5 rounded-full text-sm font-medium bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 whitespace-nowrap" data-filter="notice">
+                    <i class="fa-solid fa-bell mr-1.5"></i> Notices
+                </button>
+                <button class="filter-pill px-4 py-1.5 rounded-full text-sm font-medium bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 whitespace-nowrap" data-filter="job">
+                    <i class="fa-solid fa-briefcase mr-1.5"></i> Jobs
+                </button>
+            </div>
+        </section>
+
+        <!-- Community Stats -->
+        <section class="px-4 py-2">
+            <div class="grid grid-cols-4 gap-2">
+                <div class="bg-blue-50 rounded-custom-lg p-3 text-center border border-blue-100">
+                    <p class="text-lg font-bold text-brand-primary" id="statMembers">0</p>
+                    <p class="text-[10px] text-gray-500 font-medium">Members</p>
+                </div>
+                <div class="bg-green-50 rounded-custom-lg p-3 text-center border border-green-100">
+                    <p class="text-lg font-bold text-brand-green" id="statPosts">0</p>
+                    <p class="text-[10px] text-gray-500 font-medium">Posts</p>
+                </div>
+                <div class="bg-purple-50 rounded-custom-lg p-3 text-center border border-purple-100">
+                    <p class="text-lg font-bold text-purple-600" id="statBusinesses">0</p>
+                    <p class="text-[10px] text-gray-500 font-medium">Businesses</p>
+                </div>
+                <div class="bg-orange-50 rounded-custom-lg p-3 text-center border border-orange-100">
+                    <p class="text-lg font-bold text-orange-500" id="statEvents">0</p>
+                    <p class="text-[10px] text-gray-500 font-medium">Events</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feed Container -->
+        <section class="px-4 py-3">
+            <div id="feedContainer" class="space-y-4">
+                <!-- Posts rendered by JavaScript -->
+                <div class="text-center py-12 text-gray-400">
+                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block"></i>
+                    <p>Loading community posts...</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast" class="toast"></div>
+
+<!-- JavaScript -->
+<script src="../pages/js/community.js"></script>
+
+</body>
+</html>

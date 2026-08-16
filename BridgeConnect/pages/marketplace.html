@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+    <title>BridgeConnect Marketplace</title>
+    <!-- Font Setup -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzAOMVoTR5YTrZlzedypz_KqQT-lotI1o",
+            authDomain: "bridgeconnect-5b8bd.firebaseapp.com",
+            projectId: "bridgeconnect-5b8bd",
+            storageBucket: "bridgeconnect-5b8bd.firebasestorage.app",
+            messagingSenderId: "231684985335",
+            appId: "1:231684985335:web:3f3bfdf7f2708f0ae81ef2",
+            measurementId: "G-C8QJH73MC0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        db.enablePersistence().catch(err => console.warn('Firestore persistence error:', err));
+    </script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#003f87',
+                        'secondary': '#22c55e',
+                        'surface': '#f9f9ff',
+                        'surface-container-low': '#f0f3ff',
+                        'surface-container-lowest': '#ffffff',
+                        'brand': { primary: '#003f87', green: '#22c55e', light: '#f0f3ff' },
+                        'brandGreen': '#22c55e'
+                    },
+                    borderRadius: {
+                        'custom': '8px',
+                        'custom-lg': '16px',
+                        'custom-full': '9999px'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f5f7fc;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+        /* Bottom Nav */
+        .bottom-nav-wrapper {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 94%;
+            max-width: 480px;
+            z-index: 1000;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        .bottom-nav-wrapper nav { pointer-events: auto; }
+
+        .bottom-nav-glass {
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(18px) saturate(1.4) !important;
+            -webkit-backdrop-filter: blur(18px) saturate(1.4) !important;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            padding: 8px 10px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0px;
+            padding: 4px 8px;
+            border-radius: 30px;
+            transition: all 0.2s ease;
+            position: relative;
+            min-width: 44px;
+            text-decoration: none;
+            color: #9ca3af;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-family: inherit;
+        }
+        .nav-item .nav-icon { font-size: 20px; transition: all 0.2s ease; }
+        .nav-item .nav-label { font-size: 9px; font-weight: 600; letter-spacing: 0.2px; margin-top: 1px; }
+        .nav-item.active { color: #003f87; }
+        .nav-item.active .nav-icon { transform: translateY(-2px); }
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 3px;
+            border-radius: 4px;
+            background: #003f87;
+        }
+        .fab-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: -14px;
+        }
+        .fab-button {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border: 3px solid rgba(255,255,255,0.95);
+            box-shadow: 0 8px 24px rgba(34,197,94,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+        }
+        .fab-button:hover { transform: scale(1.06); box-shadow: 0 12px 32px rgba(34,197,94,0.45); }
+        .fab-button:active { transform: scale(0.92); }
+        .fab-label { font-size: 9px; font-weight: 600; color: #9ca3af; margin-top: 2px; letter-spacing: 0.2px; }
+
+        /* Product Card */
+        .product-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .product-card:active {
+            transform: scale(0.98);
+        }
+
+        .toast {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+
+        #nav-placeholder { display: block; }
+
+        /* Dropdown styles */
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+        }
+        .dropdown-menu.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .dropdown-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 40;
+            display: none;
+        }
+        .dropdown-overlay.active {
+            display: block;
+        }
+
+        /* Notification badge pulse */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .badge-pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-content::-webkit-scrollbar { width: 4px; }
+        .modal-content::-webkit-scrollbar-track { background: transparent; }
+        .modal-content::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 4px; }
+
+        @media (max-width: 640px) {
+            .modal-content {
+                border-radius: 20px;
+                max-width: 100%;
+                margin: 8px;
+            }
+        }
+
+        /* Desktop */
+        @media (min-width: 1024px) {
+            .mobile-container {
+                max-width: 1200px;
+                margin: 20px auto;
+                border-radius: 32px;
+                min-height: 90vh;
+                max-height: 950px;
+                background: white;
+                box-shadow: 0 25px 60px -15px rgba(0,0,0,0.08);
+                overflow: hidden;
+                display: block;
+                padding: 0;
+                position: relative;
+            }
+            .main-content {
+                padding: 1.5rem 2.2rem 5rem 2.2rem;
+                overflow-y: auto;
+                max-height: 90vh;
+                background: white;
+            }
+            .mobile-header { display: none !important; }
+            .sidebar-nav { display: none !important; }
+
+            .bottom-nav-wrapper {
+                max-width: 560px;
+                bottom: 12px;
+                width: 92%;
+            }
+            .bottom-nav-glass {
+                padding: 10px 14px;
+                border-radius: 48px;
+                background: rgba(255, 255, 255, 0.85) !important;
+                backdrop-filter: blur(22px) saturate(1.5) !important;
+                -webkit-backdrop-filter: blur(22px) saturate(1.5) !important;
+                border: 1px solid rgba(255, 255, 255, 0.8);
+            }
+            .nav-item .nav-icon { font-size: 22px; }
+            .nav-item .nav-label { font-size: 10px; }
+            .fab-button { width: 60px; height: 60px; font-size: 26px; }
+            
+            .products-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1.5rem;
+            }
+            .featured-scroll {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.5rem;
+                overflow: visible;
+            }
+            .category-scroll {
+                display: grid;
+                grid-template-columns: repeat(8, 1fr);
+                gap: 0.5rem;
+                overflow: visible;
+            }
+        }
+
+        @media (max-width: 1023px) {
+            .sidebar-nav { display: none !important; }
+            .main-content {
+                padding: 0 0 100px 0;
+                background: white;
+                overflow: visible;
+            }
+            .mobile-header {
+                display: flex !important;
+                position: sticky;
+                top: 0;
+                background: rgba(255,255,255,0.92);
+                backdrop-filter: blur(8px);
+                z-index: 50;
+                padding: 12px 16px;
+                border-bottom: 1px solid #f0f0f0;
+                justify-content: space-between !important;
+                align-items: center !important;
+            }
+            .bottom-nav-wrapper {
+                bottom: 12px;
+                width: 96%;
+            }
+            .bottom-nav-glass {
+                background: rgba(255, 255, 255, 0.85) !important;
+                backdrop-filter: blur(18px) saturate(1.4) !important;
+                -webkit-backdrop-filter: blur(18px) saturate(1.4) !important;
+            }
+            .products-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            .featured-scroll {
+                display: flex;
+                overflow-x: auto;
+                gap: 1rem;
+                padding-bottom: 4px;
+                -webkit-overflow-scrolling: touch;
+            }
+            .featured-scroll .product-card {
+                min-width: 140px;
+                width: 140px;
+                flex-shrink: 0;
+            }
+            .category-scroll {
+                display: flex;
+                overflow-x: auto;
+                gap: 0.5rem;
+                padding-bottom: 4px;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            .category-item {
+                flex-shrink: 0;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+            .featured-scroll .product-card {
+                min-width: 130px;
+                width: 130px;
+            }
+            .category-item {
+                min-width: 56px;
+            }
+            .category-item .w-12.h-12 {
+                width: 44px;
+                height: 44px;
+            }
+            .category-item .w-12.h-12 i {
+                font-size: 16px;
+            }
+            .category-item span {
+                font-size: 9px;
+            }
+        }
+
+        #nav-placeholder { display: block; }
+
+        /* Wishlist badge */
+        .wishlist-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ef4444;
+            color: white;
+            font-size: 9px;
+            font-weight: 700;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            padding: 0 4px;
+        }
+        .cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #003f87;
+            color: white;
+            font-size: 9px;
+            font-weight: 700;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            padding: 0 4px;
+        }
+        .cart-btn, .wishlist-btn {
+            position: relative;
+            cursor: pointer;
+            padding: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Placeholder -->
+<div id="nav-placeholder"></div>
+
+<!-- Dropdown Overlay -->
+<div id="dropdownOverlay" class="dropdown-overlay"></div>
+
+<!-- Main Container -->
+<div class="mobile-container">
+    <nav class="sidebar-nav" style="display:none;"></nav>
+
+    <div class="main-content">
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <div class="flex items-center gap-2">
+                <div class="flex flex-col">
+                    <div class="flex items-center gap-1 text-brand-primary font-bold text-xl leading-none">
+                        <i class="fa-solid fa-store text-brand-primary"></i> BridgeConnect
+                    </div>
+                    <span class="text-[8px] text-brand-green font-medium">Connecting Communities. Empowering Lives.</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="notificationBtn" class="relative text-gray-600 hover:text-brand-primary transition-colors">
+                    <i class="fa-regular fa-bell text-xl"></i>
+                    <span id="notificationBadge" class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-white badge-pulse">3</span>
+                </button>
+                <div class="relative">
+                    <img id="profileImage" alt="User" class="h-9 w-9 rounded-full object-cover border-2 border-white shadow-sm cursor-pointer" src="https://ui-avatars.com/api/?name=User&background=003f87&color=fff&size=200"/>
+                    <div class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 border border-white"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Header -->
+        <header class="px-4 pt-4 pb-2">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+                        <i class="fa-solid fa-store text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold leading-none text-primary">BridgeConnect</h1>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest">Marketplace</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <!-- Cart Button -->
+                    <div class="cart-btn" id="cartBtn">
+                        <i class="fa-solid fa-cart-shopping text-xl text-gray-600"></i>
+                        <span class="cart-badge" id="cartBadge" style="display:none;">0</span>
+                    </div>
+                    <!-- Wishlist Button -->
+                    <div class="wishlist-btn" id="wishlistBtn">
+                        <i class="fa-regular fa-heart text-xl text-gray-600"></i>
+                        <span class="wishlist-badge" id="wishlistBadge" style="display:none;">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="relative flex items-center mb-3">
+                <div class="absolute left-3 text-gray-400">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <input id="searchInput" class="w-full bg-gray-100 border-none rounded-xl py-3 pl-10 pr-10 text-sm focus:ring-1 focus:ring-primary outline-none" placeholder="Search products, brands and more..." type="text"/>
+                <div class="absolute right-3 text-gray-400 cursor-pointer" id="filterIcon">
+                    <i class="fa-solid fa-sliders"></i>
+                </div>
+            </div>
+            
+            <!-- Location Selector -->
+            <div id="locationBtn" class="flex items-center gap-1 cursor-pointer">
+                <i class="fa-solid fa-location-dot text-secondary text-sm"></i>
+                <span class="text-xs font-semibold text-primary" id="locationText">Deliver to: Kwamankese</span>
+                <i class="fa-solid fa-chevron-down text-primary text-xs"></i>
+            </div>
+        </header>
+
+        <!-- Location Dropdown -->
+        <div id="locationDropdown" class="dropdown-menu absolute z-50 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden" style="display:none;">
+            <div class="py-1">
+                <button class="location-option w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2" data-location="kwamankese">
+                    <i class="fa-solid fa-location-dot text-brand-primary text-xs"></i> Kwamankese
+                </button>
+                <button class="location-option w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2" data-location="abura">
+                    <i class="fa-solid fa-location-dot text-brand-primary text-xs"></i> Abura
+                </button>
+                <button class="location-option w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2" data-location="asebu">
+                    <i class="fa-solid fa-location-dot text-brand-primary text-xs"></i> Asebu
+                </button>
+                <button class="location-option w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2" data-location="cape_coast">
+                    <i class="fa-solid fa-location-dot text-brand-primary text-xs"></i> Cape Coast
+                </button>
+                <button class="location-option w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 border-t border-gray-100 mt-1" data-location="all">
+                    <i class="fa-solid fa-globe text-brand-primary text-xs"></i> All Communities
+                </button>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <nav class="px-4 py-4 overflow-x-auto hide-scrollbar flex items-start gap-4 category-scroll" id="categoriesContainer">
+            <!-- Categories will be loaded dynamically -->
+        </nav>
+
+        <!-- Controls -->
+        <div class="px-4 py-2 flex gap-2">
+            <button id="filterBtn" class="flex-1 border border-gray-200 rounded-xl px-3 py-2 flex items-center justify-between text-xs font-medium hover:bg-gray-50 transition-colors">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-secondary text-sm"></i>
+                    Filters
+                </div>
+                <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+            </button>
+            <button id="sortBtn" class="flex-[1.5] border border-gray-200 rounded-xl px-3 py-2 flex items-center justify-between text-xs font-medium hover:bg-gray-50 transition-colors">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-up-wide-short text-secondary text-sm"></i>
+                    Sort by: <span id="sortLabel" class="text-gray-900">Popular</span>
+                </div>
+                <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+            </button>
+        </div>
+
+        <!-- Featured Products -->
+        <section class="featured-section mt-4">
+            <div class="px-4 flex items-center justify-between mb-3">
+                <h2 class="font-bold text-gray-900">Featured Products</h2>
+                <a class="view-all-link text-secondary text-xs font-semibold flex items-center gap-1 cursor-pointer" id="viewAllFeatured">
+                    View All <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                </a>
+            </div>
+            <div id="featuredProducts" class="flex overflow-x-auto hide-scrollbar px-4 gap-4 pb-4 featured-scroll">
+                <!-- Featured products loaded dynamically -->
+            </div>
+            <!-- Scroll Indicator -->
+            <div class="flex justify-center gap-1.5 mt-2">
+                <div class="w-6 h-1 rounded-full bg-primary"></div>
+                <div class="w-1.5 h-1 rounded-full bg-gray-200"></div>
+                <div class="w-1.5 h-1 rounded-full bg-gray-200"></div>
+            </div>
+        </section>
+
+        <!-- All Products -->
+        <section class="all-products-section mt-8 px-4">
+            <div class="flex items-center justify-between mb-1">
+                <h2 class="font-bold text-gray-900">All Products</h2>
+                <a class="view-all-link text-secondary text-xs font-semibold flex items-center gap-1 cursor-pointer" id="viewAllProducts">
+                    View All <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                </a>
+            </div>
+            <p class="text-[10px] text-gray-500 mb-4" id="productCount">Loading products...</p>
+            <div id="allProducts" class="products-grid gap-4">
+                <!-- All products loaded dynamically -->
+            </div>
+        </section>
+
+        <!-- Community Banner -->
+        <section class="mt-8 px-4 pb-4">
+            <div class="relative bg-blue-50 rounded-3xl overflow-hidden min-h-[160px] flex items-center">
+                <div class="z-10 p-6 w-[60%]">
+                    <h2 class="text-lg font-bold text-primary leading-tight mb-2">Shop Local. Support Community.</h2>
+                    <p class="text-[10px] text-gray-600 mb-4">Every purchase you make helps grow our local economy.</p>
+                    <button class="bg-primary text-white text-xs font-bold px-5 py-2 rounded-xl hover:bg-blue-700 transition-colors" onclick="showToast('Learning more...', 'info')">
+                        Learn More
+                    </button>
+                </div>
+                <div class="absolute right-0 bottom-0 w-[50%] flex items-end justify-end opacity-50">
+                    <i class="fa-solid fa-store text-6xl text-primary"></i>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<!-- Modal Container -->
+<div id="modalContainer"></div>
+
+<!-- JavaScript -->
+<script src="../pages/js/marketplace.js"></script>
+
+</body>
+</html>

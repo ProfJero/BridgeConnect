@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Select Workspace · BridgeConnect</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzAOMVoTR5YTrZlzedypz_KqQT-lotI1o",
+            authDomain: "bridgeconnect-5b8bd.firebaseapp.com",
+            projectId: "bridgeconnect-5b8bd",
+            storageBucket: "bridgeconnect-5b8bd.firebasestorage.app",
+            messagingSenderId: "231684985335",
+            appId: "1:231684985335:web:3f3bfdf7f2708f0ae81ef2",
+            measurementId: "G-C8QJH73MC0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        db.enablePersistence().catch(err => console.warn('Firestore persistence error:', err));
+    </script>
+    
+    <style>
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #f1f5f9; }
+        .workspace-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .workspace-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -12px rgba(0,0,0,0.15);
+        }
+        .workspace-card.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+        .workspace-card .checkmark {
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        .workspace-card.selected .checkmark {
+            opacity: 1;
+        }
+        .role-badge {
+            background: #dbeafe;
+            color: #1e3a8a;
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+
+<div class="w-full max-w-4xl">
+    <!-- Header -->
+    <div class="text-center mb-10">
+        <div class="flex items-center justify-center gap-2 mb-3">
+            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                <i class="fa-solid fa-users text-xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-blue-600">BridgeConnect</h1>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800">Select Your Workspace</h2>
+        <p class="text-sm text-gray-500 mt-1">Choose which workspace you want to access</p>
+    </div>
+    
+    <!-- Workspace Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="workspaceGrid">
+        <!-- Workspaces will be rendered here -->
+    </div>
+    
+    <!-- Footer -->
+    <div class="text-center mt-8">
+        <p class="text-xs text-gray-400">
+            <i class="fa-solid fa-shield-alt text-blue-400 mr-1"></i>
+            Secured by Digital Bridge Initiative
+        </p>
+        <button class="text-sm text-gray-500 hover:text-gray-700 mt-2" id="logoutBtn">
+            <i class="fa-solid fa-right-from-bracket mr-1"></i> Sign out
+        </button>
+    </div>
+</div>
+
+<script>
+    function showToast(message, type = 'info') {
+        let toast = document.getElementById('toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'toast';
+            toast.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-xl text-white font-medium z-50 transition-all duration-400 opacity-0';
+            document.body.appendChild(toast);
+        }
+        const colors = { success: 'bg-green-600', error: 'bg-red-600', info: 'bg-blue-600' };
+        toast.textContent = message;
+        toast.className = `fixed bottom-8 left-1/2 transform -translate-x-1/2 -translate-y-0 px-6 py-3 rounded-xl text-white font-medium z-50 transition-all duration-400 ${colors[type] || colors.info}`;
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => {
+            toast.className = `fixed bottom-8 left-1/2 transform -translate-x-1/2 -translate-y-12 px-6 py-3 rounded-xl text-white font-medium z-50 transition-all duration-400 opacity-0`;
+        }, 3500);
+    }
+
+    async function loadWorkspaces() {
+        const user = auth.currentUser;
+        if (!user) {
+            window.location.href = '../login.html';
+            return;
+        }
+        
+        try {
+            const doc = await db.collection('users').doc(user.uid).get();
+            if (!doc.exists) {
+                showToast('User data not found', 'error');
+                return;
+            }
+            
+            const userData = doc.data();
+            const contexts = userData.contexts || [];
+            
+            if (contexts.length === 0) {
+                showToast('No workspaces available', 'error');
+                return;
+            }
+            
+            if (contexts.length === 1) {
+                const context = contexts[0];
+                localStorage.setItem('bridgeconnect_active_context', JSON.stringify({
+                    type: context.type,
+                    id: context.id
+                }));
+                window.location.href = 'dashboard.html';
+                return;
+            }
+            
+            renderWorkspaces(contexts);
+            
+        } catch (error) {
+            console.error('Error loading workspaces:', error);
+            showToast('Error loading workspaces', 'error');
+        }
+    }
+    
+    function renderWorkspaces(contexts) {
+        const grid = document.getElementById('workspaceGrid');
+        grid.innerHTML = '';
+        
+        const icons = {
+            'platform_owner': 'fa-globe',
+            'district_admin': 'fa-building',
+            'community_moderator': 'fa-people-group',
+            'business_owner': 'fa-store',
+            'organization': 'fa-building-columns',
+            'resident': 'fa-user'
+        };
+        
+        const colors = {
+            'platform_owner': 'text-purple-600 bg-purple-50',
+            'district_admin': 'text-blue-600 bg-blue-50',
+            'community_moderator': 'text-green-600 bg-green-50',
+            'business_owner': 'text-orange-600 bg-orange-50',
+            'organization': 'text-indigo-600 bg-indigo-50',
+            'resident': 'text-teal-600 bg-teal-50'
+        };
+        
+        const labels = {
+            'platform_owner': 'Platform Owner',
+            'district_admin': 'District Admin',
+            'community_moderator': 'Community Moderator',
+            'business_owner': 'Business Owner',
+            'organization': 'Organization',
+            'resident': 'Resident'
+        };
+        
+        contexts.forEach(context => {
+            const icon = icons[context.type] || 'fa-user';
+            const color = colors[context.type] || 'text-gray-600 bg-gray-50';
+            const label = labels[context.type] || context.type;
+            
+            const card = document.createElement('div');
+            card.className = 'workspace-card bg-white border-2 border-gray-200 rounded-2xl p-6 hover:border-blue-300 relative';
+            card.dataset.type = context.type;
+            card.dataset.id = context.id;
+            
+            card.innerHTML = `
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl ${color} flex items-center justify-center text-xl">
+                            <i class="fa-solid ${icon}"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">${context.label || 'Workspace'}</h3>
+                            <span class="role-badge">${label}</span>
+                        </div>
+                    </div>
+                    <div class="checkmark text-blue-600">
+                        <i class="fa-solid fa-circle-check text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <p class="text-xs text-gray-500">
+                        <i class="fa-regular fa-circle-check mr-1 text-green-500"></i>
+                        ${context.permissions ? context.permissions.length : 0} permissions
+                    </p>
+                </div>
+            `;
+            
+            card.addEventListener('click', function() {
+                const type = this.dataset.type;
+                const id = this.dataset.id;
+                
+                localStorage.setItem('bridgeconnect_active_context', JSON.stringify({
+                    type: type,
+                    id: id
+                }));
+                
+                showToast('Switching workspace...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 500);
+            });
+            
+            grid.appendChild(card);
+        });
+    }
+
+    auth.onAuthStateChanged((user) => {
+        if (!user) {
+            window.location.href = '../login.html';
+            return;
+        }
+        loadWorkspaces();
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        auth.signOut().then(() => {
+            localStorage.removeItem('bridgeconnect_user');
+            localStorage.removeItem('bridgeconnect_active_context');
+            window.location.href = '../login.html';
+        }).catch(err => {
+            showToast('Error logging out', 'error');
+        });
+    });
+</script>
+
+</body>
+</html>

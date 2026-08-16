@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Advertisements Management | BridgeConnect Admin Portal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzAOMVoTR5YTrZlzedypz_KqQT-lotI1o",
+            authDomain: "bridgeconnect-5b8bd.firebaseapp.com",
+            projectId: "bridgeconnect-5b8bd",
+            storageBucket: "bridgeconnect-5b8bd.firebasestorage.app",
+            messagingSenderId: "231684985335",
+            appId: "1:231684985335:web:3f3bfdf7f2708f0ae81ef2",
+            measurementId: "G-C8QJH73MC0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        db.enablePersistence().catch(err => console.warn('Firestore persistence error:', err));
+    </script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        tertiary: "#732f00",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "primary-fixed": "#dae2ff",
+                        "surface-bright": "#f7f9fb",
+                        "surface-dim": "#d8dadc",
+                        "surface-container-high": "#e6e8ea",
+                        background: "#f7f9fb",
+                        "tertiary-fixed": "#ffdbca",
+                        "surface-tint": "#0c56d0",
+                        "surface-variant": "#e0e3e5",
+                        "on-tertiary-fixed-variant": "#783200",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "inverse-surface": "#2d3133",
+                        "on-secondary": "#ffffff",
+                        error: "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#c4d2ff",
+                        "inverse-primary": "#b2c5ff",
+                        "primary-container": "#0052cc",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#341100",
+                        "outline-variant": "#c3c6d6",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#71f8e4",
+                        primary: "#003d9b",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "on-primary-fixed": "#001848",
+                        "surface-container-highest": "#e0e3e5",
+                        "tertiary-fixed-dim": "#ffb690",
+                        surface: "#f7f9fb",
+                        "on-tertiary-container": "#ffc8ac",
+                        secondary: "#006b5f",
+                        "on-surface-variant": "#434654",
+                        "secondary-container": "#6df5e1",
+                        "surface-container-low": "#f2f4f6",
+                        "on-secondary-fixed": "#00201c",
+                        "on-secondary-container": "#006f64",
+                        outline: "#737685",
+                        "on-background": "#191c1e",
+                        "error-container": "#ffdad6",
+                        "on-surface": "#191c1e",
+                        "on-primary-fixed-variant": "#0040a2",
+                        "tertiary-container": "#984100",
+                        "secondary-fixed-dim": "#4fdbc8",
+                        "on-secondary-fixed-variant": "#005048"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "card-padding": "1.25rem",
+                        "gutter": "1.5rem",
+                        "sidebar-width": "260px",
+                        "section-gap": "2rem",
+                        "container-margin": "2rem"
+                    },
+                    fontFamily: {
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    fontSize: {
+                        "label-md": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "headline-md": ["18px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8e9;
+            border-radius: 10px;
+        }
+        .stat-card-shadow {
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Sidebar collapse styles */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar.collapsed {
+            width: 72px;
+            min-width: 72px;
+        }
+        .sidebar.collapsed .logo-text,
+        .sidebar.collapsed .dbi-text,
+        .sidebar.collapsed .link-text,
+        .sidebar.collapsed .notif-badge,
+        .sidebar.collapsed .sidebar-footer .link-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-dbi {
+            padding: 6px;
+            justify-content: center;
+        }
+        .sidebar.collapsed .sidebar-dbi .dbi-text {
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-link {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-link i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-logo {
+            justify-content: center;
+            padding: 12px 0;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 {
+            width: 36px;
+            height: 36px;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-footer {
+            padding: 8px;
+        }
+        .sidebar.collapsed .sidebar-footer a {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-footer a i {
+            font-size: 18px;
+        }
+
+        @media (max-width: 1023px) {
+            .sidebar-container {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                width: 280px;
+                z-index: 1000;
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 4px 0 30px rgba(0,0,0,0.15);
+            }
+            .sidebar-container.mobile-open {
+                left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 999;
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .mobile-header {
+                display: flex !important;
+            }
+            .desktop-header {
+                display: none !important;
+            }
+            .main-content {
+                padding: 1rem !important;
+            }
+            .sidebar.collapsed {
+                width: 280px !important;
+                min-width: 280px !important;
+            }
+            .sidebar.collapsed .logo-text,
+            .sidebar.collapsed .dbi-text,
+            .sidebar.collapsed .link-text,
+            .sidebar.collapsed .notif-badge,
+            .sidebar.collapsed .sidebar-footer .link-text {
+                opacity: 1 !important;
+                display: block !important;
+                width: auto !important;
+            }
+            .sidebar.collapsed .sidebar-link {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-logo {
+                justify-content: flex-start !important;
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer {
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer a {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-dbi {
+                padding: 12px !important;
+                justify-content: flex-start !important;
+            }
+            .sidebar.collapsed .sidebar-dbi .dbi-text {
+                display: block !important;
+            }
+            .sidebar-toggle-btn {
+                display: none !important;
+            }
+            .right-sidebar {
+                display: none !important;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .mobile-header {
+                display: none !important;
+            }
+            .sidebar-overlay {
+                display: none !important;
+            }
+        }
+        
+        .toast {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+        
+        .group-hover\\:opacity-100 {
+            transition: opacity 0.2s ease-in-out;
+        }
+        .opacity-0 {
+            opacity: 0;
+        }
+        .group:hover .group-hover\\:opacity-100 {
+            opacity: 1 !important;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex min-h-screen">
+    
+    <!-- MOBILE OVERLAY -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer" class="sidebar-container"></div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-w-0">
+        
+        <!-- Mobile Header -->
+        <header class="mobile-header bg-surface/80 backdrop-blur-md h-16 border-b border-outline-variant flex items-center justify-between px-4 flex-shrink-0 z-10">
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuBtn" class="text-on-surface-variant hover:text-on-surface text-xl p-1">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center text-primary">
+                        <i class="fas fa-bullhorn text-sm"></i>
+                    </div>
+                    <span class="font-bold text-primary text-sm">BridgeConnect</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="relative text-on-surface-variant">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="notif-count absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full text-[9px] text-white flex items-center justify-center font-bold">0</span>
+                </button>
+                <img id="mobileUserAvatar" alt="User" class="w-7 h-7 rounded-full object-cover border-2 border-white shadow-sm" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=32"/>
+            </div>
+        </header>
+        
+        <!-- TopNavBar -->
+        <header class="desktop-header sticky top-0 z-40 bg-surface/80 backdrop-blur-md flex justify-between items-center w-full px-container-margin py-4 max-w-full border-b border-outline-variant">
+            <div class="flex items-center gap-4 flex-1 max-w-2xl">
+                <div class="relative w-full">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant"></i>
+                    <input id="globalSearch" class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-body-md font-body-md focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Search users, businesses, ads..." type="text"/>
+                </div>
+            </div>
+            <div class="flex items-center gap-6 ml-6">
+                <div class="flex items-center gap-4">
+                    <button class="relative p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors notification-btn">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
+                        <span class="notif-count absolute -top-1 -right-1 bg-red-500 text-white text-[8px] px-1 rounded-full hidden">0</span>
+                    </button>
+                    <button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
+                        <i class="fas fa-comment-dots text-xl"></i>
+                    </button>
+                </div>
+                <div class="h-8 w-px bg-outline-variant"></div>
+                <div class="flex items-center gap-3" id="userProfileBtn">
+                    <div class="text-right">
+                        <p class="font-label-md text-label-md text-on-surface font-bold" id="userNameDisplay">User</p>
+                        <p class="text-[10px] text-outline uppercase tracking-wider" id="userRoleDisplay">Loading...</p>
+                    </div>
+                    <img id="desktopUserAvatar" class="w-10 h-10 rounded-full border border-outline-variant object-cover" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=40"/>
+                    <i class="fas fa-chevron-down text-outline text-sm"></i>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Page Content -->
+        <div class="p-8 space-y-8 flex-1 overflow-y-auto main-content">
+            <!-- Page Header -->
+            <div class="flex justify-between items-end flex-wrap gap-4">
+                <div>
+                    <h2 class="font-headline-lg text-headline-lg text-on-surface">Advertisements Management</h2>
+                    <p class="text-body-md text-outline">Manage and monitor all sponsored advertisements across the BridgeConnect platform.</p>
+                </div>
+                <button class="flex items-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-lg font-bold hover:bg-primary-container transition-all active:scale-95" id="createAdBtn">
+                    <i class="fas fa-plus"></i>
+                    <span>Create Advertisement</span>
+                </button>
+            </div>
+            
+            <!-- Stats & Top Performer Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-gutter">
+                <!-- Metric Cards -->
+                <div class="lg:col-span-4 grid grid-cols-1 md:grid-cols-4 gap-gutter">
+                    <div class="bg-surface-container-lowest p-card-padding rounded-xl border border-outline-variant stat-card-shadow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-primary/10 text-primary rounded-lg">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <span class="flex items-center text-green-600 text-label-sm">
+                                <i class="fas fa-arrow-up text-xs mr-1"></i> 16.3%
+                            </span>
+                        </div>
+                        <p class="text-outline text-label-sm font-semibold uppercase tracking-wider">Active Campaigns</p>
+                        <h3 class="font-headline-lg text-headline-lg mt-1" id="activeCampaigns">0</h3>
+                        <p class="text-outline text-[11px] mt-2 italic">vs last 30 days</p>
+                    </div>
+                    
+                    <div class="bg-surface-container-lowest p-card-padding rounded-xl border border-outline-variant stat-card-shadow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-tertiary/10 text-tertiary rounded-lg">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
+                            <span class="flex items-center text-green-600 text-label-sm">
+                                <i class="fas fa-arrow-up text-xs mr-1"></i> 8.7%
+                            </span>
+                        </div>
+                        <p class="text-outline text-label-sm font-semibold uppercase tracking-wider">Pending Approvals</p>
+                        <h3 class="font-headline-lg text-headline-lg mt-1" id="pendingApprovals">0</h3>
+                        <p class="text-outline text-[11px] mt-2 italic">vs last 30 days</p>
+                    </div>
+                    
+                    <div class="bg-surface-container-lowest p-card-padding rounded-xl border border-outline-variant stat-card-shadow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-secondary/10 text-secondary rounded-lg">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <span class="flex items-center text-green-600 text-label-sm">
+                                <i class="fas fa-arrow-up text-xs mr-1"></i> 23.6%
+                            </span>
+                        </div>
+                        <p class="text-outline text-label-sm font-semibold uppercase tracking-wider">Total Impressions</p>
+                        <h3 class="font-headline-lg text-headline-lg mt-1" id="totalImpressions">0</h3>
+                        <p class="text-outline text-[11px] mt-2 italic">vs last 30 days</p>
+                    </div>
+                    
+                    <div class="bg-surface-container-lowest p-card-padding rounded-xl border border-outline-variant stat-card-shadow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-primary-container/20 text-primary-container rounded-lg">
+                                <i class="fas fa-hand-pointer"></i>
+                            </div>
+                            <span class="flex items-center text-green-600 text-label-sm">
+                                <i class="fas fa-arrow-up text-xs mr-1"></i> 18.9%
+                            </span>
+                        </div>
+                        <p class="text-outline text-label-sm font-semibold uppercase tracking-wider">Total Clicks</p>
+                        <h3 class="font-headline-lg text-headline-lg mt-1" id="totalClicks">0</h3>
+                        <p class="text-outline text-[11px] mt-2 italic">vs last 30 days</p>
+                    </div>
+                </div>
+                
+                <!-- Top Performer Mini-Card -->
+                <div class="bg-surface-container-lowest p-card-padding rounded-xl border border-outline-variant stat-card-shadow flex items-center space-x-4" id="topPerformer">
+                    <div class="w-16 h-16 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-trophy text-2xl text-primary"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-outline text-[10px] font-bold uppercase tracking-tighter">Top Performing Advert</p>
+                        <h4 class="font-label-md text-label-md text-on-surface truncate" id="topPerformerTitle">Loading...</h4>
+                        <div class="mt-1 flex items-baseline gap-1">
+                            <span class="text-secondary font-bold" id="topPerformerCTR">0%</span>
+                            <span class="text-[10px] text-outline">Avg CTR</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex flex-col lg:flex-row gap-gutter">
+                <!-- Main Table & Filter Section -->
+                <div class="flex-1 space-y-6">
+                    <!-- Filters -->
+                    <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                            <div class="col-span-1 md:col-span-2 xl:col-span-2 relative">
+                                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-outline"></i>
+                                <input id="adSearch" class="w-full pl-9 pr-4 py-2.5 bg-surface text-body-md rounded-lg border border-outline-variant focus:ring-1 focus:ring-primary outline-none" placeholder="Search campaigns, advertisers..." type="text"/>
+                            </div>
+                            <select id="filterStatus" class="bg-surface border-outline-variant rounded-lg text-label-md px-3 py-2.5 outline-none">
+                                <option value="">All Status</option>
+                                <option value="approved">Approved</option>
+                                <option value="pending">Pending</option>
+                                <option value="rejected">Rejected</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                            <select id="filterType" class="bg-surface border-outline-variant rounded-lg text-label-md px-3 py-2.5 outline-none">
+                                <option value="">All Types</option>
+                                <option value="banner">Banner</option>
+                                <option value="sponsored">Sponsored Post</option>
+                                <option value="marketplace">Marketplace</option>
+                                <option value="job">Job Ad</option>
+                            </select>
+                            <select id="filterCommunity" class="bg-surface border-outline-variant rounded-lg text-label-md px-3 py-2.5 outline-none">
+                                <option value="">All Communities</option>
+                            </select>
+                            <button class="flex items-center justify-center gap-2 px-4 py-2.5 text-primary font-bold hover:bg-primary/5 rounded-lg transition-colors border border-primary/20" id="moreFiltersBtn">
+                                <i class="fas fa-filter"></i>
+                                <span>More Filters</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Data Table -->
+                    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+                            <h3 class="font-headline-md text-headline-md">All Advertisements (<span id="adCount">0</span>)</h3>
+                            <div class="flex items-center gap-2">
+                                <button class="p-2 hover:bg-surface-container-high rounded-lg text-outline transition-colors" id="exportBtn">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="p-2 hover:bg-surface-container-high rounded-lg text-outline transition-colors" id="refreshBtn">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-surface-container-low/50 text-outline uppercase text-[10px] font-bold tracking-widest border-b border-outline-variant">
+                                    <tr>
+                                        <th class="px-6 py-4">Advertisement</th>
+                                        <th class="px-4 py-4">Type</th>
+                                        <th class="px-4 py-4">Dates</th>
+                                        <th class="px-4 py-4">Metrics</th>
+                                        <th class="px-4 py-4">Status</th>
+                                        <th class="px-6 py-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adsTableBody" class="divide-y divide-outline-variant/30">
+                                    <!-- Ad rows rendered here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Pagination -->
+                        <div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant flex items-center justify-between flex-wrap gap-4">
+                            <p class="text-label-sm text-outline" id="paginationInfo">Showing 0-0 of 0 advertisements</p>
+                            <div class="flex items-center gap-2">
+                                <button id="prevPage" class="p-2 hover:bg-surface-container-high rounded-lg transition-colors border border-outline-variant disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <i class="fas fa-chevron-left text-sm"></i>
+                                </button>
+                                <div id="paginationButtons" class="flex items-center gap-1">
+                                    <!-- Pagination buttons rendered here -->
+                                </div>
+                                <button id="nextPage" class="p-2 hover:bg-surface-container-high rounded-lg transition-colors border border-outline-variant disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <i class="fas fa-chevron-right text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Sidebar Charts & Actions -->
+                <aside class="w-full lg:w-80 space-y-gutter flex-shrink-0 right-sidebar">
+                    <!-- Performance Analytics -->
+                    <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm space-y-6">
+                        <h4 class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-bold">Performance Analytics</h4>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <p class="text-[10px] text-outline uppercase font-bold">Top Performing Ad</p>
+                                    <p class="font-label-md text-label-md mt-1 truncate" id="analyticsTopAd">Loading...</p>
+                                </div>
+                                <span class="text-primary font-black text-xl" id="analyticsTopCTR">0% <span class="text-[10px] text-outline font-normal">CTR</span></span>
+                            </div>
+                            <!-- Performance Chart -->
+                            <div id="performanceChart" class="h-32 flex items-end justify-between gap-1 mt-4">
+                                <!-- Chart bars rendered here -->
+                            </div>
+                            <div class="flex justify-between text-[9px] text-outline px-1 uppercase font-bold">
+                                <span>May 20</span>
+                                <span>Jun 15</span>
+                            </div>
+                            <button class="w-full py-2 bg-surface text-primary border border-primary/20 hover:bg-primary/5 rounded-lg text-[11px] font-bold transition-colors" id="viewReportBtn">
+                                View Detailed Report
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Distribution Charts -->
+                    <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm space-y-6">
+                        <div class="space-y-6">
+                            <!-- Ad Type Distribution -->
+                            <div>
+                                <h4 class="font-label-md text-label-md text-on-surface mb-4">Advertisement by Type</h4>
+                                <div class="flex items-center gap-4">
+                                    <div class="relative w-20 h-20 rounded-full border-8 border-primary border-r-secondary border-b-tertiary flex items-center justify-center" id="typeDonut">
+                                        <span class="text-[10px] font-bold" id="typeTotal">0</span>
+                                    </div>
+                                    <div class="flex-1 space-y-1" id="typeDistribution">
+                                        <!-- Type distribution rendered here -->
+                                    </div>
+                                </div>
+                            </div>
+                            <hr class="border-outline-variant/30"/>
+                            <!-- Status Distribution -->
+                            <div>
+                                <h4 class="font-label-md text-label-md text-on-surface mb-4">Advertisement Status</h4>
+                                <div class="flex items-center gap-4">
+                                    <div class="relative w-20 h-20 rounded-full border-8 border-green-500 border-r-amber-500 border-b-blue-500 border-l-red-500 flex items-center justify-center" id="statusDonut">
+                                        <span class="text-[10px] font-bold" id="statusTotal">0</span>
+                                    </div>
+                                    <div class="flex-1 space-y-1" id="statusDistribution">
+                                        <!-- Status distribution rendered here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm">
+                        <h4 class="font-label-md text-label-md text-on-surface mb-4">Quick Actions</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button class="p-4 bg-primary/5 hover:bg-primary/10 rounded-xl flex flex-col items-center justify-center text-center transition-colors group" id="quickCreateAd">
+                                <i class="fas fa-plus-circle text-primary text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="text-[10px] font-bold text-on-surface-variant leading-tight">Create Advertisement</span>
+                            </button>
+                            <button class="p-4 bg-secondary/5 hover:bg-secondary/10 rounded-xl flex flex-col items-center justify-center text-center transition-colors group" id="quickManageCampaigns">
+                                <i class="fas fa-sliders-h text-secondary text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="text-[10px] font-bold text-on-surface-variant leading-tight">Manage Campaigns</span>
+                            </button>
+                            <button class="p-4 bg-tertiary/5 hover:bg-tertiary/10 rounded-xl flex flex-col items-center justify-center text-center transition-colors group" id="quickAnalytics">
+                                <i class="fas fa-chart-bar text-tertiary text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="text-[10px] font-bold text-on-surface-variant leading-tight">Ad Analytics</span>
+                            </button>
+                            <button class="p-4 bg-primary-container/5 hover:bg-primary-container/10 rounded-xl flex flex-col items-center justify-center text-center transition-colors group" id="quickExport">
+                                <i class="fas fa-file-export text-primary-container text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="text-[10px] font-bold text-on-surface-variant leading-tight">Export Reports</span>
+                            </button>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="p-8 text-center border-t border-outline-variant">
+            <p class="text-label-sm text-outline">Powered by Digital Bridge Initiative (DBI)</p>
+            <div class="mt-4 flex justify-center gap-2 items-center grayscale opacity-50">
+                <div class="w-8 h-8 bg-green-600 rounded flex items-center justify-center text-white font-black text-xs">DBI</div>
+                <div class="font-black text-lg text-[#001c3d]">DIGITAL BRIDGE INITIATIVE</div>
+            </div>
+        </footer>
+    </main>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<!-- Load the context manager -->
+<script src="js/context-manager.js"></script>
+
+<!-- Load the advertisements page -->
+<script src="js/advertisements.js"></script>
+</body>
+</html>

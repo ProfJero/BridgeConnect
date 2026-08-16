@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>User Profile | BridgeConnect Admin Portal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzAOMVoTR5YTrZlzedypz_KqQT-lotI1o",
+            authDomain: "bridgeconnect-5b8bd.firebaseapp.com",
+            projectId: "bridgeconnect-5b8bd",
+            storageBucket: "bridgeconnect-5b8bd.firebasestorage.app",
+            messagingSenderId: "231684985335",
+            appId: "1:231684985335:web:3f3bfdf7f2708f0ae81ef2",
+            measurementId: "G-C8QJH73MC0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        db.enablePersistence().catch(err => console.warn('Firestore persistence error:', err));
+    </script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdbca",
+                        "secondary-fixed": "#71f8e4",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#6df5e1",
+                        "on-surface-variant": "#434654",
+                        "on-primary-fixed": "#001848",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-fixed-dim": "#ffb690",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-fixed-dim": "#4fdbc8",
+                        "on-error-container": "#93000a",
+                        "primary-container": "#0052cc",
+                        "surface-container-high": "#e6e8ea",
+                        "inverse-surface": "#2d3133",
+                        "on-tertiary-container": "#ffc8ac",
+                        "surface-variant": "#e0e3e5",
+                        "on-background": "#191c1e",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#0c56d0",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#006b5f",
+                        "on-secondary-fixed": "#00201c",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary-fixed-variant": "#783200",
+                        "inverse-primary": "#b2c5ff",
+                        "primary": "#003d9b",
+                        "tertiary": "#732f00",
+                        "surface": "#f7f9fb",
+                        "background": "#f7f9fb",
+                        "outline-variant": "#c3c6d6",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#984100",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "on-secondary-fixed-variant": "#005048",
+                        "on-secondary-container": "#006f64",
+                        "on-primary-fixed-variant": "#0040a2",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-bright": "#f7f9fb",
+                        "outline": "#737685",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#c4d2ff",
+                        "primary-fixed": "#dae2ff",
+                        "surface-container": "#eceef0",
+                        "on-surface": "#191c1e"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "gutter": "1.5rem",
+                        "container-margin": "2rem",
+                        "sidebar-width": "260px",
+                        "card-padding": "1.25rem",
+                        "section-gap": "2rem"
+                    },
+                    fontFamily: {
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-md": ["18px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .card-shadow { box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04); }
+        
+        /* Sidebar collapse styles */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar.collapsed {
+            width: 72px;
+            min-width: 72px;
+        }
+        .sidebar.collapsed .logo-text,
+        .sidebar.collapsed .dbi-text,
+        .sidebar.collapsed .link-text,
+        .sidebar.collapsed .notif-badge,
+        .sidebar.collapsed .sidebar-footer .link-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-dbi {
+            padding: 6px;
+            justify-content: center;
+        }
+        .sidebar.collapsed .sidebar-dbi .dbi-text {
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-link {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-link i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-logo {
+            justify-content: center;
+            padding: 12px 0;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 {
+            width: 36px;
+            height: 36px;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-footer {
+            padding: 8px;
+        }
+        .sidebar.collapsed .sidebar-footer a {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-footer a i {
+            font-size: 18px;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 1023px) {
+            .sidebar-container {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                width: 280px;
+                z-index: 1000;
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 4px 0 30px rgba(0,0,0,0.15);
+            }
+            .sidebar-container.mobile-open {
+                left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 999;
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .mobile-header {
+                display: flex !important;
+            }
+            .desktop-header {
+                display: none !important;
+            }
+            .main-content {
+                padding: 1rem !important;
+            }
+            .sidebar.collapsed {
+                width: 280px !important;
+                min-width: 280px !important;
+            }
+            .sidebar.collapsed .logo-text,
+            .sidebar.collapsed .dbi-text,
+            .sidebar.collapsed .link-text,
+            .sidebar.collapsed .notif-badge,
+            .sidebar.collapsed .sidebar-footer .link-text {
+                opacity: 1 !important;
+                display: block !important;
+                width: auto !important;
+            }
+            .sidebar.collapsed .sidebar-link {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-logo {
+                justify-content: flex-start !important;
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer {
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer a {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-dbi {
+                padding: 12px !important;
+                justify-content: flex-start !important;
+            }
+            .sidebar.collapsed .sidebar-dbi .dbi-text {
+                display: block !important;
+            }
+            .sidebar-toggle-btn {
+                display: none !important;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .mobile-header {
+                display: none !important;
+            }
+            .sidebar-overlay {
+                display: none !important;
+            }
+        }
+        
+        /* Toast styles */
+        .toast {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+        
+        /* Profile image placeholder */
+        .profile-img-placeholder {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* Status badge colors */
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+            border-color: #86efac;
+        }
+        .status-suspended {
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: #fca5a5;
+        }
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+            border-color: #fcd34d;
+        }
+        .status-inactive {
+            background: #e5e7eb;
+            color: #4b5563;
+            border-color: #d1d5db;
+        }
+        
+        /* Verification badge colors */
+        .badge-verified-business {
+            background: #dcfce7;
+            color: #166534;
+            border-color: #86efac;
+        }
+        .badge-verified-organization {
+            background: #dbeafe;
+            color: #1e40af;
+            border-color: #93c5fd;
+        }
+        .badge-community-leader {
+            background: #f3e8ff;
+            color: #6b21a8;
+            border-color: #d8b4fe;
+        }
+        .badge-government-office {
+            background: #fef3c7;
+            color: #92400e;
+            border-color: #fcd34d;
+        }
+        .badge-trusted-seller {
+            background: #fce7f3;
+            color: #9d174d;
+            border-color: #f9a8d4;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<div class="flex h-screen overflow-hidden">
+    
+    <!-- MOBILE OVERLAY -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer" class="sidebar-container"></div>
+    
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        
+        <!-- Mobile Header -->
+        <header class="mobile-header bg-surface h-16 border-b border-outline-variant flex items-center justify-between px-4 flex-shrink-0 z-10">
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuBtn" class="text-on-surface-variant hover:text-on-surface text-xl p-1">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center text-primary">
+                        <i class="fas fa-users text-sm"></i>
+                    </div>
+                    <span class="font-bold text-primary text-sm">BridgeConnect</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="relative text-on-surface-variant">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full text-[9px] text-white flex items-center justify-center font-bold">8</span>
+                </button>
+                <img id="mobileUserAvatar" alt="User" class="w-7 h-7 rounded-full object-cover border-2 border-white shadow-sm" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=32"/>
+            </div>
+        </header>
+        
+        <!-- Desktop TopNavBar -->
+        <header class="desktop-header bg-surface sticky top-0 z-40 flex justify-between items-center w-full px-container-margin py-4 max-w-full border-b border-outline-variant">
+            <div class="flex items-center flex-1 max-w-xl">
+                <div class="relative w-full max-w-md mr-4">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-outline"></i>
+                    <input id="globalSearch" class="w-full bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-body-md font-body-md focus:ring-2 focus:ring-primary/20" placeholder="Search for users, businesses, communities..." type="text"/>
+                </div>
+                <button class="flex items-center px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                    <span class="font-label-md text-label-md mr-1">All Communities</span>
+                    <i class="fas fa-chevron-down text-sm"></i>
+                </button>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high relative">
+                    <i class="fas fa-bell text-on-surface-variant"></i>
+                    <span class="absolute top-2 right-2 w-4 h-4 bg-error text-white text-[10px] flex items-center justify-center rounded-full border-2 border-surface">8</span>
+                </button>
+                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high relative">
+                    <i class="fas fa-comment-dots text-on-surface-variant"></i>
+                    <span class="absolute top-2 right-2 w-4 h-4 bg-error text-white text-[10px] flex items-center justify-center rounded-full border-2 border-surface">5</span>
+                </button>
+                <div class="h-8 w-px bg-outline-variant mx-2"></div>
+                <div class="flex items-center space-x-3 ml-2 group cursor-pointer">
+                    <div class="text-right hidden sm:block">
+                        <p class="font-label-md text-label-md text-on-surface font-bold" id="headerUserName">Loading...</p>
+                        <p class="text-[11px] text-outline" id="headerUserRole">Loading...</p>
+                    </div>
+                    <img id="desktopUserAvatar" class="w-10 h-10 rounded-full object-cover border-2 border-primary/10" alt="User Avatar" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=40"/>
+                    <i class="fas fa-chevron-down text-outline"></i>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-6 custom-scrollbar main-content">
+            
+            <!-- Breadcrumb & Actions -->
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                <div>
+                    <nav class="text-xs text-outline mb-1">
+                        <a href="users.html" class="hover:text-primary transition-colors"><i class="fas fa-arrow-left mr-1"></i> Users</a>
+                        <span class="mx-1">/</span>
+                        <span class="text-on-surface font-medium" id="breadcrumbUserName">User Profile</span>
+                    </nav>
+                    <h2 class="text-2xl font-bold text-on-surface" id="pageTitle">User Profile</h2>
+                </div>
+                <div class="flex items-center gap-3 flex-wrap">
+                    <a href="users.html" class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-sm font-medium hover:bg-surface-container-high transition-colors bg-surface">
+                        <i class="fas fa-arrow-left text-xs"></i> Back to Users
+                    </a>
+                    <button id="editUserBtn" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">
+                        <i class="fas fa-edit text-xs"></i> Edit User
+                    </button>
+                    <div class="relative" id="moreOptionsDropdown">
+                        <button id="moreOptionsBtn" class="p-2 border border-outline-variant rounded-lg text-outline hover:bg-surface-container-high transition-colors">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                        <div id="moreOptionsMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 hidden z-50">
+                            <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors" data-action="suspend">
+                                <i class="fas fa-ban text-red-500 mr-2"></i> Suspend User
+                            </button>
+                            <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors" data-action="reactivate">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i> Reactivate User
+                            </button>
+                            <hr class="my-1 border-gray-200"/>
+                            <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors" data-action="reset-password">
+                                <i class="fas fa-key text-blue-500 mr-2"></i> Reset Password
+                            </button>
+                            <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors" data-action="send-email">
+                                <i class="fas fa-envelope text-blue-500 mr-2"></i> Send Email
+                            </button>
+                            <hr class="my-1 border-gray-200"/>
+                            <button class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors" data-action="delete">
+                                <i class="fas fa-trash mr-2"></i> Delete User
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Content Grid -->
+            <div id="profileContent">
+                <!-- Loading State -->
+                <div id="loadingState" class="flex items-center justify-center py-20">
+                    <div class="text-center">
+                        <i class="fas fa-spinner fa-spin text-3xl text-primary"></i>
+                        <p class="mt-4 text-on-surface-variant">Loading user profile...</p>
+                    </div>
+                </div>
+                
+                <!-- Profile Content - Hidden until loaded -->
+                <div id="profileData" class="grid grid-cols-12 gap-6 hidden">
+                    
+                    <!-- Left Column -->
+                    <div class="col-span-12 lg:col-span-3 space-y-6">
+                        
+                        <!-- User Summary Card -->
+                        <div class="bg-surface border border-outline-variant rounded-xl p-6 flex flex-col items-center text-center relative card-shadow">
+                            <span id="statusBadge" class="absolute top-4 right-4 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 border">
+                                <span class="w-1.5 h-1.5 rounded-full"></span> <span id="statusText">Loading...</span>
+                            </span>
+                            <div id="profileAvatar" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-sm profile-img-placeholder flex items-center justify-center text-white text-5xl font-bold">
+                                ?
+                            </div>
+                            <h3 id="profileFullName" class="mt-4 text-xl font-bold text-on-surface">Loading...</h3>
+                            <div id="badgesContainer" class="mt-2 flex flex-wrap items-center justify-center gap-1.5">
+                                <!-- Badges will be rendered here -->
+                            </div>
+                            <p id="userIdDisplay" class="mt-4 text-[11px] text-outline font-medium">User ID: Loading...</p>
+                            <p id="memberSince" class="text-[11px] text-outline">Member since Loading...</p>
+                        </div>
+                        
+                        <!-- Roles & Permissions -->
+                        <div class="bg-surface border border-outline-variant rounded-xl p-6 card-shadow">
+                            <div class="flex items-center gap-2 mb-4">
+                                <i class="fas fa-shield-alt text-primary"></i>
+                                <h4 class="font-bold text-sm text-on-surface">Roles &amp; Permissions</h4>
+                            </div>
+                            <div id="rolesContainer" class="space-y-2">
+                                <!-- Roles will be rendered dynamically -->
+                            </div>
+                            <button id="viewAllRolesBtn" class="mt-4 text-xs font-semibold text-primary hover:underline">View All Roles</button>
+                        </div>
+                        
+                        <!-- Verification Status -->
+                        <div class="bg-surface border border-outline-variant rounded-xl p-6 card-shadow">
+                            <div class="flex items-center gap-2 mb-4">
+                                <i class="fas fa-check-circle text-primary"></i>
+                                <h4 class="font-bold text-sm text-on-surface">Verification Status</h4>
+                            </div>
+                            <div id="verificationContainer" class="space-y-3">
+                                <!-- Verification items will be rendered dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Middle Column -->
+                    <div class="col-span-12 lg:col-span-5 space-y-6">
+                        
+                        <!-- Personal & Contact Info -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-surface border border-outline-variant rounded-xl p-6 card-shadow">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <i class="fas fa-user text-primary"></i>
+                                    <h4 class="font-bold text-sm text-on-surface">Personal Information</h4>
+                                </div>
+                                <div id="personalInfo" class="space-y-4">
+                                    <!-- Personal info will be rendered dynamically -->
+                                </div>
+                            </div>
+                            <div class="bg-surface border border-outline-variant rounded-xl p-6 card-shadow">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <i class="fas fa-phone text-primary"></i>
+                                    <h4 class="font-bold text-sm text-on-surface">Contact Information</h4>
+                                </div>
+                                <div id="contactInfo" class="space-y-4">
+                                    <!-- Contact info will be rendered dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Activity -->
+                        <div class="bg-surface border border-outline-variant rounded-xl flex flex-col card-shadow">
+                            <div class="p-6 border-b border-outline-variant flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-clock text-primary"></i>
+                                    <h4 class="font-bold text-sm text-on-surface">Recent Activity</h4>
+                                </div>
+                                <button id="viewAllActivityBtn" class="text-xs font-semibold text-primary hover:underline">View All</button>
+                            </div>
+                            <div id="activityContainer" class="flex-1 overflow-y-auto p-6 space-y-6 max-h-[400px]">
+                                <!-- Activities will be rendered dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column -->
+                    <div class="col-span-12 lg:col-span-4 space-y-6">
+                        
+                        <!-- Community & Location -->
+                        <div class="bg-surface border border-outline-variant rounded-xl p-6 card-shadow">
+                            <div class="flex items-center gap-2 mb-4">
+                                <i class="fas fa-map-marker-alt text-primary"></i>
+                                <h4 class="font-bold text-sm text-on-surface">Community &amp; Location</h4>
+                            </div>
+                            <div id="locationInfo" class="space-y-4">
+                                <!-- Location info will be rendered dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Businesses Owned -->
+                        <div class="bg-surface border border-outline-variant rounded-xl p-6 card-shadow">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-briefcase text-primary"></i>
+                                    <h4 class="font-bold text-sm text-on-surface">Businesses Owned</h4>
+                                </div>
+                                <button id="viewAllBusinessesBtn" class="text-[10px] font-semibold text-primary hover:underline">View All</button>
+                            </div>
+                            <div id="businessesContainer">
+                                <!-- Businesses will be rendered dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Orders (Only for Business/Service Provider types) -->
+                        <div id="ordersSection" class="bg-surface border border-outline-variant rounded-xl p-6 card-shadow hidden">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-box text-primary"></i>
+                                    <h4 class="font-bold text-sm text-on-surface">Recent Orders</h4>
+                                </div>
+                                <button id="viewAllOrdersBtn" class="text-[10px] font-semibold text-primary hover:underline">View All</button>
+                            </div>
+                            <div id="ordersContainer">
+                                <!-- Orders will be rendered dynamically -->
+                            </div>
+                            <div id="orderSummary" class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-100">
+                                <div>
+                                    <p class="text-[10px] text-outline uppercase font-bold">Total Orders</p>
+                                    <p class="text-lg font-bold text-on-surface" id="totalOrders">0</p>
+                                </div>
+                                <div class="text-right border-l border-gray-100 pl-4">
+                                    <p class="text-[10px] text-outline uppercase font-bold">Total Spent</p>
+                                    <p class="text-lg font-bold text-primary" id="totalSpent">GHC 0.00</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Reviews (Only for Businesses/Service Providers) -->
+                        <div id="reviewsSection" class="bg-surface border border-outline-variant rounded-xl p-6 card-shadow hidden">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-star text-primary"></i>
+                                    <h4 class="font-bold text-sm text-on-surface">Reviews &amp; Ratings</h4>
+                                </div>
+                                <button id="viewAllReviewsBtn" class="text-[10px] font-semibold text-primary hover:underline">View All</button>
+                            </div>
+                            <div id="reviewsContainer">
+                                <!-- Reviews will be rendered dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Reports Submitted -->
+                        <div class="bg-surface border border-outline-variant rounded-xl p-6 card-shadow">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-file-alt text-primary"></i>
+                                    <h4 class="font-bold text-sm text-on-surface">Reports Submitted</h4>
+                                </div>
+                                <button id="viewAllReportsBtn" class="text-[10px] font-semibold text-primary hover:underline">View All</button>
+                            </div>
+                            <div id="reportsContainer">
+                                <!-- Reports will be rendered dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<!-- Modal Container -->
+<div id="modalContainer"></div>
+
+<!-- JavaScript -->
+<script src="js/context-manager.js"></script>
+<script src="js/user-profile.js"></script>
+
+</body>
+</html>

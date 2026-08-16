@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Locations · BridgeConnect Admin</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzAOMVoTR5YTrZlzedypz_KqQT-lotI1o",
+            authDomain: "bridgeconnect-5b8bd.firebaseapp.com",
+            projectId: "bridgeconnect-5b8bd",
+            storageBucket: "bridgeconnect-5b8bd.firebasestorage.app",
+            messagingSenderId: "231684985335",
+            appId: "1:231684985335:web:3f3bfdf7f2708f0ae81ef2",
+            measurementId: "G-C8QJH73MC0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        db.enablePersistence().catch(err => console.warn('Firestore persistence error:', err));
+    </script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#0052cc',
+                        'surface-container-lowest': '#ffffff',
+                        'surface': '#f7f9fb',
+                        'surface-container': '#ebeeed',
+                        'on-surface': '#181b1b',
+                        'on-surface-variant': '#424848',
+                        'outline-variant': '#c0c8c7',
+                        'success': '#16a34a',
+                        'success-bg': '#dcfce7',
+                    },
+                    borderRadius: {
+                        'xl': '0.5rem',
+                        '2xl': '0.75rem',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #f7f9fb;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* ===== SCROLLBAR STYLES ===== */
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: #c0c8c7; border-radius: 4px; }
+        .sidebar::-webkit-scrollbar-thumb:hover { background: #a0a8a7; }
+        
+        .main-content::-webkit-scrollbar { width: 6px; }
+        .main-content::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 3px; }
+        .main-content::-webkit-scrollbar-thumb { background: #c0c8c7; border-radius: 3px; }
+        .main-content::-webkit-scrollbar-thumb:hover { background: #a0a8a7; }
+        
+        .sidebar { scrollbar-width: thin; scrollbar-color: #c0c8c7 transparent; }
+        .main-content { scrollbar-width: thin; scrollbar-color: #c0c8c7 #f0f0f0; }
+
+        /* Sidebar styles */
+        .sidebar { width: 260px; min-width: 260px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar.collapsed { width: 72px; min-width: 72px; }
+        .sidebar.collapsed .logo-text,
+        .sidebar.collapsed .dbi-text,
+        .sidebar.collapsed .link-text,
+        .sidebar.collapsed .notif-badge,
+        .sidebar.collapsed .sidebar-footer .link-text {
+            opacity: 0; width: 0; overflow: hidden; display: none;
+        }
+        .sidebar.collapsed .sidebar-dbi { padding: 6px; justify-content: center; }
+        .sidebar.collapsed .sidebar-dbi .dbi-text { display: none; }
+        .sidebar.collapsed .sidebar-link { justify-content: center; padding: 10px 0; }
+        .sidebar.collapsed .sidebar-link i { font-size: 18px; }
+        .sidebar.collapsed .sidebar-logo { justify-content: center; padding: 12px 0; }
+        .sidebar.collapsed .sidebar-footer { padding: 8px; }
+        .sidebar.collapsed .sidebar-footer a { justify-content: center; padding: 10px 0; }
+        .sidebar.collapsed .sidebar-footer a i { font-size: 18px; }
+
+        @media (max-width: 1023px) {
+            .sidebar-container {
+                position: fixed; left: -280px; top: 0; bottom: 0; width: 280px;
+                z-index: 1000; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 4px 0 30px rgba(0,0,0,0.15);
+            }
+            .sidebar-container.mobile-open { left: 0; }
+            .sidebar-overlay {
+                display: none; position: fixed; inset: 0;
+                background: rgba(0,0,0,0.4); z-index: 999;
+                backdrop-filter: blur(4px);
+            }
+            .sidebar-overlay.active { display: block; }
+            .mobile-header { display: flex !important; }
+            .desktop-header { display: none !important; }
+            .main-content { padding: 1rem !important; }
+            .sidebar.collapsed { width: 280px !important; min-width: 280px !important; }
+            .sidebar.collapsed .logo-text,
+            .sidebar.collapsed .dbi-text,
+            .sidebar.collapsed .link-text,
+            .sidebar.collapsed .notif-badge,
+            .sidebar.collapsed .sidebar-footer .link-text {
+                opacity: 1 !important; display: block !important; width: auto !important;
+            }
+            .sidebar.collapsed .sidebar-link { justify-content: flex-start !important; padding: 10px 12px !important; }
+            .sidebar.collapsed .sidebar-logo { justify-content: flex-start !important; padding: 16px !important; }
+            .sidebar.collapsed .sidebar-footer { padding: 16px !important; }
+            .sidebar.collapsed .sidebar-footer a { justify-content: flex-start !important; padding: 10px 12px !important; }
+            .sidebar.collapsed .sidebar-dbi { padding: 12px !important; justify-content: flex-start !important; }
+            .sidebar.collapsed .sidebar-dbi .dbi-text { display: block !important; }
+            .sidebar-toggle-btn { display: none !important; }
+        }
+        
+        @media (min-width: 1024px) {
+            .mobile-header { display: none !important; }
+            .sidebar-overlay { display: none !important; }
+        }
+
+        .toast {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+
+        /* Location tree styles */
+        .location-item {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .location-item:hover {
+            background: #f0f5ff;
+        }
+        
+        .location-item.selected {
+            background: #dbeafe;
+            border-left-color: #2563eb;
+        }
+        
+        .location-item .expand-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .location-item.expanded .expand-icon {
+            transform: rotate(90deg);
+        }
+        
+        .child-list {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .child-list.expanded {
+            max-height: 2000px;
+        }
+        
+        .badge-count {
+            background: #e5e7eb;
+            color: #4b5563;
+            font-size: 10px;
+            padding: 1px 8px;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+        
+        .badge-count.active {
+            background: #dbeafe;
+            color: #1e3a8a;
+        }
+    </style>
+</head>
+<body class="font-sans text-on-surface antialiased bg-surface flex h-screen overflow-hidden">
+
+<!-- MOBILE OVERLAY -->
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+<!-- BEGIN: Left Sidebar Container -->
+<div id="sidebarContainer" class="sidebar-container">
+    <!-- Sidebar will be loaded here -->
+</div>
+<!-- END: Left Sidebar Container -->
+
+<!-- BEGIN: Main Content Area -->
+<div class="flex-1 flex flex-col h-full overflow-hidden">
+    
+    <!-- BEGIN: Mobile Header -->
+    <header class="mobile-header bg-surface-container-lowest h-16 border-b border-outline-variant flex items-center justify-between px-4 flex-shrink-0 z-10">
+        <div class="flex items-center gap-3">
+            <button id="mobileMenuBtn" class="text-on-surface-variant hover:text-on-surface text-xl p-1">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center text-primary">
+                    <i class="fa-solid fa-map text-sm"></i>
+                </div>
+                <span class="font-bold text-primary text-sm">Locations</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <button class="relative text-on-surface-variant">
+                <i class="fa-regular fa-bell text-lg"></i>
+                <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full text-[9px] text-white flex items-center justify-center font-bold">8</span>
+            </button>
+            <img id="mobileUserAvatar" alt="User" class="w-7 h-7 rounded-full object-cover border-2 border-white shadow-sm" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=32"/>
+        </div>
+    </header>
+    <!-- END: Mobile Header -->
+    
+    <!-- BEGIN: Top Header (Desktop) -->
+    <header class="desktop-header bg-surface-container-lowest h-16 border-b border-outline-variant flex items-center justify-between px-8 flex-shrink-0 z-10">
+        <div class="flex items-center gap-4">
+            <h1 class="text-lg font-semibold text-on-surface">Location Management</h1>
+            <span class="text-xs text-on-surface-variant bg-surface px-3 py-1 rounded-full">Regions · Districts · Communities</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button id="addRegionBtn" class="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">
+                <i class="fa-solid fa-plus"></i> Add Region
+            </button>
+            <button id="refreshBtn" class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant text-on-surface-variant px-4 py-2 rounded-xl text-sm font-medium hover:bg-surface transition-colors">
+                <i class="fa-solid fa-rotate-right"></i> Refresh
+            </button>
+        </div>
+    </header>
+    <!-- END: Top Header -->
+    
+    <!-- BEGIN: Main Content -->
+    <main class="flex-1 overflow-y-auto p-8 main-content">
+        <div class="max-w-7xl mx-auto">
+            
+            <!-- Stats Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-5 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-on-surface-variant">Total Regions</p>
+                            <p class="text-2xl font-bold text-on-surface" id="totalRegions">0</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-map"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-5 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-on-surface-variant">Total Districts</p>
+                            <p class="text-2xl font-bold text-on-surface" id="totalDistricts">0</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-building"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-5 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-on-surface-variant">Total Communities</p>
+                            <p class="text-2xl font-bold text-on-surface" id="totalCommunities">0</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-people-group"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location Tree -->
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
+                <div class="p-4 border-b border-outline-variant flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-sitemap text-primary"></i>
+                        <h2 class="font-semibold text-on-surface">Location Hierarchy</h2>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="expandAllBtn" class="text-xs text-primary hover:underline">Expand All</button>
+                        <span class="text-outline-variant">|</span>
+                        <button id="collapseAllBtn" class="text-xs text-on-surface-variant hover:underline">Collapse All</button>
+                    </div>
+                </div>
+                <div id="locationTree" class="p-4 space-y-1">
+                    <!-- Regions will be rendered here -->
+                    <div class="text-center text-on-surface-variant py-12">
+                        <i class="fa-regular fa-circle-plus text-4xl block mb-3 text-gray-300"></i>
+                        <p class="text-sm">No regions added yet</p>
+                        <p class="text-xs mt-1">Click "Add Region" to get started</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+    <!-- END: Main Content -->
+</div>
+<!-- END: Main Content Area -->
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<!-- Modal Container -->
+<div id="modalContainer"></div>
+
+<!-- ============================================ -->
+<!-- JAVASCRIPT                                    -->
+<!-- ============================================ -->
+<script src="js/context-manager.js"></script>
+<script src="js/locations.js"></script>
+
+</body>
+</html>

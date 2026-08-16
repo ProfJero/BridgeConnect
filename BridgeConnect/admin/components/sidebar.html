@@ -1,0 +1,127 @@
+<!-- admin/components/sidebar.html - Reusable Sidebar Component -->
+<aside id="adminSidebar" class="sidebar bg-white border-r border-gray-200 flex flex-col h-full flex-shrink-0 z-30 overflow-y-auto transition-all duration-300">
+    <!-- Toggle Button -->
+    <button class="sidebar-toggle absolute -right-3 top-6 w-6 h-6 rounded-full bg-white border border-gray-300 shadow-md flex items-center justify-center hover:bg-gray-50 transition-all z-40" id="sidebarToggleBtn" title="Toggle Sidebar">
+        <i class="fa-solid fa-chevron-left text-gray-600 text-xs"></i>
+    </button>
+
+    <!-- Logo -->
+    <div class="sidebar-logo p-4 pb-3 flex items-center gap-3 border-b border-gray-200/50 flex-shrink-0">
+        <div class="w-9 h-9 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 shrink-0">
+            <i class="fa-solid fa-users text-xl"></i>
+        </div>
+        <div class="logo-text transition-all duration-300 overflow-hidden">
+            <h1 class="text-lg font-bold text-blue-600 leading-tight">BridgeConnect</h1>
+            <p class="text-[10px] text-gray-500">Admin Portal</p>
+        </div>
+    </div>
+    
+    <!-- DBI Badge -->
+    <div class="sidebar-dbi p-2.5 mx-3 my-2 bg-gray-50 rounded-lg border border-gray-200/50 flex items-center gap-2 flex-shrink-0 transition-all duration-300">
+        <div class="w-5 h-5 bg-blue-600 rounded text-white flex items-center justify-center text-[8px] font-bold shrink-0">DBI</div>
+        <div class="dbi-text text-[10px] text-gray-500 transition-all duration-300 overflow-hidden whitespace-nowrap">
+            Powered by <br/><span class="font-semibold text-gray-800">Digital Bridge Initiative</span>
+        </div>
+    </div>
+    
+    <!-- Navigation - Scrollable -->
+    <nav class="sidebar-nav flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
+        <!-- Dashboard -->
+        <a class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium text-sm transition-all group" href="dashboard.html" data-page="dashboard">
+            <i class="fa-solid fa-house w-5 text-center text-sm"></i>
+            <span class="link-text transition-all duration-300">Dashboard</span>
+        </a>
+        
+        <!-- Users -->
+        <a class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium text-sm transition-all group" href="users.html" data-page="users">
+            <i class="fa-solid fa-users w-5 text-center text-sm"></i>
+            <span class="link-text transition-all duration-300">Users</span>
+        </a>
+        
+        <!-- Businesses -->
+        <a class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium text-sm transition-all group" href="businesses.html" data-page="businesses">
+            <i class="fa-solid fa-store w-5 text-center text-sm"></i>
+            <span class="link-text transition-all duration-300">Businesses</span>
+        </a>
+        
+        <!-- Organizations -->
+        <a class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium text-sm transition-all group" href="organizations.html" data-page="organizations">
+            <i class="fa-solid fa-building w-5 text-center text-sm"></i>
+            <span class="link-text transition-all duration-300">Organizations</span>
+        </a>
+        
+        <!-- Marketplace -->
+        <a class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium text-sm transition-all group" href="marketplace.html" data-page="marketplace">
+            <i class="fa-solid fa-shop w-5 text-center text-sm"></i>
+            <span class="link-text transition-all duration-300">Marketplace</span>
+        </a>
+        
+        <!-- Jobs -->
+        <a class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium text-sm transition-all group" href="jobs.html" data-page="jobs">
+            <i class="fa-solid fa-briefcase w-5 text-center text-sm"></i>
+            <span class="link-text transition-all duration-300">Jobs</span>
+        </a>
+        
+        <!-- Events -->
+        <a class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium text-sm transition-all group" href="events.html" data-page="events">
+            <i class="fa-solid fa-calendar-days w-5 text-center text-sm"></i>
+            <span class="link-text transition-all duration-300">Events</span>
+        </a>
+        
+        <!-- Advertisements -->
+        <a class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium text-sm transition-all group" href="advertisements.html" data-page="advertisements">
+            <i class="fa-solid fa-bullhorn w-5 text-center text-sm"></i>
+            <span class="link-text transition-all duration-300">Advertisements</span>
+        </a>
+        
+        <!-- Reports -->
+        <a class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium text-sm transition-all group" href="reports.html" data-page="reports">
+            <i class="fa-solid fa-flag w-5 text-center text-sm"></i>
+            <span class="link-text transition-all duration-300">Reports</span>
+        </a>
+        
+        <!-- Analytics -->
+        <a class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium text-sm transition-all group" href="analytics.html" data-page="analytics">
+            <i class="fa-solid fa-chart-line w-5 text-center text-sm"></i>
+            <span class="link-text transition-all duration-300">Analytics</span>
+        </a>
+        
+        <!-- Roles & Permissions -->
+        <a class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium text-sm transition-all group" href="roles.html" data-page="roles">
+            <i class="fa-solid fa-user-shield w-5 text-center text-sm"></i>
+            <span class="link-text transition-all duration-300">Roles &amp; Permissions</span>
+        </a>
+        
+        <!-- Divider -->
+        <div class="my-2 border-t border-gray-200/50"></div>
+        
+        <!-- Notifications -->
+        <a class="sidebar-link flex items-center justify-between px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium text-sm transition-all group" href="notifications.html" data-page="notifications">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-bell w-5 text-center text-sm"></i>
+                <span class="link-text transition-all duration-300">Notifications</span>
+            </div>
+            <span class="notif-badge bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full animate-pulse">12</span>
+        </a>
+        
+        <!-- Settings -->
+        <a class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium text-sm transition-all group" href="settings.html" data-page="settings">
+            <i class="fa-solid fa-gear w-5 text-center text-sm"></i>
+            <span class="link-text transition-all duration-300">Settings</span>
+        </a>
+        
+        <!-- Support -->
+        <a class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 font-medium text-sm transition-all group" href="support.html" data-page="support">
+            <i class="fa-solid fa-circle-question w-5 text-center text-sm"></i>
+            <span class="link-text transition-all duration-300">Support</span>
+        </a>
+    </nav>
+    
+    <!-- Logout -->
+    <div class="sidebar-footer p-3 border-t border-gray-200/50 flex-shrink-0">
+        <a id="logoutBtn" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 font-medium text-sm transition-all cursor-pointer group">
+            <i class="fa-solid fa-right-from-bracket w-5 text-center text-sm group-hover:rotate-12 transition-transform"></i>
+            <span class="link-text transition-all duration-300">Logout</span>
+        </a>
+    </div>
+</aside>

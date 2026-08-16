@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Community Management - BridgeConnect Admin Portal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzAOMVoTR5YTrZlzedypz_KqQT-lotI1o",
+            authDomain: "bridgeconnect-5b8bd.firebaseapp.com",
+            projectId: "bridgeconnect-5b8bd",
+            storageBucket: "bridgeconnect-5b8bd.firebasestorage.app",
+            messagingSenderId: "231684985335",
+            appId: "1:231684985335:web:3f3bfdf7f2708f0ae81ef2",
+            measurementId: "G-C8QJH73MC0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        db.enablePersistence().catch(err => console.warn('Firestore persistence error:', err));
+    </script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdbca",
+                        "secondary-fixed": "#71f8e4",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#6df5e1",
+                        "on-surface-variant": "#434654",
+                        "on-primary-fixed": "#001848",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-fixed-dim": "#ffb690",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-fixed-dim": "#4fdbc8",
+                        "on-error-container": "#93000a",
+                        "primary-container": "#0052cc",
+                        "surface-container-high": "#e6e8ea",
+                        "inverse-surface": "#2d3133",
+                        "on-tertiary-container": "#ffc8ac",
+                        "surface-variant": "#e0e3e5",
+                        "on-background": "#191c1e",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#0c56d0",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#006b5f",
+                        "on-secondary-fixed": "#00201c",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary-fixed-variant": "#783200",
+                        "inverse-primary": "#b2c5ff",
+                        "primary": "#003d9b",
+                        "tertiary": "#732f00",
+                        "surface": "#f7f9fb",
+                        "background": "#f7f9fb",
+                        "outline-variant": "#c3c6d6",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#984100",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "on-secondary-fixed-variant": "#005048",
+                        "on-secondary-container": "#006f64",
+                        "on-primary-fixed-variant": "#0040a2",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-bright": "#f7f9fb",
+                        "outline": "#737685",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#c4d2ff",
+                        "primary-fixed": "#dae2ff",
+                        "surface-container": "#eceef0",
+                        "on-surface": "#191c1e"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "gutter": "1.5rem",
+                        "container-margin": "2rem",
+                        "sidebar-width": "260px",
+                        "card-padding": "1.25rem",
+                        "section-gap": "2rem"
+                    },
+                    fontFamily: {
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-md": ["18px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .card-shadow { box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04); }
+        .table-row-hover:hover { background-color: #f8fafc; }
+        
+        /* Sidebar collapse styles */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar.collapsed {
+            width: 72px;
+            min-width: 72px;
+        }
+        .sidebar.collapsed .logo-text,
+        .sidebar.collapsed .dbi-text,
+        .sidebar.collapsed .link-text,
+        .sidebar.collapsed .notif-badge,
+        .sidebar.collapsed .sidebar-footer .link-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-dbi {
+            padding: 6px;
+            justify-content: center;
+        }
+        .sidebar.collapsed .sidebar-dbi .dbi-text {
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-link {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-link i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-logo {
+            justify-content: center;
+            padding: 12px 0;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 {
+            width: 36px;
+            height: 36px;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-footer {
+            padding: 8px;
+        }
+        .sidebar.collapsed .sidebar-footer a {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-footer a i {
+            font-size: 18px;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 1023px) {
+            .sidebar-container {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                width: 280px;
+                z-index: 1000;
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 4px 0 30px rgba(0,0,0,0.15);
+            }
+            .sidebar-container.mobile-open {
+                left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 999;
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .mobile-header {
+                display: flex !important;
+            }
+            .desktop-header {
+                display: none !important;
+            }
+            .main-content {
+                padding: 1rem !important;
+            }
+            .sidebar.collapsed {
+                width: 280px !important;
+                min-width: 280px !important;
+            }
+            .sidebar.collapsed .logo-text,
+            .sidebar.collapsed .dbi-text,
+            .sidebar.collapsed .link-text,
+            .sidebar.collapsed .notif-badge,
+            .sidebar.collapsed .sidebar-footer .link-text {
+                opacity: 1 !important;
+                display: block !important;
+                width: auto !important;
+            }
+            .sidebar.collapsed .sidebar-link {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-logo {
+                justify-content: flex-start !important;
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer {
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer a {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-dbi {
+                padding: 12px !important;
+                justify-content: flex-start !important;
+            }
+            .sidebar.collapsed .sidebar-dbi .dbi-text {
+                display: block !important;
+            }
+            .sidebar-toggle-btn {
+                display: none !important;
+            }
+            
+            .grid-cols-6 {
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 0.75rem !important;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .grid-cols-6 {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .mobile-header {
+                display: none !important;
+            }
+            .sidebar-overlay {
+                display: none !important;
+            }
+        }
+        
+        /* Toast styles */
+        .toast {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+        
+        /* Avatar stack */
+        .avatar-stack {
+            display: flex;
+            align-items: center;
+        }
+        .avatar-stack img {
+            border: 2px solid white;
+            margin-left: -8px;
+        }
+        .avatar-stack img:first-child {
+            margin-left: 0;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<div class="flex h-screen overflow-hidden">
+    
+    <!-- MOBILE OVERLAY -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer" class="sidebar-container"></div>
+    
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        
+        <!-- Mobile Header -->
+        <header class="mobile-header bg-surface h-16 border-b border-outline-variant flex items-center justify-between px-4 flex-shrink-0 z-10">
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuBtn" class="text-on-surface-variant hover:text-on-surface text-xl p-1">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center text-primary">
+                        <i class="fas fa-users text-sm"></i>
+                    </div>
+                    <span class="font-bold text-primary text-sm">BridgeConnect</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="relative text-on-surface-variant">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full text-[9px] text-white flex items-center justify-center font-bold">8</span>
+                </button>
+                <img alt="User" class="w-7 h-7 rounded-full object-cover border-2 border-white shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4IUJ5dDwHQtH9QQV4TEouv8N2bLkccFu_Pa5dyO8sD9onv-SCO-pDtTexpcucB7YtZ4yO2QVAsp-y8jM8cj6oaAzNgeKdc9x6rcWKtWQ-a7jj4pXt1hFP0spvU4zBu62aQc1KaNSSyjrhj6PkwkAZXYhUrP8lPbH0yX9yZ8PDHIdUq0QrcJNNB_ld8epFxRofIrC6TzUl06OTI0S0y4-lqB7Ysi_HqFp3b5LPZKe029W2oyKy7ubg"/>
+            </div>
+        </header>
+        
+        <!-- Desktop TopNavBar -->
+        <header class="desktop-header bg-surface sticky top-0 z-40 flex justify-between items-center w-full px-container-margin py-4 max-w-full border-b border-outline-variant">
+            <div class="flex items-center flex-1 max-w-xl">
+                <div class="relative w-full max-w-md mr-4">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-outline"></i>
+                    <input class="w-full bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-body-md font-body-md focus:ring-2 focus:ring-primary/20" placeholder="Search communities, districts, regions..." type="text"/>
+                </div>
+                <button class="flex items-center px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                    <span class="font-label-md text-label-md mr-1">All Regions</span>
+                    <i class="fas fa-chevron-down text-sm"></i>
+                </button>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high relative">
+                    <i class="fas fa-bell text-on-surface-variant"></i>
+                    <span class="absolute top-2 right-2 w-4 h-4 bg-error text-white text-[10px] flex items-center justify-center rounded-full border-2 border-surface">8</span>
+                </button>
+                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high relative">
+                    <i class="fas fa-comment-dots text-on-surface-variant"></i>
+                    <span class="absolute top-2 right-2 w-4 h-4 bg-error text-white text-[10px] flex items-center justify-center rounded-full border-2 border-surface">5</span>
+                </button>
+                <div class="h-8 w-px bg-outline-variant mx-2"></div>
+                <div class="flex items-center space-x-3 ml-2 group cursor-pointer">
+                    <div class="text-right hidden sm:block">
+                        <p class="font-label-md text-label-md text-on-surface font-bold">Benjamin Amoako</p>
+                        <p class="text-[11px] text-outline">Platform Owner</p>
+                    </div>
+                    <img class="w-10 h-10 rounded-full object-cover border-2 border-primary/10" alt="Benjamin Amoako" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4IUJ5dDwHQtH9QQV4TEouv8N2bLkccFu_Pa5dyO8sD9onv-SCO-pDtTexpcucB7YtZ4yO2QVAsp-y8jM8cj6oaAzNgeKdc9x6rcWKtWQ-a7jj4pXt1hFP0spvU4zBu62aQc1KaNSSyjrhj6PkwkAZXYhUrP8lPbH0yX9yZ8PDHIdUq0QrcJNNB_ld8epFxRofIrC6TzUl06OTI0S0y4-lqB7Ysi_HqFp3b5LPZKe029W2oyKy7ubg"/>
+                    <i class="fas fa-chevron-down text-outline"></i>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-6 custom-scrollbar main-content">
+            
+            <!-- Page Header -->
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-on-surface">Community Management</h1>
+                    <p class="text-sm text-outline mt-1">Manage regions, districts and communities</p>
+                </div>
+                <div class="flex items-center gap-3 flex-wrap">
+                    <button onclick="showToast('Exporting communities...', 'info')" class="flex items-center gap-2 px-4 py-2 bg-surface border border-outline-variant rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                        <i class="fas fa-download text-sm"></i> Export
+                    </button>
+                    <button onclick="showToast('Opening filters...', 'info')" class="flex items-center gap-2 px-4 py-2 bg-surface border border-outline-variant rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                        <i class="fas fa-sliders-h text-sm"></i> Filters
+                    </button>
+                    <button onclick="showToast('Opening add community form...', 'info')" class="flex items-center gap-2 px-6 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-blue-700 shadow-sm transition-colors">
+                        <i class="fas fa-plus text-sm"></i> Add Community
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Grid -->
+            <div class="stats-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+                <div class="bg-surface border border-outline-variant rounded-xl p-4 card-shadow">
+                    <div class="flex items-center gap-4">
+                        <div class="w-11 h-11 bg-blue-50 rounded-full flex items-center justify-center text-primary">
+                            <i class="fas fa-globe-africa text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-outline font-medium">Regions</p>
+                            <p class="text-lg font-bold text-on-surface leading-none py-1">16</p>
+                            <p class="text-[10px] text-outline">Across Ghana</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-surface border border-outline-variant rounded-xl p-4 card-shadow">
+                    <div class="flex items-center gap-4">
+                        <div class="w-11 h-11 bg-purple-50 rounded-full flex items-center justify-center text-purple-500">
+                            <i class="fas fa-map-pin text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-outline font-medium">Districts</p>
+                            <p class="text-lg font-bold text-on-surface leading-none py-1">261</p>
+                            <p class="text-[10px] text-outline">Across 16 regions</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-surface border border-outline-variant rounded-xl p-4 card-shadow">
+                    <div class="flex items-center gap-4">
+                        <div class="w-11 h-11 bg-blue-50 rounded-full flex items-center justify-center text-primary">
+                            <i class="fas fa-building text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-outline font-medium">Communities</p>
+                            <p class="text-lg font-bold text-on-surface leading-none py-1">1,842</p>
+                            <p class="text-[10px] text-outline">Across all districts</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-surface border border-outline-variant rounded-xl p-4 card-shadow">
+                    <div class="flex items-center gap-4">
+                        <div class="w-11 h-11 bg-green-50 rounded-full flex items-center justify-center text-green-500">
+                            <i class="fas fa-users text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-outline font-medium">Total Population</p>
+                            <p class="text-lg font-bold text-on-surface leading-none py-1">5,678,124</p>
+                            <p class="text-[10px] text-outline">Estimated</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-surface border border-outline-variant rounded-xl p-4 card-shadow">
+                    <div class="flex items-center gap-4">
+                        <div class="w-11 h-11 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-500">
+                            <i class="fas fa-user-circle text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-outline font-medium">Total Users</p>
+                            <p class="text-lg font-bold text-on-surface leading-none py-1">245,897</p>
+                            <p class="text-[10px] text-green-500 font-semibold">↑ 12.6% <span class="text-outline font-normal">vs last month</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-surface border border-outline-variant rounded-xl p-4 card-shadow">
+                    <div class="flex items-center gap-4">
+                        <div class="w-11 h-11 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500">
+                            <i class="fas fa-store text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-outline font-medium">Total Businesses</p>
+                            <p class="text-lg font-bold text-on-surface leading-none py-1">12,463</p>
+                            <p class="text-[10px] text-green-500 font-semibold">↑ 15.3% <span class="text-outline font-normal">vs last month</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Table Section -->
+            <div class="bg-surface rounded-xl border border-outline-variant overflow-hidden card-shadow">
+                <!-- Tab Navigation -->
+                <div class="flex border-b border-outline-variant px-6 pt-4">
+                    <button onclick="showToast('Viewing Regions...', 'info')" class="px-6 py-4 text-sm font-medium text-outline border-b-2 border-transparent hover:text-on-surface transition-colors">Regions (16)</button>
+                    <button onclick="showToast('Viewing Districts...', 'info')" class="px-6 py-4 text-sm font-medium text-outline border-b-2 border-transparent hover:text-on-surface transition-colors">Districts (261)</button>
+                    <button class="px-6 py-4 text-sm font-bold text-primary border-b-2 border-primary">Communities (1,842)</button>
+                </div>
+                
+                <!-- Filter Bar -->
+                <div class="p-4 flex flex-wrap items-center justify-between gap-4 bg-surface-container-low/30 border-b border-outline-variant">
+                    <div class="flex-1 min-w-[200px] relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-outline"></i>
+                        <input class="w-full pl-9 pr-4 py-2 border border-outline-variant rounded-lg text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none bg-surface" placeholder="Search communities..." type="text"/>
+                    </div>
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <select class="pl-4 pr-8 py-2 border border-outline-variant rounded-lg text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none appearance-none bg-surface">
+                            <option>All Regions</option>
+                            <option>Central Region</option>
+                            <option>Western Region</option>
+                        </select>
+                        <select class="pl-4 pr-8 py-2 border border-outline-variant rounded-lg text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none appearance-none bg-surface">
+                            <option>All Districts</option>
+                            <option>Abura Asebu Kwamankese</option>
+                            <option>Cape Coast Metropolitan</option>
+                        </select>
+                        <select class="pl-4 pr-8 py-2 border border-outline-variant rounded-lg text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none appearance-none bg-surface">
+                            <option>All Status</option>
+                            <option>Active</option>
+                            <option>Inactive</option>
+                        </select>
+                        <button onclick="showToast('Clearing filters...', 'info')" class="px-3 py-2 text-sm font-medium text-outline hover:text-on-surface transition-colors">Clear</button>
+                    </div>
+                </div>
+                
+                <!-- Data Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-surface-container-low/30 text-outline text-[11px] uppercase tracking-wider font-bold border-y border-outline-variant">
+                                <th class="px-4 py-4 w-12"><input class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></th>
+                                <th class="px-4 py-4 font-semibold">Community</th>
+                                <th class="px-4 py-4 font-semibold">District</th>
+                                <th class="px-4 py-4 font-semibold">Region</th>
+                                <th class="px-4 py-4 font-semibold">Population</th>
+                                <th class="px-4 py-4 font-semibold text-right">Users</th>
+                                <th class="px-4 py-4 font-semibold text-right">Businesses</th>
+                                <th class="px-4 py-4 font-semibold">Moderators</th>
+                                <th class="px-4 py-4 font-semibold">Status</th>
+                                <th class="px-4 py-4 font-semibold text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant/50">
+                            <!-- Row 1: Kwamankese -->
+                            <tr class="table-row-hover cursor-pointer hover:bg-surface-container-low/50 transition-colors">
+                                <td class="px-4 py-4"><input class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></td>
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center font-bold text-sm">K</div>
+                                        <div class="flex flex-col">
+                                            <span class="text-sm font-bold text-on-surface">Kwamankese</span>
+                                            <span class="text-[10px] text-outline font-mono uppercase">COM-001</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4 text-sm text-on-surface-variant">Abura Asebu Kwamankese</td>
+                                <td class="px-4 py-4 text-sm text-on-surface-variant">Central Region</td>
+                                <td class="px-4 py-4 text-sm text-on-surface font-medium">12,540</td>
+                                <td class="px-4 py-4 text-sm text-on-surface font-medium text-right">3,245</td>
+                                <td class="px-4 py-4 text-sm text-on-surface font-medium text-right">168</td>
+                                <td class="px-4 py-4">
+                                    <div class="avatar-stack">
+                                        <img alt="mod" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrEYqNEMEaNiPCIdYIn23B-z6RDOsL_tXtJEBoktAxnsqP-Ap4Ak80K87Wx9mLg1Izr7UOkmU6-mmGJhXO-2oP7Hffm-qxoWueZO8IpirmVoJ_O_eUpz6Nem0IOH95j6lDloDMC0vMmdS0n_h3QW9FxkSDcGy7IhcgZNhktAr3HmBJ-gLWJd2p6te2vaNJQpHvtU_Po7kajaplD5a2bRbisteJ1l6B3VM8NvQW5AmZ9VtgodYV6x1N"/>
+                                        <img alt="mod" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdw4XepzJP5OK8ldmbcL2qEaTE-0nDiEf5hfVti5-7oru1COl-Eca4KMQJPXxpp8CwBClZVE-rYkpMOOjmMdqwiBn8CS-vOx_gvNfYe0jd7xn8fPvR7O6nsi4sCmzdb0h5Y3idPNTvt_Tl-cmiW-IqbEfbo0XTzVwNXaXT5wctrccqX3TNGeltwXdCLWgSVO7YBqdeGlcXavis7PFdp2UHPFFJVVefYckc2qOiitYfU00V1FyxTF8I"/>
+                                        <img alt="mod" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNuG5Hi2Qlb6SwGWaur1qoMdRlXhIQn107gD44p6XFEd5fjkOWHQaOtdbxZGuHoC1hRcDXs0q3qs81Z4rdfRUtSGMfHXNzGoLRJGi2JM_iySQAxBXy5-TRR4G54VrWkr9EPCiUI0xdVCBzJ_eun571OQDNx8hsI8NaTMdQ5uYNqnWqPlfEtj1Jq-QHV-VDO0I08c5M6MBcMylpiE2svkCFHWxLEk4lAMRiswznHeU9uvRlDILtKghE"/>
+                                        <div class="w-7 h-7 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center text-[10px] text-gray-500 font-bold ml-[-8px] relative z-10">+2</div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4">
+                                    <span class="px-3 py-1 bg-green-50 text-green-600 text-[11px] font-bold rounded-full uppercase">Active</span>
+                                </td>
+                                <td class="px-4 py-4 text-center">
+                                    <div class="flex items-center justify-center gap-1">
+                                        <button onclick="event.stopPropagation(); showToast('Viewing community...', 'info')" class="p-1.5 text-blue-500 hover:bg-blue-50 rounded transition-colors"><i class="fas fa-eye text-sm"></i></button>
+                                        <button onclick="event.stopPropagation(); showToast('Editing community...', 'info')" class="p-1.5 text-blue-400 hover:bg-blue-50 rounded transition-colors"><i class="fas fa-edit text-sm"></i></button>
+                                        <button onclick="event.stopPropagation(); showToast('More options...', 'info')" class="p-1.5 text-gray-400 hover:bg-gray-100 rounded transition-colors"><i class="fas fa-ellipsis-v text-sm"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Row 2: Abura -->
+                            <tr class="table-row-hover cursor-pointer hover:bg-surface-container-low/50 transition-colors">
+                                <td class="px-4 py-4"><input class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></td>
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm">A</div>
+                                        <div class="flex flex-col">
+                                            <span class="text-sm font-bold text-on-surface">Abura</span>
+                                            <span class="text-[10px] text-outline font-mono uppercase">COM-002</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4 text-sm text-on-surface-variant">Abura Asebu Kwamankese</td>
+                                <td class="px-4 py-4 text-sm text-on-surface-variant">Central Region</td>
+                                <td class="px-4 py-4 text-sm text-on-surface font-medium">8,761</td>
+                                <td class="px-4 py-4 text-sm text-on-surface font-medium text-right">2,015</td>
+                                <td class="px-4 py-4 text-sm text-on-surface font-medium text-right">124</td>
+                                <td class="px-4 py-4">
+                                    <div class="avatar-stack">
+                                        <img alt="mod" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCCKnUI4T_CZx0AfgpU5uw7QePlGKYp3CekBzOlLhnbT__35oQ2QWFAGQoS2Vs26UsQdw_vqqpPrv0BYG01fOZZdHvSWJRomD2nU5aZIp6uhR7OhFhQJxqxQAOMmwt_jE_AMUpzrh8fxw3jqmlz6D2xHfOy9t9IxzpLbP8rXCekyg0SgbdR2HSrpuP_fSs19kCGYn7rHGkg2Ux0h4xqPzyKsR9Nn3wvZKevz_rK9E8F1rJfiVk7bbi"/>
+                                        <img alt="mod" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_uACoemacZGMDgQcJ8pHtjFXW6KLIEAqZZU_5rTDIKJ68Th8di21FBgI-BWSuNsnunqiBSN7UfsTFWbPuUKlrg4MgWXt2nK3ic_MtIQBHfsW43sU4kVGw2Ti4yDnCZ_GnzRmEjCbnzRJUOgeM4QnnT1l-6mXBwtQsBNCAW7qRfVrJM95bf-nGddJBk-Fs5x4pR4wu0oPQIH5UKuZAEwxmEjewa2uyXiSPo2kECZCScfRDIxy2suIC"/>
+                                        <img alt="mod" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBc6RggmDgBxC7lKjadZwnFZLE7lA5e_ksPck5tfy25xmcmOFneL5RR7Bg98oiUyPi5HZJ-0fqDJOLZPlpE1UMcW_qttFU9KqhdV3dj__G71T3wRkmlENDYFhxtwihfjETmflvChvVSBKTbR2vAMCQAvV2Gog90KLtMR-DgpuuxfRYBNiLRWsJ4uI9N5pSzapmel_zjcpJurjGszVGf_baqP-KqHPR1bNb1Fom5VjT4MiBBJqdexSTj"/>
+                                        <div class="w-7 h-7 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center text-[10px] text-gray-500 font-bold ml-[-8px] relative z-10">+1</div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4">
+                                    <span class="px-3 py-1 bg-green-50 text-green-600 text-[11px] font-bold rounded-full uppercase">Active</span>
+                                </td>
+                                <td class="px-4 py-4 text-center">
+                                    <div class="flex items-center justify-center gap-1">
+                                        <button onclick="event.stopPropagation(); showToast('Viewing community...', 'info')" class="p-1.5 text-blue-500 hover:bg-blue-50 rounded transition-colors"><i class="fas fa-eye text-sm"></i></button>
+                                        <button onclick="event.stopPropagation(); showToast('Editing community...', 'info')" class="p-1.5 text-blue-400 hover:bg-blue-50 rounded transition-colors"><i class="fas fa-edit text-sm"></i></button>
+                                        <button onclick="event.stopPropagation(); showToast('More options...', 'info')" class="p-1.5 text-gray-400 hover:bg-gray-100 rounded transition-colors"><i class="fas fa-ellipsis-v text-sm"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Row 3: Asebu -->
+                            <tr class="table-row-hover cursor-pointer hover:bg-surface-container-low/50 transition-colors">
+                                <td class="px-4 py-4"><input class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></td>
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center font-bold text-sm">A</div>
+                                        <div class="flex flex-col">
+                                            <span class="text-sm font-bold text-on-surface">Asebu</span>
+                                            <span class="text-[10px] text-outline font-mono uppercase">COM-003</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4 text-sm text-on-surface-variant">Abura Asebu Kwamankese</td>
+                                <td class="px-4 py-4 text-sm text-on-surface-variant">Central Region</td>
+                                <td class="px-4 py-4 text-sm text-on-surface font-medium">9,321</td>
+                                <td class="px-4 py-4 text-sm text-on-surface font-medium text-right">1,876</td>
+                                <td class="px-4 py-4 text-sm text-on-surface font-medium text-right">110</td>
+                                <td class="px-4 py-4">
+                                    <div class="avatar-stack">
+                                        <img alt="mod" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNRI9CQH6r9WHq8nOJ8ckszSmf0MGVfx7YMtttvD4qgvurqgeu1LQn9XNZlFEardM6VtgoOL7EKPXrZA6Y22diaDoiXxAyj5LJltB0FZOxqrv6GA6d0nMfCWDhGErZe3DQrRBWBLcp4XhoHonu2m7--e9QVLva0uMXl_Tue9lujOSGda72aoNvmE-7VgR7irfc2pz-BKr8OMXN2SqM3oZgyUrBwgdurnJLqoVUNibgiadZv5EZgBVb"/>
+                                        <img alt="mod" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVNRavx6jZp27wFebsVrL5xfEpGEzQHc77yZPXnEJRxRjqv2pO_kbSiJ4WYoSy0uvM4GTw4YuOHO8MU_Ha7Muo_ek6Hn5WwQw-WciXgUXpsZgPgiEZnp2gzuRIwbjx91Wj_GNPbCGbCyHP08fc9fSaTXc65E8TE_q8vSJIEyQdORt2C54DzT6bluNg8EcAVVFToRgrdc5sgSQKgJMXNUKqvyO-sDJg3YMXlDXHhkPST4_Qpmpnfxh2"/>
+                                        <div class="w-7 h-7 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center text-[10px] text-gray-500 font-bold ml-[-8px] relative z-10">+1</div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4">
+                                    <span class="px-3 py-1 bg-green-50 text-green-600 text-[11px] font-bold rounded-full uppercase">Active</span>
+                                </td>
+                                <td class="px-4 py-4 text-center">
+                                    <div class="flex items-center justify-center gap-1">
+                                        <button onclick="event.stopPropagation(); showToast('Viewing community...', 'info')" class="p-1.5 text-blue-500 hover:bg-blue-50 rounded transition-colors"><i class="fas fa-eye text-sm"></i></button>
+                                        <button onclick="event.stopPropagation(); showToast('Editing community...', 'info')" class="p-1.5 text-blue-400 hover:bg-blue-50 rounded transition-colors"><i class="fas fa-edit text-sm"></i></button>
+                                        <button onclick="event.stopPropagation(); showToast('More options...', 'info')" class="p-1.5 text-gray-400 hover:bg-gray-100 rounded transition-colors"><i class="fas fa-ellipsis-v text-sm"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Row 4: Cape Coast -->
+                            <tr class="table-row-hover cursor-pointer hover:bg-surface-container-low/50 transition-colors">
+                                <td class="px-4 py-4"><input class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></td>
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center font-bold text-sm">C</div>
+                                        <div class="flex flex-col">
+                                            <span class="text-sm font-bold text-on-surface">Cape Coast</span>
+                                            <span class="text-[10px] text-outline font-mono uppercase">COM-004</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4 text-sm text-on-surface-variant">Cape Coast Metropolitan</td>
+                                <td class="px-4 py-4 text-sm text-on-surface-variant">Central Region</td>
+                                <td class="px-4 py-4 text-sm text-on-surface font-medium">122,659</td>
+                                <td class="px-4 py-4 text-sm text-on-surface font-medium text-right">18,765</td>
+                                <td class="px-4 py-4 text-sm text-on-surface font-medium text-right">1,023</td>
+                                <td class="px-4 py-4">
+                                    <div class="avatar-stack">
+                                        <img alt="mod" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAu7LjPVCfRG0ApErSBa7nzEu03ziLqabx_c3buURGOMml64-uhRObAueYZFVEXdvBiP_hyQqU3jd1lQlWlqzdK3LEqi3S-Y7uSOgBL2SyYjhhIlr_T9ZlzB-2MNHRtUQA1LcBdbTNXTuTILbo77qX8Nod2hxCzNWZ_wGYyrUUt0_qb1VswOZtK8nR_qMSrLAhyNwqKtjlim7zshPC8I__uPphObQVFS5spYTuLfHuUTj_ALJfIUrdr"/>
+                                        <img alt="mod" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEI3kT5YsgXScqt7CqZfQenUxI5zyLBv9MZWWf801qyKXZXWEQ4BzaJRpVIn14RSuaHtesi6KIAKsdQ3EDkbIKkxwz8MCdoIvquzgwLGq66rWQTDc5NoKzF5AkcpVn5N54B450HqrqsnT-smULLvXsbTuaZH3VeRuUX_hAxBoArlG6P8cKlRHa4lWiqsP9Se2j6Eo80cRPYEY8K-D69bLQS6uzt-ORA1RF64v4s-Rj9bAlOBzGkmkC"/>
+                                        <img alt="mod" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaNOC7zi0oJNNUsSKn1SIZsYGo6ILBORQ5iIwLBXmN9hCyzGr2zDqwwcrxMnZ6BiXGOYJhNCszhI5B8woFRpePrncztcQPTjhMLHFSIBRSt42WN1cS9N_v3AzXVz31_8CykawlthFuELK8usf90OHDxgo4ZNk2lHsi82T0Grz5gRhJx4bC7CQ19t2KJsnfbRFW7fwX_ote4XnrYaQs7Fjhtp9eyefdrQVO4lFetDKUaBpJ1k1zITgv"/>
+                                        <div class="w-7 h-7 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center text-[10px] text-gray-500 font-bold ml-[-8px] relative z-10">+3</div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4">
+                                    <span class="px-3 py-1 bg-green-50 text-green-600 text-[11px] font-bold rounded-full uppercase">Active</span>
+                                </td>
+                                <td class="px-4 py-4 text-center">
+                                    <div class="flex items-center justify-center gap-1">
+                                        <button onclick="event.stopPropagation(); showToast('Viewing community...', 'info')" class="p-1.5 text-blue-500 hover:bg-blue-50 rounded transition-colors"><i class="fas fa-eye text-sm"></i></button>
+                                        <button onclick="event.stopPropagation(); showToast('Editing community...', 'info')" class="p-1.5 text-blue-400 hover:bg-blue-50 rounded transition-colors"><i class="fas fa-edit text-sm"></i></button>
+                                        <button onclick="event.stopPropagation(); showToast('More options...', 'info')" class="p-1.5 text-gray-400 hover:bg-gray-100 rounded transition-colors"><i class="fas fa-ellipsis-v text-sm"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Row 5: Elmina -->
+                            <tr class="table-row-hover cursor-pointer hover:bg-surface-container-low/50 transition-colors">
+                                <td class="px-4 py-4"><input class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></td>
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-bold text-sm">E</div>
+                                        <div class="flex flex-col">
+                                            <span class="text-sm font-bold text-on-surface">Elmina</span>
+                                            <span class="text-[10px] text-outline font-mono uppercase">COM-005</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4 text-sm text-on-surface-variant">Komenda Edina Eguato Abirem</td>
+                                <td class="px-4 py-4 text-sm text-on-surface-variant">Central Region</td>
+                                <td class="px-4 py-4 text-sm text-on-surface font-medium">33,412</td>
+                                <td class="px-4 py-4 text-sm text-on-surface font-medium text-right">4,321</td>
+                                <td class="px-4 py-4 text-sm text-on-surface font-medium text-right">265</td>
+                                <td class="px-4 py-4">
+                                    <div class="avatar-stack">
+                                        <img alt="mod" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEs4KtoqPl1w6ipxxBsrd5WA38hejeUKdHn_islni2AfQllIAmdp_g9JvBIW2LioGHX-ccTVgZ716PAAx_GJLP1REvZWWR5xS7C7Aamf9-4aNdFdgtl8spVLnSVrbfMGpoLo5C-I8pVtM6pSEwajXLFwapbFoR46RaBslLKrGbaYfRWWbjoJNRqq_M0GDJI72R2TVFgjvGksAuE7n1SICvWZ4m6UCbp4E2JF1E-6bmVHBOY7UN5kIJ"/>
+                                        <img alt="mod" class="w-7 h-7 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQ4cVKVZm98WLsjv8n__-zqyQzOtUIyFU7srcL3SKFBl3tOWxsBHPPthGaZGA9MQcr_2ZqwOq_AfjlqsUcBeN8wLClwDFzQ7B73qA5MqDiUfBpJr2_IKcG4xr1CbexwG0zxj2PwiYFumSrfPR8nWChAPvK-k1xNk-bgHnqk2aPfa9o6KTTy0F__4Ccyh8Vas8zhvzf0aai2kBQzZ-DHLztMGBbLQtVLUw8SL5eYOL-pPJLPy6Sdo_0"/>
+                                        <div class="w-7 h-7 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center text-[10px] text-gray-500 font-bold ml-[-8px] relative z-10">+1</div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4">
+                                    <span class="px-3 py-1 bg-green-50 text-green-600 text-[11px] font-bold rounded-full uppercase">Active</span>
+                                </td>
+                                <td class="px-4 py-4 text-center">
+                                    <div class="flex items-center justify-center gap-1">
+                                        <button onclick="event.stopPropagation(); showToast('Viewing community...', 'info')" class="p-1.5 text-blue-500 hover:bg-blue-50 rounded transition-colors"><i class="fas fa-eye text-sm"></i></button>
+                                        <button onclick="event.stopPropagation(); showToast('Editing community...', 'info')" class="p-1.5 text-blue-400 hover:bg-blue-50 rounded transition-colors"><i class="fas fa-edit text-sm"></i></button>
+                                        <button onclick="event.stopPropagation(); showToast('More options...', 'info')" class="p-1.5 text-gray-400 hover:bg-gray-100 rounded transition-colors"><i class="fas fa-ellipsis-v text-sm"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="px-6 py-4 flex flex-wrap items-center justify-between gap-4 bg-surface-container-low/30 border-t border-outline-variant">
+                    <span class="text-xs text-outline">Showing <span class="font-bold text-on-surface">1 to 10</span> of 1,842 communities</span>
+                    <div class="flex items-center gap-6 flex-wrap">
+                        <div class="flex items-center gap-1">
+                            <button onclick="showToast('Loading previous page...', 'info')" class="w-8 h-8 flex items-center justify-center text-outline hover:text-primary transition-colors rounded">
+                                <i class="fas fa-chevron-left text-sm"></i>
+                            </button>
+                            <button class="w-8 h-8 rounded-md bg-primary text-white text-xs font-bold shadow-sm">1</button>
+                            <button onclick="showToast('Loading page 2...', 'info')" class="w-8 h-8 rounded-md text-on-surface-variant text-xs font-medium hover:bg-surface transition-colors">2</button>
+                            <button onclick="showToast('Loading page 3...', 'info')" class="w-8 h-8 rounded-md text-on-surface-variant text-xs font-medium hover:bg-surface transition-colors">3</button>
+                            <button onclick="showToast('Loading page 4...', 'info')" class="w-8 h-8 rounded-md text-on-surface-variant text-xs font-medium hover:bg-surface transition-colors">4</button>
+                            <button onclick="showToast('Loading page 5...', 'info')" class="w-8 h-8 rounded-md text-on-surface-variant text-xs font-medium hover:bg-surface transition-colors">5</button>
+                            <span class="text-outline text-xs">...</span>
+                            <button onclick="showToast('Loading page 185...', 'info')" class="w-8 h-8 rounded-md text-on-surface-variant text-xs font-medium hover:bg-surface transition-colors">185</button>
+                            <button onclick="showToast('Loading next page...', 'info')" class="w-8 h-8 flex items-center justify-center text-outline hover:text-primary transition-colors rounded">
+                                <i class="fas fa-chevron-right text-sm"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <select class="pl-2 pr-8 py-1.5 border border-outline-variant rounded text-xs text-on-surface-variant focus:ring-1 focus:ring-primary focus:border-primary outline-none bg-surface">
+                                <option>10 / page</option>
+                                <option>20 / page</option>
+                                <option>50 / page</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<!-- JavaScript -->
+<script src="js/communit.js"></script>
+
+</body>
+</html>

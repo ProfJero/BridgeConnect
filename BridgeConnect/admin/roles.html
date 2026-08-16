@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Roles &amp; Permissions | BridgeConnect Admin Portal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzAOMVoTR5YTrZlzedypz_KqQT-lotI1o",
+            authDomain: "bridgeconnect-5b8bd.firebaseapp.com",
+            projectId: "bridgeconnect-5b8bd",
+            storageBucket: "bridgeconnect-5b8bd.firebasestorage.app",
+            messagingSenderId: "231684985335",
+            appId: "1:231684985335:web:3f3bfdf7f2708f0ae81ef2",
+            measurementId: "G-C8QJH73MC0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        db.enablePersistence().catch(err => console.warn('Firestore persistence error:', err));
+    </script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-fixed": "#71f8e4",
+                        "on-surface-variant": "#434654",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface": "#f7f9fb",
+                        "background": "#f7f9fb",
+                        "primary-fixed": "#dae2ff",
+                        "surface-container": "#eceef0",
+                        "on-secondary-fixed": "#00201c",
+                        "secondary-container": "#6df5e1",
+                        "primary-container": "#0052cc",
+                        "primary": "#003d9b",
+                        "inverse-primary": "#b2c5ff",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e0e3e5",
+                        "on-tertiary-fixed": "#341100",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#732f00",
+                        "on-primary-container": "#c4d2ff",
+                        "tertiary-fixed-dim": "#ffb690",
+                        "on-surface": "#191c1e",
+                        "tertiary-fixed": "#ffdbca",
+                        "surface-bright": "#f7f9fb",
+                        "surface-container-high": "#e6e8ea",
+                        "inverse-surface": "#2d3133",
+                        "secondary-fixed-dim": "#4fdbc8",
+                        "outline-variant": "#c3c6d6",
+                        "outline": "#737685",
+                        "surface-container-low": "#f2f4f6",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#0040a2",
+                        "on-tertiary-container": "#ffc8ac",
+                        "surface-tint": "#0c56d0",
+                        "on-background": "#191c1e",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed": "#001848",
+                        "tertiary-container": "#984100",
+                        "on-secondary-container": "#006f64",
+                        "on-tertiary-fixed-variant": "#783200",
+                        "on-secondary-fixed-variant": "#005048",
+                        "secondary": "#006b5f",
+                        "surface-dim": "#d8dadc",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary": "#ffffff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "container-margin": "2rem",
+                        "sidebar-width": "260px",
+                        "card-padding": "1.25rem",
+                        "section-gap": "2rem",
+                        "gutter": "1.5rem"
+                    },
+                    fontFamily: {
+                        "headline-lg-mobile": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                        "label-md": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-md": ["18px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .card-shadow { box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04); }
+        .matrix-cell:hover { background-color: rgba(236, 238, 240, 0.5); }
+        
+        /* Sidebar collapse styles */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar.collapsed {
+            width: 72px;
+            min-width: 72px;
+        }
+        .sidebar.collapsed .logo-text,
+        .sidebar.collapsed .dbi-text,
+        .sidebar.collapsed .link-text,
+        .sidebar.collapsed .notif-badge,
+        .sidebar.collapsed .sidebar-footer .link-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-dbi {
+            padding: 6px;
+            justify-content: center;
+        }
+        .sidebar.collapsed .sidebar-dbi .dbi-text {
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-link {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-link i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-logo {
+            justify-content: center;
+            padding: 12px 0;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 {
+            width: 36px;
+            height: 36px;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-footer {
+            padding: 8px;
+        }
+        .sidebar.collapsed .sidebar-footer a {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-footer a i {
+            font-size: 18px;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 1023px) {
+            .sidebar-container {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                width: 280px;
+                z-index: 1000;
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 4px 0 30px rgba(0,0,0,0.15);
+            }
+            .sidebar-container.mobile-open {
+                left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 999;
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .mobile-header {
+                display: flex !important;
+            }
+            .desktop-header {
+                display: none !important;
+            }
+            .main-content {
+                padding: 1rem !important;
+            }
+            .sidebar.collapsed {
+                width: 280px !important;
+                min-width: 280px !important;
+            }
+            .sidebar.collapsed .logo-text,
+            .sidebar.collapsed .dbi-text,
+            .sidebar.collapsed .link-text,
+            .sidebar.collapsed .notif-badge,
+            .sidebar.collapsed .sidebar-footer .link-text {
+                opacity: 1 !important;
+                display: block !important;
+                width: auto !important;
+            }
+            .sidebar.collapsed .sidebar-link {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-logo {
+                justify-content: flex-start !important;
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer {
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer a {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-dbi {
+                padding: 12px !important;
+                justify-content: flex-start !important;
+            }
+            .sidebar.collapsed .sidebar-dbi .dbi-text {
+                display: block !important;
+            }
+            .sidebar-toggle-btn {
+                display: none !important;
+            }
+            
+            .grid-cols-12 {
+                grid-template-columns: 1fr !important;
+            }
+            .lg\\:col-span-9 {
+                grid-column: span 1 !important;
+            }
+            .lg\\:col-span-3 {
+                grid-column: span 1 !important;
+            }
+            .space-y-gutter {
+                margin-top: 1.5rem;
+            }
+            .flex.gap-8 {
+                gap: 1rem;
+                overflow-x: auto;
+            }
+            .w-sidebar-width {
+                width: 0;
+            }
+            .ml-sidebar-width {
+                margin-left: 0;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .mobile-header {
+                display: none !important;
+            }
+            .sidebar-overlay {
+                display: none !important;
+            }
+        }
+        
+        /* Toast styles */
+        .toast {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+        
+        /* Scrollbar hide */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<div class="flex h-screen overflow-hidden">
+    
+    <!-- MOBILE OVERLAY -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer" class="sidebar-container"></div>
+    
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        
+        <!-- Mobile Header -->
+        <header class="mobile-header bg-surface h-16 border-b border-outline-variant flex items-center justify-between px-4 flex-shrink-0 z-10">
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuBtn" class="text-on-surface-variant hover:text-on-surface text-xl p-1">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center text-primary">
+                        <i class="fas fa-user-shield text-sm"></i>
+                    </div>
+                    <span class="font-bold text-primary text-sm">Roles</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="relative text-on-surface-variant">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full text-[9px] text-white flex items-center justify-center font-bold">8</span>
+                </button>
+                <img id="mobileUserAvatar" alt="User" class="w-7 h-7 rounded-full object-cover border-2 border-white shadow-sm" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=32"/>
+            </div>
+        </header>
+        
+        <!-- Desktop TopNavBar -->
+        <header class="desktop-header bg-surface sticky top-0 z-40 flex justify-between items-center w-full px-container-margin py-4 max-w-full border-b border-outline-variant">
+            <div class="flex items-center flex-1 max-w-xl">
+                <div class="relative w-full max-w-md mr-4">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-outline"></i>
+                    <input id="globalSearch" class="w-full bg-surface-container-lowest border-outline-variant rounded-full py-2 pl-10 pr-4 text-body-md focus:ring-2 focus:ring-primary/20 border outline-none" placeholder="Search users, businesses, communities..." type="text"/>
+                </div>
+                <button id="communityFilterBtn" class="flex items-center px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                    <span class="font-label-md text-label-md">All Communities</span>
+                    <i class="fas fa-chevron-down text-sm ml-1"></i>
+                </button>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high relative">
+                    <i class="fas fa-bell text-on-surface-variant"></i>
+                    <span class="absolute top-2 right-2 w-4 h-4 bg-error text-white text-[10px] flex items-center justify-center rounded-full border-2 border-surface">8</span>
+                </button>
+                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high relative">
+                    <i class="fas fa-comment-dots text-on-surface-variant"></i>
+                    <span class="absolute top-2 right-2 w-4 h-4 bg-error text-white text-[10px] flex items-center justify-center rounded-full border-2 border-surface">5</span>
+                </button>
+                <div class="h-8 w-px bg-outline-variant mx-2"></div>
+                <div class="flex items-center space-x-3 ml-2 group cursor-pointer">
+                    <div class="text-right hidden sm:block">
+                        <p class="font-label-md text-label-md text-on-surface font-bold" id="headerUserName">Loading...</p>
+                        <p class="text-[11px] text-outline uppercase font-bold" id="headerUserRole">Loading...</p>
+                    </div>
+                    <img id="desktopUserAvatar" class="w-10 h-10 rounded-full object-cover border-2 border-primary/10" alt="User Avatar" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=40"/>
+                    <i class="fas fa-chevron-down text-outline group-hover:translate-y-0.5 transition-transform"></i>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar main-content">
+            <div class="max-w-[1600px]">
+                
+                <!-- Page Header -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-on-surface">Roles &amp; Permissions</h2>
+                        <p class="text-on-surface-variant text-sm mt-1">Manage user roles and set permissions for platform features and modules.</p>
+                    </div>
+                    <button id="createRoleBtn" class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-lg font-bold hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-primary/20">
+                        <i class="fas fa-plus"></i>
+                        <span class="text-sm font-bold">Create New Role</span>
+                    </button>
+                </div>
+                
+                <!-- Sub-Navigation Tabs -->
+                <div class="flex gap-6 md:gap-8 border-b border-outline-variant mb-6 overflow-x-auto whitespace-nowrap scrollbar-hide">
+                    <a class="tab-btn pb-3 px-1 border-b-2 border-primary text-primary font-bold text-sm cursor-pointer" data-tab="roles">Roles</a>
+                    <a class="tab-btn pb-3 px-1 border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors text-sm cursor-pointer" data-tab="permissions">Permissions</a>
+                    <a class="tab-btn pb-3 px-1 border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors text-sm cursor-pointer" data-tab="assignments">Role Assignments</a>
+                    <a class="tab-btn pb-3 px-1 border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors text-sm cursor-pointer" data-tab="requests">Access Requests</a>
+                </div>
+                
+                <!-- Dashboard Grid -->
+                <div class="grid grid-cols-12 gap-4 md:gap-6">
+                    <!-- Left: Permission Matrix -->
+                    <div class="col-span-12 lg:col-span-9 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0px_4px_20px_rgba(0,0,0,0.04)] flex flex-col overflow-hidden card-shadow">
+                        <div class="p-4 md:p-6 border-b border-outline-variant bg-surface-bright/50">
+                            <h3 class="font-headline-md text-headline-md text-on-surface">Permission Matrix</h3>
+                            <p class="text-on-surface-variant text-body-md">Manage what each role can access and modify.</p>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-surface-container-low">
+                                        <th class="p-3 md:p-4 font-label-sm text-outline uppercase tracking-wider sticky left-0 bg-surface-container-low z-10 w-48 md:w-64 border-b border-outline-variant">Permissions</th>
+                                        <th class="p-3 md:p-4 text-center min-w-[90px] md:min-w-[120px] border-b border-outline-variant">
+                                            <div class="flex flex-col items-center gap-1 md:gap-2">
+                                                <i class="fas fa-shield-alt text-primary text-lg md:text-xl"></i>
+                                                <span class="text-[10px] md:text-xs text-on-surface leading-tight">Platform<br/>Owner</span>
+                                            </div>
+                                        </th>
+                                        <th class="p-3 md:p-4 text-center min-w-[90px] md:min-w-[120px] border-b border-outline-variant">
+                                            <div class="flex flex-col items-center gap-1 md:gap-2">
+                                                <i class="fas fa-user-cog text-secondary text-lg md:text-xl"></i>
+                                                <span class="text-[10px] md:text-xs text-on-surface leading-tight">District<br/>Admin</span>
+                                            </div>
+                                        </th>
+                                        <th class="p-3 md:p-4 text-center min-w-[90px] md:min-w-[120px] border-b border-outline-variant">
+                                            <div class="flex flex-col items-center gap-1 md:gap-2">
+                                                <i class="fas fa-gavel text-tertiary text-lg md:text-xl"></i>
+                                                <span class="text-[10px] md:text-xs text-on-surface leading-tight">Community<br/>Moderator</span>
+                                            </div>
+                                        </th>
+                                        <th class="p-3 md:p-4 text-center min-w-[90px] md:min-w-[120px] border-b border-outline-variant">
+                                            <div class="flex flex-col items-center gap-1 md:gap-2 text-on-tertiary-container">
+                                                <i class="fas fa-bullhorn text-lg md:text-xl"></i>
+                                                <span class="text-[10px] md:text-xs text-on-surface leading-tight">Community<br/>Ambassador</span>
+                                            </div>
+                                        </th>
+                                        <th class="p-3 md:p-4 text-center min-w-[90px] md:min-w-[120px] border-b border-outline-variant">
+                                            <div class="flex flex-col items-center gap-1 md:gap-2">
+                                                <i class="fas fa-briefcase text-primary text-lg md:text-xl"></i>
+                                                <span class="text-[10px] md:text-xs text-on-surface leading-tight">Business<br/>Owner</span>
+                                            </div>
+                                        </th>
+                                        <th class="p-3 md:p-4 text-center min-w-[90px] md:min-w-[120px] border-b border-outline-variant">
+                                            <div class="flex flex-col items-center gap-1 md:gap-2">
+                                                <i class="fas fa-network-wired text-secondary text-lg md:text-xl"></i>
+                                                <span class="text-[10px] md:text-xs text-on-surface leading-tight">Organization<br/>Manager</span>
+                                            </div>
+                                        </th>
+                                        <th class="p-3 md:p-4 text-center min-w-[90px] md:min-w-[120px] border-b border-outline-variant">
+                                            <div class="flex flex-col items-center gap-1 md:gap-2">
+                                                <i class="fas fa-user text-on-surface-variant text-lg md:text-xl"></i>
+                                                <span class="text-[10px] md:text-xs text-on-surface leading-tight">Resident</span>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="permissionMatrixBody">
+                                    <!-- Will be populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="p-3 md:p-4 bg-surface-container-low border-t border-outline-variant flex justify-between items-center">
+                            <span class="text-xs font-bold text-on-surface-variant" id="totalRolesDisplay">Total Roles: 0</span>
+                            <div class="flex gap-2">
+                                <button id="prevPageBtn" class="p-2 text-outline-variant hover:text-primary disabled:opacity-30" disabled>
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button id="nextPageBtn" class="p-2 text-outline-variant hover:text-primary">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Sidebar -->
+                    <div class="col-span-12 lg:col-span-3 space-y-4 md:space-y-6">
+                        <!-- Role Details Card -->
+                        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 md:p-5 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] card-shadow">
+                            <h4 class="text-xs text-outline uppercase tracking-wider mb-4 font-bold">Role Details</h4>
+                            <div id="roleDetailsContainer">
+                                <!-- Will be populated dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Assign Form -->
+                        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 md:p-5 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] card-shadow">
+                            <h4 class="text-xs text-outline uppercase tracking-wider mb-4 font-bold">Quick Assign Role</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs text-on-surface-variant font-bold mb-1.5">Select user</label>
+                                    <div class="relative">
+                                        <select id="assignUserSelect" class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-2.5 px-3 text-sm appearance-none focus:ring-2 focus:ring-primary/20 outline-none">
+                                            <option value="">Choose a user</option>
+                                            <!-- Will be populated dynamically -->
+                                        </select>
+                                        <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline text-sm"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-on-surface-variant font-bold mb-1.5">Select role</label>
+                                    <div class="relative">
+                                        <select id="assignRoleSelect" class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-2.5 px-3 text-sm appearance-none focus:ring-2 focus:ring-primary/20 outline-none">
+                                            <option value="">Choose a role</option>
+                                            <!-- Will be populated dynamically -->
+                                        </select>
+                                        <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline text-sm"></i>
+                                    </div>
+                                </div>
+                                <button id="assignRoleBtn" class="w-full bg-primary-container/10 text-primary font-bold py-3 rounded-lg hover:bg-primary-container hover:text-on-primary-container transition-all text-sm">
+                                    Assign Role
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Role Summary Stats -->
+                        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 md:p-5 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] card-shadow">
+                            <h4 class="text-xs text-outline uppercase tracking-wider mb-4 font-bold">Role Summary</h4>
+                            <div id="roleSummaryContainer" class="space-y-3">
+                                <!-- Will be populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<!-- Modal Container -->
+<div id="modalContainer"></div>
+
+<!-- JavaScript -->
+<script src="js/context-manager.js"></script>
+<script src="js/roles.js"></script>
+
+</body>
+</html>

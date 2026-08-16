@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Job Management - BridgeConnect Admin Portal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzAOMVoTR5YTrZlzedypz_KqQT-lotI1o",
+            authDomain: "bridgeconnect-5b8bd.firebaseapp.com",
+            projectId: "bridgeconnect-5b8bd",
+            storageBucket: "bridgeconnect-5b8bd.firebasestorage.app",
+            messagingSenderId: "231684985335",
+            appId: "1:231684985335:web:3f3bfdf7f2708f0ae81ef2",
+            measurementId: "G-C8QJH73MC0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        db.enablePersistence().catch(err => console.warn('Firestore persistence error:', err));
+    </script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdbca",
+                        "secondary-fixed": "#71f8e4",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#6df5e1",
+                        "on-surface-variant": "#434654",
+                        "on-primary-fixed": "#001848",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-fixed-dim": "#ffb690",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-fixed-dim": "#4fdbc8",
+                        "on-error-container": "#93000a",
+                        "primary-container": "#0052cc",
+                        "surface-container-high": "#e6e8ea",
+                        "inverse-surface": "#2d3133",
+                        "on-tertiary-container": "#ffc8ac",
+                        "surface-variant": "#e0e3e5",
+                        "on-background": "#191c1e",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#0c56d0",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#006b5f",
+                        "on-secondary-fixed": "#00201c",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary-fixed-variant": "#783200",
+                        "inverse-primary": "#b2c5ff",
+                        "primary": "#003d9b",
+                        "tertiary": "#732f00",
+                        "surface": "#f7f9fb",
+                        "background": "#f7f9fb",
+                        "outline-variant": "#c3c6d6",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#984100",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "on-secondary-fixed-variant": "#005048",
+                        "on-secondary-container": "#006f64",
+                        "on-primary-fixed-variant": "#0040a2",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-bright": "#f7f9fb",
+                        "outline": "#737685",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#c4d2ff",
+                        "primary-fixed": "#dae2ff",
+                        "surface-container": "#eceef0",
+                        "on-surface": "#191c1e"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "gutter": "1.5rem",
+                        "container-margin": "2rem",
+                        "sidebar-width": "260px",
+                        "card-padding": "1.25rem",
+                        "section-gap": "2rem"
+                    },
+                    fontFamily: {
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-md": ["18px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .card-shadow { box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04); }
+        .table-row-hover:hover { background-color: #f8fafc; }
+        
+        /* Sidebar collapse styles */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar.collapsed {
+            width: 72px;
+            min-width: 72px;
+        }
+        .sidebar.collapsed .logo-text,
+        .sidebar.collapsed .dbi-text,
+        .sidebar.collapsed .link-text,
+        .sidebar.collapsed .notif-badge,
+        .sidebar.collapsed .sidebar-footer .link-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-dbi {
+            padding: 6px;
+            justify-content: center;
+        }
+        .sidebar.collapsed .sidebar-dbi .dbi-text {
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-link {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-link i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-logo {
+            justify-content: center;
+            padding: 12px 0;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 {
+            width: 36px;
+            height: 36px;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-footer {
+            padding: 8px;
+        }
+        .sidebar.collapsed .sidebar-footer a {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-footer a i {
+            font-size: 18px;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 1023px) {
+            .sidebar-container {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                width: 280px;
+                z-index: 1000;
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 4px 0 30px rgba(0,0,0,0.15);
+            }
+            .sidebar-container.mobile-open {
+                left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 999;
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .mobile-header {
+                display: flex !important;
+            }
+            .desktop-header {
+                display: none !important;
+            }
+            .main-content {
+                padding: 1rem !important;
+            }
+            .sidebar.collapsed {
+                width: 280px !important;
+                min-width: 280px !important;
+            }
+            .sidebar.collapsed .logo-text,
+            .sidebar.collapsed .dbi-text,
+            .sidebar.collapsed .link-text,
+            .sidebar.collapsed .notif-badge,
+            .sidebar.collapsed .sidebar-footer .link-text {
+                opacity: 1 !important;
+                display: block !important;
+                width: auto !important;
+            }
+            .sidebar.collapsed .sidebar-link {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-logo {
+                justify-content: flex-start !important;
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer {
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer a {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-dbi {
+                padding: 12px !important;
+                justify-content: flex-start !important;
+            }
+            .sidebar.collapsed .sidebar-dbi .dbi-text {
+                display: block !important;
+            }
+            .sidebar-toggle-btn {
+                display: none !important;
+            }
+            
+            .grid-cols-5 {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 0.75rem !important;
+            }
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .grid-cols-5 {
+                grid-template-columns: 1fr !important;
+            }
+            .metrics-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .mobile-header {
+                display: none !important;
+            }
+            .sidebar-overlay {
+                display: none !important;
+            }
+        }
+        
+        /* Toast styles */
+        .toast {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+
+        /* Status badge colors */
+        .status-pending { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+        .status-approved { background: #dcfce7; color: #166534; border-color: #86efac; }
+        .status-rejected { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+        .status-expired { background: #e5e7eb; color: #4b5563; border-color: #d1d5db; }
+
+        /* Tab styles */
+        .tab-active {
+            border-bottom-width: 2px;
+            border-color: #0052cc;
+            color: #0052cc;
+            font-weight: 600;
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<div class="flex h-screen overflow-hidden">
+    
+    <!-- MOBILE OVERLAY -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer" class="sidebar-container"></div>
+    
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        
+        <!-- Mobile Header -->
+        <header class="mobile-header bg-surface h-16 border-b border-outline-variant flex items-center justify-between px-4 flex-shrink-0 z-10">
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuBtn" class="text-on-surface-variant hover:text-on-surface text-xl p-1">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center text-primary">
+                        <i class="fas fa-briefcase text-sm"></i>
+                    </div>
+                    <span class="font-bold text-primary text-sm">Jobs</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="relative text-on-surface-variant">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full text-[9px] text-white flex items-center justify-center font-bold">8</span>
+                </button>
+                <img id="mobileUserAvatar" alt="User" class="w-7 h-7 rounded-full object-cover border-2 border-white shadow-sm" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=32"/>
+            </div>
+        </header>
+        
+        <!-- Desktop TopNavBar -->
+        <header class="desktop-header bg-surface sticky top-0 z-40 flex justify-between items-center w-full px-container-margin py-4 max-w-full border-b border-outline-variant">
+            <div class="flex items-center flex-1 max-w-xl">
+                <div class="relative w-full max-w-md mr-4">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-outline"></i>
+                    <input id="searchInput" class="w-full bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-body-md font-body-md focus:ring-2 focus:ring-primary/20" placeholder="Search jobs by title, keyword or employer..." type="text"/>
+                </div>
+                <button id="communityFilterBtn" class="flex items-center px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                    <span class="font-label-md text-label-md mr-1">All Communities</span>
+                    <i class="fas fa-chevron-down text-sm"></i>
+                </button>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high relative">
+                    <i class="fas fa-bell text-on-surface-variant"></i>
+                    <span class="absolute top-2 right-2 w-4 h-4 bg-error text-white text-[10px] flex items-center justify-center rounded-full border-2 border-surface">8</span>
+                </button>
+                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high relative">
+                    <i class="fas fa-comment-dots text-on-surface-variant"></i>
+                    <span class="absolute top-2 right-2 w-4 h-4 bg-error text-white text-[10px] flex items-center justify-center rounded-full border-2 border-surface">5</span>
+                </button>
+                <div class="h-8 w-px bg-outline-variant mx-2"></div>
+                <div class="flex items-center space-x-3 ml-2 group cursor-pointer">
+                    <div class="text-right hidden sm:block">
+                        <p class="font-label-md text-label-md text-on-surface font-bold" id="headerUserName">Loading...</p>
+                        <p class="text-[11px] text-outline" id="headerUserRole">Loading...</p>
+                    </div>
+                    <img id="desktopUserAvatar" class="w-10 h-10 rounded-full object-cover border-2 border-primary/10" alt="User Avatar" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=40"/>
+                    <i class="fas fa-chevron-down text-outline"></i>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-6 custom-scrollbar main-content">
+            
+            <!-- Page Header -->
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-on-surface">Job Management</h2>
+                    <p class="text-sm text-outline">Manage jobs, review submissions and monitor job listings</p>
+                </div>
+                <div class="flex items-center gap-3 flex-wrap">
+                    <button id="exportBtn" class="flex items-center gap-2 px-4 py-2 bg-surface border border-outline-variant rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                        <i class="fas fa-download text-sm"></i> Export
+                    </button>
+                    <button id="filterBtn" class="flex items-center gap-2 px-4 py-2 bg-surface border border-outline-variant rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                        <i class="fas fa-sliders-h text-sm"></i> Filters
+                    </button>
+                    <button id="postJobBtn" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-blue-700 shadow-sm transition-colors">
+                        <i class="fas fa-plus text-sm"></i> Post a Job
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Metrics Cards -->
+            <div class="metrics-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6" id="metricCards">
+                <!-- Stats will be populated dynamically -->
+            </div>
+            
+            <!-- Data Table Section -->
+            <div class="bg-surface border border-outline-variant rounded-xl overflow-hidden card-shadow">
+                <!-- Tabbed Nav -->
+                <div class="px-6 border-b border-outline-variant">
+                    <nav class="flex flex-wrap gap-6" id="tabNav">
+                        <a class="tab-btn py-4 text-sm font-semibold border-b-2 border-primary text-primary cursor-pointer" data-tab="all">All Jobs</a>
+                        <a class="tab-btn py-4 text-sm font-medium text-outline hover:text-on-surface cursor-pointer border-b-2 border-transparent" data-tab="pending">Pending</a>
+                        <a class="tab-btn py-4 text-sm font-medium text-outline hover:text-on-surface cursor-pointer border-b-2 border-transparent" data-tab="approved">Approved</a>
+                        <a class="tab-btn py-4 text-sm font-medium text-outline hover:text-on-surface cursor-pointer border-b-2 border-transparent" data-tab="rejected">Rejected</a>
+                        <a class="tab-btn py-4 text-sm font-medium text-outline hover:text-on-surface cursor-pointer border-b-2 border-transparent" data-tab="expired">Expired</a>
+                    </nav>
+                </div>
+                
+                <!-- Table Filters -->
+                <div class="p-4 flex flex-wrap items-center gap-4 border-b border-outline-variant">
+                    <div class="relative flex-1 min-w-[200px]">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-outline"></i>
+                        <input id="searchFilter" class="w-full pl-9 pr-3 py-2 border border-outline-variant rounded-lg text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none bg-surface" placeholder="Search jobs..." type="text"/>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <select id="typeFilter" class="text-sm border border-outline-variant rounded-lg bg-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none px-3 py-2 min-w-[140px]">
+                            <option value="all">All Job Types</option>
+                            <option value="Full-time">Full-time</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Contract">Contract</option>
+                            <option value="Internship">Internship</option>
+                        </select>
+                        <select id="statusFilter" class="text-sm border border-outline-variant rounded-lg bg-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none px-3 py-2 min-w-[140px]">
+                            <option value="all">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="expired">Expired</option>
+                        </select>
+                        <button id="clearFiltersBtn" class="text-sm text-outline font-medium hover:text-on-surface px-2 transition-colors">Clear</button>
+                    </div>
+                </div>
+                
+                <!-- Main Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-surface-container-low/30 text-outline text-[11px] font-bold uppercase tracking-wider border-b border-outline-variant">
+                                <th class="px-4 py-4 w-12"><input id="selectAll" class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></th>
+                                <th class="px-4 py-4">Job Title</th>
+                                <th class="px-4 py-4">Employer</th>
+                                <th class="px-4 py-4">Community</th>
+                                <th class="px-4 py-4">Type</th>
+                                <th class="px-4 py-4">Posted Date</th>
+                                <th class="px-4 py-4">Applications</th>
+                                <th class="px-4 py-4">Status</th>
+                                <th class="px-4 py-4 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobsTableBody">
+                            <tr>
+                                <td colspan="9" class="text-center py-8 text-outline">
+                                    <i class="fas fa-spinner fa-spin text-2xl"></i>
+                                    <p class="mt-2">Loading jobs...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="px-6 py-4 flex flex-wrap items-center justify-between gap-4 bg-surface-container-low/30 border-t border-outline-variant">
+                    <span class="text-xs font-medium text-outline" id="paginationInfo">Showing <span class="font-bold text-on-surface">0</span> jobs</span>
+                    <div class="flex items-center gap-2 flex-wrap" id="paginationControls">
+                        <!-- Pagination will be rendered dynamically -->
+                    </div>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<!-- Modal Container -->
+<div id="modalContainer"></div>
+
+<!-- JavaScript -->
+<script src="js/context-manager.js"></script>
+<script src="js/jobs.js"></script>
+
+</body>
+</html>

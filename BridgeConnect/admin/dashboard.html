@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>BridgeConnect Platform Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzAOMVoTR5YTrZlzedypz_KqQT-lotI1o",
+            authDomain: "bridgeconnect-5b8bd.firebaseapp.com",
+            projectId: "bridgeconnect-5b8bd",
+            storageBucket: "bridgeconnect-5b8bd.firebasestorage.app",
+            messagingSenderId: "231684985335",
+            appId: "1:231684985335:web:3f3bfdf7f2708f0ae81ef2",
+            measurementId: "G-C8QJH73MC0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        db.enablePersistence().catch(err => console.warn('Firestore persistence error:', err));
+    </script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#0052cc',
+                        'surface-container-lowest': '#ffffff',
+                        'surface': '#f7f9fb',
+                        'surface-container': '#ebeeed',
+                        'on-surface': '#181b1b',
+                        'on-surface-variant': '#424848',
+                        'outline-variant': '#c0c8c7',
+                        'success': '#16a34a',
+                        'success-bg': '#dcfce7',
+                    },
+                    borderRadius: {
+                        'xl': '0.5rem',
+                        '2xl': '0.75rem',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #f7f9fb;
+        }
+        
+        /* ===== SCROLLBAR STYLES ===== */
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #c0c8c7;
+            border-radius: 4px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #a0a8a7;
+        }
+        
+        .main-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .main-content::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 3px;
+        }
+        .main-content::-webkit-scrollbar-thumb {
+            background: #c0c8c7;
+            border-radius: 3px;
+        }
+        .main-content::-webkit-scrollbar-thumb:hover {
+            background: #a0a8a7;
+        }
+        
+        .sidebar {
+            scrollbar-width: thin;
+            scrollbar-color: #c0c8c7 transparent;
+        }
+        .main-content {
+            scrollbar-width: thin;
+            scrollbar-color: #c0c8c7 #f0f0f0;
+        }
+
+        /* ===== SIDEBAR COLLAPSE STYLES ===== */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar.collapsed {
+            width: 72px;
+            min-width: 72px;
+        }
+        .sidebar.collapsed .logo-text,
+        .sidebar.collapsed .dbi-text,
+        .sidebar.collapsed .link-text,
+        .sidebar.collapsed .notif-badge,
+        .sidebar.collapsed .sidebar-footer .link-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-dbi {
+            padding: 6px;
+            justify-content: center;
+        }
+        .sidebar.collapsed .sidebar-dbi .dbi-text {
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-link {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-link i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-logo {
+            justify-content: center;
+            padding: 12px 0;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 {
+            width: 36px;
+            height: 36px;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-footer {
+            padding: 8px;
+        }
+        .sidebar.collapsed .sidebar-footer a {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-footer a i {
+            font-size: 18px;
+        }
+
+        @media (max-width: 1023px) {
+            .sidebar-container {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                width: 280px;
+                z-index: 1000;
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 4px 0 30px rgba(0,0,0,0.15);
+            }
+            .sidebar-container.mobile-open {
+                left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 999;
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .mobile-header {
+                display: flex !important;
+            }
+            .desktop-header {
+                display: none !important;
+            }
+            .main-content {
+                padding: 1rem !important;
+            }
+            .sidebar.collapsed {
+                width: 280px !important;
+                min-width: 280px !important;
+            }
+            .sidebar.collapsed .logo-text,
+            .sidebar.collapsed .dbi-text,
+            .sidebar.collapsed .link-text,
+            .sidebar.collapsed .notif-badge,
+            .sidebar.collapsed .sidebar-footer .link-text {
+                opacity: 1 !important;
+                display: block !important;
+                width: auto !important;
+            }
+            .sidebar.collapsed .sidebar-link {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-logo {
+                justify-content: flex-start !important;
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer {
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer a {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-dbi {
+                padding: 12px !important;
+                justify-content: flex-start !important;
+            }
+            .sidebar.collapsed .sidebar-dbi .dbi-text {
+                display: block !important;
+            }
+            .sidebar-toggle-btn {
+                display: none !important;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .mobile-header {
+                display: none !important;
+            }
+            .sidebar-overlay {
+                display: none !important;
+            }
+        }
+
+        .toast {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+
+        /* Notification dropdown */
+        .notification-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            width: 380px;
+            max-height: 480px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            z-index: 50;
+        }
+        .notification-dropdown.active {
+            display: block;
+        }
+        .notification-dropdown .header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notification-dropdown .header h3 {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .notification-dropdown .header button {
+            font-size: 12px;
+            color: #0052cc;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .notification-dropdown .list {
+            overflow-y: auto;
+            max-height: 360px;
+        }
+        .notification-item {
+            padding: 12px 20px;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+            transition: background 0.15s;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .notification-item:hover {
+            background: #f8fafc;
+        }
+        .notification-item.unread {
+            background: #f0f7ff;
+        }
+        .notification-item .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+        .notification-item .content {
+            flex: 1;
+            min-width: 0;
+        }
+        .notification-item .content .title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+        .notification-item .content .desc {
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .notification-item .content .time {
+            font-size: 10px;
+            color: #999;
+            margin-top: 4px;
+        }
+        .notification-empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: #999;
+        }
+        .notification-empty i {
+            font-size: 32px;
+            margin-bottom: 12px;
+            display: block;
+            color: #ddd;
+        }
+    </style>
+</head>
+<body class="font-sans text-on-surface antialiased bg-surface flex h-screen overflow-hidden">
+
+<!-- MOBILE OVERLAY -->
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+<!-- BEGIN: Left Sidebar Container -->
+<div id="sidebarContainer" class="sidebar-container">
+    <!-- Sidebar will be loaded here -->
+</div>
+<!-- END: Left Sidebar Container -->
+
+<!-- BEGIN: Main Content Area -->
+<div class="flex-1 flex flex-col h-full overflow-hidden">
+    
+    <!-- BEGIN: Mobile Header -->
+    <header class="mobile-header bg-surface-container-lowest h-16 border-b border-outline-variant flex items-center justify-between px-4 flex-shrink-0 z-10">
+        <div class="flex items-center gap-3">
+            <button id="mobileMenuBtn" class="text-on-surface-variant hover:text-on-surface text-xl p-1">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center text-primary">
+                    <i class="fa-solid fa-users text-sm"></i>
+                </div>
+                <span class="font-bold text-primary text-sm">BridgeConnect</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <button class="relative text-on-surface-variant notification-btn">
+                <i class="fa-regular fa-bell text-lg"></i>
+                <span class="notif-count absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full text-[9px] text-white flex items-center justify-center font-bold">0</span>
+            </button>
+            <img id="mobileUserAvatar" alt="User" class="w-7 h-7 rounded-full object-cover border-2 border-white shadow-sm" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=32"/>
+        </div>
+    </header>
+    <!-- END: Mobile Header -->
+    
+    <!-- BEGIN: Top Header (Desktop) -->
+    <header class="desktop-header bg-surface-container-lowest h-16 border-b border-outline-variant flex items-center justify-between px-8 flex-shrink-0 z-10">
+        <!-- Search Bar -->
+        <div class="flex-1 max-w-xl">
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-on-surface-variant"></i>
+                <input id="globalSearch" class="w-full pl-10 pr-4 py-2 bg-surface border border-outline-variant rounded-full text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow" placeholder="Search for users, businesses, communities..." type="text"/>
+            </div>
+        </div>
+        <!-- Right Actions -->
+        <div class="flex items-center gap-6 pl-6">
+            <button id="communitySwitcherBtn" class="flex items-center gap-2 text-sm text-on-surface-variant hover:text-on-surface border border-outline-variant rounded-full px-4 py-1.5 transition-colors">
+                <i class="fa-solid fa-globe"></i> <span id="currentCommunityLabel">All Communities</span> <i class="fa-solid fa-chevron-down text-xs ml-1"></i>
+            </button>
+            <div class="flex items-center gap-4">
+                <button class="relative text-on-surface-variant hover:text-on-surface transition-colors notification-btn">
+                    <i class="fa-regular fa-bell text-lg"></i>
+                    <span class="notif-count absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full text-[9px] text-white flex items-center justify-center font-bold">0</span>
+                </button>
+                <button class="relative text-on-surface-variant hover:text-on-surface transition-colors">
+                    <i class="fa-regular fa-comment-dots text-lg"></i>
+                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full text-[9px] text-white flex items-center justify-center font-bold">0</span>
+                </button>
+            </div>
+            <button class="flex items-center gap-3 pl-2 border-l border-outline-variant" id="userProfileBtn">
+                <img id="desktopUserAvatar" class="w-8 h-8 rounded-full object-cover" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=32"/>
+                <div class="text-left hidden md:block">
+                    <p id="userNameDisplay" class="text-sm font-semibold leading-tight text-on-surface">User</p>
+                    <p id="userRoleDisplay" class="text-xs text-on-surface-variant">Loading...</p>
+                </div>
+                <i class="fa-solid fa-chevron-down text-xs text-on-surface-variant ml-2 hidden md:block"></i>
+            </button>
+        </div>
+    </header>
+    <!-- END: Top Header -->
+    
+    <!-- Notification Dropdown -->
+    <div id="notificationDropdown" class="notification-dropdown">
+        <div class="header">
+            <h3><i class="fa-regular fa-bell mr-2"></i>Notifications</h3>
+            <button id="markAllReadBtn">Mark all read</button>
+        </div>
+        <div id="notificationList" class="list">
+            <!-- Notifications will be rendered here -->
+        </div>
+    </div>
+    
+    <!-- BEGIN: Main Dashboard Content - Scrollable -->
+    <main id="mainContent" class="flex-1 overflow-y-auto p-8 main-content">
+        <div class="max-w-[1600px] mx-auto space-y-6">
+            <!-- Dashboard Header -->
+            <div class="flex items-end justify-between mb-6 flex-wrap gap-4">
+                <div>
+                    <h2 id="dashboardTitle" class="text-2xl font-bold text-on-surface">Platform Dashboard</h2>
+                    <p id="dashboardGreeting" class="text-sm text-on-surface-variant mt-1">Loading your dashboard...</p>
+                </div>
+                <div class="flex items-center gap-4 flex-wrap">
+                    <button id="dateRangeBtn" class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant text-on-surface-variant px-4 py-2 rounded-xl text-sm font-medium hover:bg-surface transition-colors">
+                        <i class="fa-regular fa-calendar"></i> <span id="dateRangeDisplay">Loading...</span> <i class="fa-solid fa-chevron-down text-xs ml-1"></i>
+                    </button>
+                    <button id="downloadReportBtn" class="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">
+                        <i class="fa-solid fa-download"></i> Download Report
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Row -->
+            <div id="statsGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+                <!-- Stats cards will be rendered dynamically -->
+            </div>
+            
+            <!-- Middle Row: Charts & Lists -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Chart Column -->
+                <div class="lg:col-span-5 bg-surface-container-lowest rounded-2xl border border-outline-variant p-5 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-on-surface">Platform Growth Overview</h3>
+                        <button id="growthChartFilter" class="text-xs border border-outline-variant rounded-md px-2 py-1 text-on-surface-variant flex items-center gap-1 hover:bg-surface">
+                            This Year <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div id="chartLegend" class="flex items-center gap-4 text-xs text-on-surface-variant mb-4">
+                        <!-- Legend will be rendered dynamically -->
+                    </div>
+                    <div id="chartContainer" class="h-48 w-full border-b border-l border-outline-variant relative flex items-center justify-center">
+                        <div class="text-center text-on-surface-variant">
+                            <i class="fa-solid fa-chart-line text-3xl mb-2 block opacity-30"></i>
+                            <span class="text-sm">Loading chart data...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Registrations List -->
+                <div class="lg:col-span-3 bg-surface-container-lowest rounded-2xl border border-outline-variant p-5 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-on-surface">Recent Registrations</h3>
+                        <a id="viewAllRegistrations" class="text-xs text-primary font-medium hover:underline cursor-pointer">View All</a>
+                    </div>
+                    <div id="recentRegistrations" class="space-y-4">
+                        <!-- Will be populated from Firestore -->
+                    </div>
+                </div>
+                
+                <!-- Pending Approvals & Reports -->
+                <div class="lg:col-span-4 grid grid-cols-2 gap-6">
+                    <!-- Approvals -->
+                    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-5 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-on-surface text-sm">Pending Approvals</h3>
+                            <a id="viewAllApprovals" class="text-[10px] text-primary font-medium hover:underline cursor-pointer">View All</a>
+                        </div>
+                        <div id="pendingApprovals" class="space-y-3">
+                            <!-- Will be populated from Firestore -->
+                        </div>
+                    </div>
+                    <!-- Reports -->
+                    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-5 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-on-surface text-sm">Pending Reports</h3>
+                            <a id="viewAllReports" class="text-[10px] text-primary font-medium hover:underline cursor-pointer">View All</a>
+                        </div>
+                        <div id="pendingReports" class="space-y-3">
+                            <!-- Will be populated from Firestore -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Row: Map, Announcements, Revenue -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Map -->
+                <div class="lg:col-span-5 bg-surface-container-lowest rounded-2xl border border-outline-variant p-5 shadow-sm flex flex-col">
+                    <h3 class="font-semibold text-on-surface mb-4">Community Activity Map</h3>
+                    <div class="flex-1 flex gap-4 min-h-[200px]">
+                        <div class="flex-1 bg-gray-100 rounded-xl overflow-hidden relative border border-outline-variant/50 flex items-center justify-center">
+                            <div class="text-center text-on-surface-variant">
+                                <i class="fa-solid fa-map-location-dot text-4xl mb-2 block opacity-30"></i>
+                                <span class="text-sm">Loading map data...</span>
+                            </div>
+                        </div>
+                        <div class="w-1/3">
+                            <h4 class="text-xs font-medium text-on-surface-variant mb-2">Most Active Communities</h4>
+                            <ol id="activeCommunities" class="space-y-3 list-decimal list-inside text-sm">
+                                <!-- Will be populated from Firestore -->
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Announcements -->
+                <div class="lg:col-span-4 bg-surface-container-lowest rounded-2xl border border-outline-variant p-5 shadow-sm flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-on-surface">Recent Announcements</h3>
+                        <a id="viewAllAnnouncements" class="text-xs text-primary font-medium hover:underline cursor-pointer">View All</a>
+                    </div>
+                    <div id="recentAnnouncements" class="space-y-4 flex-1">
+                        <!-- Will be populated from Firestore -->
+                    </div>
+                    <button id="createAnnouncementBtn" class="w-full mt-4 py-2 border border-blue-100 bg-blue-50/50 text-primary rounded-xl text-sm font-medium hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Create Announcement
+                    </button>
+                </div>
+                
+                <!-- Revenue -->
+                <div class="lg:col-span-3 bg-surface-container-lowest rounded-2xl border border-outline-variant p-5 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-on-surface">Revenue Overview</h3>
+                        <button id="revenueFilter" class="text-[10px] border border-outline-variant rounded-md px-2 py-1 text-on-surface-variant flex items-center gap-1 hover:bg-surface">
+                            This Month <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div id="revenueDisplay" class="mb-4">
+                        <p class="text-xs text-on-surface-variant mb-1">Total Revenue</p>
+                        <h4 id="totalRevenue" class="text-xl font-bold text-on-surface">Loading...</h4>
+                        <p id="revenueChange" class="text-[10px] font-medium flex items-center gap-1 mt-1">Loading...</p>
+                    </div>
+                    <div id="revenueBreakdown" class="flex gap-4">
+                        <!-- Will be populated from Firestore -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer Row: Quick Actions & Summary -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-8 bg-surface-container-lowest rounded-2xl border border-outline-variant p-5 shadow-sm">
+                    <h3 class="font-semibold text-on-surface mb-4">Quick Actions</h3>
+                    <div id="quickActions" class="grid grid-cols-4 md:grid-cols-8 gap-4">
+                        <!-- Will be populated based on user role -->
+                    </div>
+                </div>
+                <div class="lg:col-span-4 bg-surface-container-lowest rounded-2xl border border-outline-variant p-5 shadow-sm flex items-center justify-between">
+                    <div>
+                        <h3 class="font-semibold text-on-surface mb-1">Platform Summary</h3>
+                        <p id="platformSummary" class="text-xs text-on-surface-variant">Loading platform data...</p>
+                    </div>
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                        <i class="fa-solid fa-chart-simple text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- END: Main Dashboard Content -->
+</div>
+<!-- END: Main Content Area -->
+
+<!-- Load the context manager -->
+<script src="js/context-manager.js"></script>
+
+<!-- Load the dashboard -->
+<script src="js/dashboard.js"></script>
+
+</body>
+</html>

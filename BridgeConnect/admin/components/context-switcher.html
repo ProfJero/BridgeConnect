@@ -1,0 +1,76 @@
+<!-- Context Switcher Component -->
+<div class="context-switcher relative" id="contextSwitcher">
+    <button class="flex items-center gap-2 px-3 py-2 rounded-xl border border-outline-variant hover:bg-surface transition-colors" id="contextToggleBtn">
+        <i class="fa-solid {{activeIcon}} text-primary text-sm"></i>
+        <span class="text-sm font-medium text-on-surface" id="contextLabel">{{activeLabel}}</span>
+        <i class="fa-solid fa-chevron-down text-xs text-on-surface-variant"></i>
+    </button>
+    
+    <div class="context-dropdown hidden absolute right-0 top-full mt-2 w-72 bg-white rounded-xl border border-outline-variant shadow-lg overflow-hidden z-50" id="contextDropdown">
+        <div class="p-2 border-b border-outline-variant/50">
+            <p class="text-xs font-medium text-on-surface-variant px-2">Switch Workspace</p>
+        </div>
+        <div class="context-list max-h-72 overflow-y-auto p-1" id="contextList">
+            <!-- Contexts will be rendered here -->
+        </div>
+        <div class="p-2 border-t border-outline-variant/50">
+            <button class="w-full text-xs text-primary font-medium hover:underline px-2 py-1 text-left" id="manageContextsBtn">
+                <i class="fa-solid fa-pen mr-1"></i> Manage Workspaces
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .context-dropdown {
+        animation: contextSlideDown 0.2s ease;
+    }
+    
+    @keyframes contextSlideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-8px) scale(0.98);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    
+    .context-item {
+        transition: all 0.15s ease;
+    }
+    
+    .context-item:hover {
+        background: #f0f5ff;
+    }
+    
+    .context-item.active {
+        background: #dbeafe;
+        color: #1e3a8a;
+    }
+    
+    .context-item .fa-check {
+        opacity: 0;
+        transition: opacity 0.15s ease;
+    }
+    
+    .context-item.active .fa-check {
+        opacity: 1;
+    }
+    
+    .context-list::-webkit-scrollbar {
+        width: 4px;
+    }
+    .context-list::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .context-list::-webkit-scrollbar-thumb {
+        background: #c0c8c7;
+        border-radius: 4px;
+    }
+</style>
+
+<script>
+    // Context Switcher JavaScript will be initialized by dashboard.js
+</script>

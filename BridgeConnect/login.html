@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Bridge Connect · Sign In</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzAOMVoTR5YTrZlzedypz_KqQT-lotI1o",
+            authDomain: "bridgeconnect-5b8bd.firebaseapp.com",
+            projectId: "bridgeconnect-5b8bd",
+            storageBucket: "bridgeconnect-5b8bd.firebasestorage.app",
+            messagingSenderId: "231684985335",
+            appId: "1:231684985335:web:3f3bfdf7f2708f0ae81ef2",
+            measurementId: "G-C8QJH73MC0"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Enable offline persistence
+        db.enablePersistence().catch(err => console.warn('Firestore persistence error:', err));
+    </script>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#aad4ff",
+                        "surface-dim": "#cfdaf1",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#111c2c",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dee8ff",
+                        "on-secondary-container": "#007327",
+                        "on-background": "#111c2c",
+                        "surface-container": "#e7eeff",
+                        "primary-fixed-dim": "#acc7ff",
+                        "outline-variant": "#c2c6d4",
+                        "on-primary-container": "#bbd0ff",
+                        "tertiary": "#00456d",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#66df75",
+                        "tertiary-container": "#005d92",
+                        "on-primary-fixed-variant": "#004491",
+                        "on-tertiary-fixed-variant": "#004a76",
+                        "surface-tint": "#115cb9",
+                        "secondary": "#006e25",
+                        "on-secondary-fixed-variant": "#00531a",
+                        "primary-container": "#0056b3",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#f9f9ff",
+                        "secondary-fixed": "#83fc8e",
+                        "secondary-container": "#80f98b",
+                        "tertiary-fixed": "#cee5ff",
+                        "tertiary-fixed-dim": "#96ccff",
+                        "surface-variant": "#d8e3fa",
+                        "background": "#f9f9ff",
+                        "on-secondary-fixed": "#002106",
+                        "on-tertiary-fixed": "#001d32",
+                        "on-surface-variant": "#424752",
+                        "inverse-on-surface": "#ebf1ff",
+                        "primary": "#003f87",
+                        "surface-container-low": "#f0f3ff",
+                        "on-primary": "#ffffff",
+                        "surface": "#f9f9ff",
+                        "inverse-surface": "#263142",
+                        "inverse-primary": "#acc7ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#001a40",
+                        "surface-container-highest": "#d8e3fa",
+                        "outline": "#727784",
+                        "primary-fixed": "#d7e2ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "4rem",
+                        "stack-md": "1rem",
+                        "stack-lg": "2rem",
+                        "stack-sm": "0.5rem",
+                        "gutter": "1rem",
+                        "margin-mobile": "1.5rem"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "button": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "button": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Desktop enhancements */
+        @media (min-width: 1024px) {
+            .auth-grid {
+                display: grid;
+                grid-template-columns: 1fr 1.2fr;
+                gap: 0;
+                min-height: 90vh;
+                max-height: 900px;
+                background: white;
+                border-radius: 2rem;
+                box-shadow: 0 25px 60px -15px rgba(0,0,0,0.15);
+                overflow: hidden;
+            }
+            .brand-panel {
+                background: linear-gradient(160deg, #f0f5ff 0%, #e8eeff 100%);
+                padding: 3rem 2.5rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border-right: 1px solid rgba(0,0,0,0.04);
+            }
+            .form-panel {
+                padding: 2.5rem 3rem;
+                background: white;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            z-index: 9999;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast-success {
+            background: #006e25;
+        }
+        
+        .toast-error {
+            background: #ba1a1a;
+        }
+        
+        .toast-info {
+            background: #003f87;
+        }
+        
+        .loading-spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .form-input:focus {
+            border-color: #003f87;
+            ring: 2px solid rgba(0, 63, 135, 0.2);
+            outline: none;
+        }
+
+        /* Language dropdown styles */
+        .language-dropdown {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .language-dropdown .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            min-width: 150px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            border: 1px solid #e8eeff;
+            overflow: hidden;
+            display: none;
+            z-index: 50;
+        }
+        
+        .language-dropdown .dropdown-menu.show {
+            display: block;
+        }
+        
+        .language-dropdown .dropdown-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s ease;
+        }
+        
+        .language-dropdown .dropdown-item:hover {
+            background: #f0f5ff;
+        }
+        
+        .language-dropdown .dropdown-item.active {
+            background: #e8eeff;
+            color: #003f87;
+        }
+        
+        .language-dropdown .dropdown-item img {
+            width: 20px;
+            height: auto;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex items-center justify-center p-4 md:p-8">
+
+<div class="w-full max-w-7xl auth-grid">
+
+    <!-- Brand Panel (Desktop) -->
+    <div class="brand-panel hidden lg:flex">
+        <div class="w-full max-w-sm text-center space-y-8">
+            <!-- Logo -->
+            <div class="flex justify-center items-end gap-2 relative">
+                <svg class="w-16 h-16" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M100 80 Q100 40 180 80" fill="none" stroke="#006e25" stroke-linecap="round" stroke-width="12"/>
+                    <path d="M100 80 Q100 40 20 80" fill="none" stroke="#006e25" stroke-linecap="round" stroke-width="12"/>
+                    <circle cx="100" cy="30" fill="#003f87" r="12"/>
+                    <circle cx="150" cy="45" fill="#006e25" r="10"/>
+                    <circle cx="50" cy="45" fill="#006e25" r="10"/>
+                    <path d="M20 90 Q100 50 180 90 L180 100 Q100 60 20 100 Z" fill="#003f87"/>
+                    <rect fill="#003f87" height="30" width="10" x="70" y="80"/>
+                    <rect fill="#003f87" height="35" width="10" x="95" y="75"/>
+                    <rect fill="#003f87" height="30" width="10" x="120" y="80"/>
+                </svg>
+            </div>
+            
+            <div>
+                <h1 class="text-4xl font-extrabold tracking-tight">
+                    <span class="text-primary">Bridge</span><span class="text-secondary">Connect</span>
+                </h1>
+                <p class="text-primary text-lg font-medium mt-1">Connecting Communities. <span class="text-secondary">Empowering Lives.</span></p>
+            </div>
+
+            <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-outline-variant/30">
+                <div class="flex items-center justify-center gap-2 text-sm text-on-surface-variant">
+                    <i class="fas fa-check-circle text-primary text-lg"></i>
+                    <span>Trusted by 20+ communities in Ghana</span>
+                </div>
+                <div class="flex items-center justify-center gap-1 mt-3 text-xs text-on-surface-variant/70">
+                    <i class="fas fa-handshake text-primary text-sm"></i>
+                    <span>Digital Bridge Initiative · DBI</span>
+                </div>
+            </div>
+
+            <!-- Illustrative elements -->
+            <div class="mt-6 opacity-50 pointer-events-none">
+                <svg width="200" height="80" viewBox="0 0 200 80" fill="none">
+                    <rect x="10" y="40" width="18" height="40" fill="#003f87" rx="2" opacity="0.7"/>
+                    <rect x="35" y="25" width="18" height="55" fill="#006e25" rx="2" opacity="0.7"/>
+                    <rect x="60" y="10" width="18" height="70" fill="#003f87" rx="2" opacity="0.7"/>
+                    <rect x="85" y="30" width="18" height="50" fill="#115cb9" rx="2" opacity="0.7"/>
+                    <rect x="110" y="15" width="18" height="65" fill="#006e25" rx="2" opacity="0.7"/>
+                    <rect x="135" y="35" width="18" height="45" fill="#003f87" rx="2" opacity="0.7"/>
+                    <rect x="160" y="20" width="18" height="60" fill="#115cb9" rx="2" opacity="0.7"/>
+                    <circle cx="69" cy="5" r="6" fill="#ffb347"/>
+                    <path d="M5 75 L195 75 L195 80 L5 80 Z" fill="#aad4ff" opacity="0.4"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Panel -->
+    <div class="form-panel">
+        <!-- Top Bar -->
+        <div class="flex justify-between items-center mb-6 lg:mb-8">
+            <a href="index.html" class="p-2 -ml-2 rounded-full hover:bg-surface-container-low transition-colors text-on-surface">
+                <i class="fas fa-arrow-left text-lg"></i>
+            </a>
+            
+            <!-- Language Dropdown -->
+            <div class="language-dropdown">
+                <div class="flex items-center gap-2 border border-outline-variant rounded-lg px-3 py-1.5 hover:bg-surface-container-low transition-colors" id="languageToggle">
+                    <img alt="Ghana Flag" class="w-5 h-auto rounded-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsYf1Fn3-udZ9guLz7iZciSpnoq7taAikDP3N1q-Y4Pt4CTPiY-xx0KwUy_wNI-xWQ3jhTuC_1drTzHE9NHl6h2QRMXOa5kSSv1Z0aMYxRzYa58TWZEi3FdEDjQGYqTe73EExbfGx8_OU1OFTxEcMc2AcsOWQA_j4j9q-7RZxX9SFYKzI9uVLUd9ZedK-dT3Rlsl9hITCY5ryA4ptjUoItv4iLrHFh3xsSs-zkbWBDJ4CYU6dwcs15"/>
+                    <span class="text-label-md font-label-md text-on-surface">English</span>
+                    <i class="fas fa-chevron-down text-xs text-on-surface-variant"></i>
+                </div>
+                
+                <div class="dropdown-menu" id="languageMenu">
+                    <div class="dropdown-item active" data-lang="en">
+                        <img alt="Ghana Flag" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsYf1Fn3-udZ9guLz7iZciSpnoq7taAikDP3N1q-Y4Pt4CTPiY-xx0KwUy_wNI-xWQ3jhTuC_1drTzHE9NHl6h2QRMXOa5kSSv1Z0aMYxRzYa58TWZEi3FdEDjQGYqTe73EExbfGx8_OU1OFTxEcMc2AcsOWQA_j4j9q-7RZxX9SFYKzI9uVLUd9ZedK-dT3Rlsl9hITCY5ryA4ptjUoItv4iLrHFh3xsSs-zkbWBDJ4CYU6dwcs15"/>
+                        <span>English</span>
+                        <i class="fas fa-check ml-auto text-primary text-sm"></i>
+                    </div>
+                    <div class="dropdown-item" data-lang="tw">
+                        <img alt="Ghana Flag" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsYf1Fn3-udZ9guLz7iZciSpnoq7taAikDP3N1q-Y4Pt4CTPiY-xx0KwUy_wNI-xWQ3jhTuC_1drTzHE9NHl6h2QRMXOa5kSSv1Z0aMYxRzYa58TWZEi3FdEDjQGYqTe73EExbfGx8_OU1OFTxEcMc2AcsOWQA_j4j9q-7RZxX9SFYKzI9uVLUd9ZedK-dT3Rlsl9hITCY5ryA4ptjUoItv4iLrHFh3xsSs-zkbWBDJ4CYU6dwcs15"/>
+                        <span>Twi</span>
+                    </div>
+                    <div class="dropdown-item" data-lang="ha">
+                        <img alt="Ghana Flag" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsYf1Fn3-udZ9guLz7iZciSpnoq7taAikDP3N1q-Y4Pt4CTPiY-xx0KwUy_wNI-xWQ3jhTuC_1drTzHE9NHl6h2QRMXOa5kSSv1Z0aMYxRzYa58TWZEi3FdEDjQGYqTe73EExbfGx8_OU1OFTxEcMc2AcsOWQA_j4j9q-7RZxX9SFYKzI9uVLUd9ZedK-dT3Rlsl9hITCY5ryA4ptjUoItv4iLrHFh3xsSs-zkbWBDJ4CYU6dwcs15"/>
+                        <span>Hausa</span>
+                    </div>
+                    <div class="dropdown-item" data-lang="fr">
+                        <img alt="Ghana Flag" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsYf1Fn3-udZ9guLz7iZciSpnoq7taAikDP3N1q-Y4Pt4CTPiY-xx0KwUy_wNI-xWQ3jhTuC_1drTzHE9NHl6h2QRMXOa5kSSv1Z0aMYxRzYa58TWZEi3FdEDjQGYqTe73EExbfGx8_OU1OFTxEcMc2AcsOWQA_j4j9q-7RZxX9SFYKzI9uVLUd9ZedK-dT3Rlsl9hITCY5ryA4ptjUoItv4iLrHFh3xsSs-zkbWBDJ4CYU6dwcs15"/>
+                        <span>Français</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Brand -->
+        <div class="flex flex-col items-center mb-6 lg:hidden">
+            <svg class="w-16 h-16" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                <path d="M100 80 Q100 40 180 80" fill="none" stroke="#006e25" stroke-linecap="round" stroke-width="12"/>
+                <path d="M100 80 Q100 40 20 80" fill="none" stroke="#006e25" stroke-linecap="round" stroke-width="12"/>
+                <circle cx="100" cy="30" fill="#003f87" r="12"/>
+                <circle cx="150" cy="45" fill="#006e25" r="10"/>
+                <circle cx="50" cy="45" fill="#006e25" r="10"/>
+                <path d="M20 90 Q100 50 180 90 L180 100 Q100 60 20 100 Z" fill="#003f87"/>
+                <rect fill="#003f87" height="30" width="10" x="70" y="80"/>
+                <rect fill="#003f87" height="35" width="10" x="95" y="75"/>
+                <rect fill="#003f87" height="30" width="10" x="120" y="80"/>
+            </svg>
+            <h1 class="text-2xl font-bold mt-2">
+                <span class="text-primary">Bridge</span><span class="text-secondary">Connect</span>
+            </h1>
+            <p class="text-xs text-on-surface-variant">Connecting Communities. Empowering Lives.</p>
+        </div>
+
+        <!-- Form -->
+        <form id="loginForm" class="w-full max-w-md mx-auto flex flex-col gap-4 lg:gap-5">
+            <!-- Phone / Email -->
+            <div>
+                <label class="text-label-md font-label-md text-on-surface flex items-center gap-2">
+                    <i class="fas fa-user text-outline text-sm"></i>
+                    Phone Number or Email
+                </label>
+                <div class="flex items-center border border-outline-variant rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent bg-surface mt-1">
+                    <div class="flex items-center px-3 bg-surface border-r border-outline-variant text-on-surface py-3">
+                        <i class="fas fa-phone text-outline mr-2"></i>
+                        <span class="text-sm text-outline">+233</span>
+                    </div>
+                    <input id="loginIdentifier" class="flex-1 w-full bg-transparent px-4 py-3 text-body-md font-body-md text-on-surface focus:outline-none border-none placeholder-outline-variant" placeholder="Phone or Email" type="text"/>
+                </div>
+                <p class="text-[11px] text-on-surface-variant mt-1">Enter your phone number (e.g., 0241234567) or email address</p>
+            </div>
+
+            <!-- Password -->
+            <div>
+                <label class="text-label-md font-label-md text-on-surface flex items-center gap-2">
+                    <i class="fas fa-lock text-outline text-sm"></i>
+                    Password
+                </label>
+                <div class="relative flex items-center border border-outline-variant rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent bg-surface mt-1">
+                    <i class="fas fa-lock text-outline absolute left-3 z-10 text-sm"></i>
+                    <input id="loginPassword" class="w-full bg-transparent pl-10 pr-10 py-3 text-body-md font-body-md text-on-surface focus:outline-none border-none" type="password" placeholder="Enter your password"/>
+                    <button id="togglePassword" class="absolute right-3 text-outline hover:text-on-surface transition-colors" type="button">
+                        <i class="fas fa-eye text-sm"></i>
+                    </button>
+                </div>
+                <div class="flex justify-end mt-1">
+                    <a id="forgotPasswordLink" class="text-label-md font-label-md text-primary hover:underline font-semibold text-sm cursor-pointer">Forgot Password?</a>
+                </div>
+            </div>
+
+            <!-- Sign In Button -->
+            <button id="signInBtn" class="w-full mt-2 flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-secondary text-on-primary rounded-lg py-3.5 px-4 hover:opacity-90 transition-opacity shadow-sm" type="button">
+                <i class="fas fa-sign-in-alt text-sm"></i>
+                <span class="text-button font-button">Sign In</span>
+            </button>
+
+            <!-- Divider -->
+            <div class="flex items-center my-1">
+                <div class="flex-grow border-t border-outline-variant"></div>
+                <span class="mx-4 text-label-md font-label-md text-on-surface-variant">OR</span>
+                <div class="flex-grow border-t border-outline-variant"></div>
+            </div>
+
+            <!-- Google Button -->
+            <button id="googleSignInBtn" class="w-full flex items-center justify-center gap-3 bg-surface border border-outline-variant text-on-surface rounded-lg py-3 px-4 hover:bg-surface-container-low transition-colors shadow-sm" type="button">
+                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                <span class="text-button font-button">Continue with Google</span>
+            </button>
+
+            <div class="text-center mt-4">
+                <p class="text-body-md font-body-md text-on-surface-variant">
+                    Don't have an account? <a href="signup.html" class="text-primary font-semibold hover:underline">Create Account</a>
+                </p>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast" class="toast"></div>
+
+<script>
+    // ============================================
+    // TOAST NOTIFICATIONS
+    // ============================================
+    function showToast(message, type = 'info') {
+        const toast = document.getElementById('toast');
+        if (!toast) return;
+        toast.textContent = message;
+        toast.className = `toast toast-${type}`;
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 4000);
+    }
+
+    // ============================================
+    // LANGUAGE DROPDOWN
+    // ============================================
+    const languageToggle = document.getElementById('languageToggle');
+    const languageMenu = document.getElementById('languageMenu');
+    const dropdownItems = document.querySelectorAll('.dropdown-item');
+
+    if (languageToggle && languageMenu) {
+        // Toggle dropdown
+        languageToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            languageMenu.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function() {
+            languageMenu.classList.remove('show');
+        });
+
+        // Language selection
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const lang = this.dataset.lang;
+                const langName = this.querySelector('span').textContent;
+                
+                // Update active state
+                dropdownItems.forEach(i => {
+                    i.classList.remove('active');
+                    const check = i.querySelector('.fa-check');
+                    if (check) check.remove();
+                });
+                
+                this.classList.add('active');
+                
+                // Add check mark to active item
+                const checkIcon = document.createElement('i');
+                checkIcon.className = 'fas fa-check ml-auto text-primary text-sm';
+                this.appendChild(checkIcon);
+                
+                // Update toggle button text
+                const toggleSpan = languageToggle.querySelector('span');
+                if (toggleSpan) {
+                    toggleSpan.textContent = langName;
+                }
+                
+                // Close dropdown
+                languageMenu.classList.remove('show');
+                
+                // Store language preference
+                localStorage.setItem('bridgeconnect_language', lang);
+                
+                // Show success message (except for English since it's default)
+                if (lang !== 'en') {
+                    showToast(`Language changed to ${langName}. More languages coming soon! 🚀`, 'info');
+                } else {
+                    showToast('Language set to English', 'success');
+                }
+                
+                console.log('Language selected:', lang);
+            });
+        });
+
+        // Restore saved language
+        const savedLanguage = localStorage.getItem('bridgeconnect_language');
+        if (savedLanguage) {
+            const savedItem = document.querySelector(`.dropdown-item[data-lang="${savedLanguage}"]`);
+            if (savedItem) {
+                savedItem.click();
+            }
+        }
+    }
+
+    // ============================================
+    // PASSWORD VISIBILITY TOGGLE
+    // ============================================
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    if (togglePasswordBtn) {
+        togglePasswordBtn.addEventListener('click', function() {
+            const passwordInput = document.getElementById('loginPassword');
+            const icon = this.querySelector('.fa-eye');
+            
+            if (passwordInput) {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    if (icon) {
+                        icon.className = 'fas fa-eye-slash text-sm';
+                    }
+                } else {
+                    passwordInput.type = 'password';
+                    if (icon) {
+                        icon.className = 'fas fa-eye text-sm';
+                    }
+                }
+            }
+        });
+    }
+
+    // ============================================
+    // REDIRECT BASED ON USER ROLE (UPDATED)
+    // ============================================
+    function redirectUser(userData) {
+        // Check for admin/owner roles (supports both old and new role names)
+        const adminRoles = ['platform_owner', 'owner', 'district_admin', 'community_moderator'];
+        const isAdmin = adminRoles.includes(userData.role);
+        
+        // Also check if user has any admin contexts
+        const hasAdminContext = userData.contexts && userData.contexts.some(ctx => 
+            ['platform_owner', 'district_admin', 'community_moderator'].includes(ctx.type)
+        );
+        
+        if (isAdmin || hasAdminContext) {
+            // Check if user has multiple contexts
+            if (userData.contexts && userData.contexts.length > 1) {
+                // Redirect to workspace selector
+                window.location.href = 'admin/workspace-selector.html';
+            } else {
+                // Redirect to admin dashboard
+                window.location.href = 'admin/dashboard.html';
+            }
+        } else {
+            // Redirect to public home page
+            window.location.href = 'pages/home.html';
+        }
+    }
+
+    // ============================================
+    // SIGN IN WITH EMAIL/PASSWORD
+    // ============================================
+    const signInBtn = document.getElementById('signInBtn');
+    if (signInBtn) {
+        signInBtn.addEventListener('click', async function() {
+            const identifier = document.getElementById('loginIdentifier')?.value.trim();
+            const password = document.getElementById('loginPassword')?.value;
+            
+            // Validate inputs
+            if (!identifier) {
+                showToast('Please enter your phone number or email', 'error');
+                return;
+            }
+            
+            if (!password) {
+                showToast('Please enter your password', 'error');
+                return;
+            }
+            
+            // Show loading state
+            this.disabled = true;
+            this.innerHTML = '<span class="loading-spinner"></span> Signing in...';
+            
+            try {
+                let email = identifier;
+                
+                // Check if identifier is a phone number (basic check)
+                const isPhone = /^[0-9+\s-]{8,}$/.test(identifier);
+                
+                if (isPhone) {
+                    // Clean the phone number
+                    let phoneCleaned = identifier.replace(/[\s\-+]/g, '');
+                    if (phoneCleaned.startsWith('233')) {
+                        phoneCleaned = '0' + phoneCleaned.substring(3);
+                    }
+                    
+                    // Try to find user by phone number in Firestore
+                    try {
+                        const usersRef = db.collection('users');
+                        const snapshot = await usersRef.where('mobile', '==', phoneCleaned).get();
+                        
+                        if (snapshot.empty) {
+                            showToast('No account found with this phone number', 'error');
+                            this.disabled = false;
+                            this.innerHTML = `
+                                <i class="fas fa-sign-in-alt text-sm"></i>
+                                <span class="text-button font-button">Sign In</span>
+                            `;
+                            return;
+                        }
+                        
+                        // Get the user's email from Firestore
+                        const userDoc = snapshot.docs[0];
+                        const userData = userDoc.data();
+                        email = userData.email || `${phoneCleaned}@bridgeconnect.local`;
+                    } catch (error) {
+                        console.error('Error finding user by phone:', error);
+                        // If we can't query by phone, try using the phone as email
+                        email = `${phoneCleaned}@bridgeconnect.local`;
+                    }
+                }
+                
+                // Sign in with Firebase Auth
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Get user data from Firestore
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                
+                if (!userDoc.exists) {
+                    showToast('User data not found. Please contact support.', 'error');
+                    return;
+                }
+                
+                const userData = userDoc.data();
+                
+                // Check if user is approved (for non-residents)
+                const residentRoles = ['resident', 'user'];
+                if (!residentRoles.includes(userData.role) && userData.approvalStatus !== 'approved') {
+                    showToast('Your account is pending approval. Please wait for admin verification.', 'info');
+                    this.disabled = false;
+                    this.innerHTML = `
+                        <i class="fas fa-sign-in-alt text-sm"></i>
+                        <span class="text-button font-button">Sign In</span>
+                    `;
+                    return;
+                }
+                
+                // Check if user is active
+                if (userData.status === 'suspended') {
+                    showToast('Your account has been suspended. Please contact support.', 'error');
+                    this.disabled = false;
+                    this.innerHTML = `
+                        <i class="fas fa-sign-in-alt text-sm"></i>
+                        <span class="text-button font-button">Sign In</span>
+                    `;
+                    return;
+                }
+                
+                // Update last login
+                await db.collection('users').doc(user.uid).update({
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Store user data in localStorage for quick access
+                localStorage.setItem('bridgeconnect_user', JSON.stringify({
+                    uid: user.uid,
+                    ...userData
+                }));
+                
+                // Store active context if available
+                if (userData.activeContext) {
+                    localStorage.setItem('bridgeconnect_active_context', JSON.stringify(userData.activeContext));
+                }
+                
+                showToast(`Welcome back, ${userData.fullName}! 🎉`, 'success');
+                
+                // Redirect based on role
+                setTimeout(() => {
+                    redirectUser(userData);
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                let errorMsg = 'Failed to sign in. Please try again.';
+                
+                if (error.code === 'auth/user-not-found') {
+                    errorMsg = 'No account found with these credentials. Please create an account.';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMsg = 'Incorrect password. Please try again.';
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMsg = 'Too many failed attempts. Please try again later.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMsg = 'Invalid email format. Please check and try again.';
+                }
+                
+                showToast(errorMsg, 'error');
+            } finally {
+                // Reset button state
+                this.disabled = false;
+                this.innerHTML = `
+                    <i class="fas fa-sign-in-alt text-sm"></i>
+                    <span class="text-button font-button">Sign In</span>
+                `;
+            }
+        });
+    }
+
+    // ============================================
+    // GOOGLE SIGN IN
+    // ============================================
+    const googleSignInBtn = document.getElementById('googleSignInBtn');
+    if (googleSignInBtn) {
+        googleSignInBtn.addEventListener('click', async function() {
+            this.disabled = true;
+            this.innerHTML = '<span class="loading-spinner"></span> Connecting...';
+            
+            try {
+                // Create Google Auth provider
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.addScope('profile');
+                provider.addScope('email');
+                
+                // Sign in with Google popup
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+                
+                // Check if user exists in Firestore
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                
+                if (!userDoc.exists) {
+                    // User doesn't exist - redirect to signup to complete profile
+                    showToast('Please complete your profile setup.', 'info');
+                    setTimeout(() => {
+                        window.location.href = 'signup.html?google=true&uid=' + user.uid;
+                    }, 1500);
+                    return;
+                }
+                
+                const userData = userDoc.data();
+                
+                // Check if user is approved
+                const residentRoles = ['resident', 'user'];
+                if (!residentRoles.includes(userData.role) && userData.approvalStatus !== 'approved') {
+                    showToast('Your account is pending approval. Please wait for admin verification.', 'info');
+                    this.disabled = false;
+                    this.innerHTML = `
+                        <svg class="w-5 h-5" viewBox="0 0 24 24">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                        </svg>
+                        <span class="text-button font-button">Continue with Google</span>
+                    `;
+                    return;
+                }
+                
+                // Check if user is active
+                if (userData.status === 'suspended') {
+                    showToast('Your account has been suspended. Please contact support.', 'error');
+                    this.disabled = false;
+                    this.innerHTML = `
+                        <svg class="w-5 h-5" viewBox="0 0 24 24">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                        </svg>
+                        <span class="text-button font-button">Continue with Google</span>
+                    `;
+                    return;
+                }
+                
+                // Update last login
+                await db.collection('users').doc(user.uid).update({
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Store user data
+                localStorage.setItem('bridgeconnect_user', JSON.stringify({
+                    uid: user.uid,
+                    ...userData
+                }));
+                
+                // Store active context if available
+                if (userData.activeContext) {
+                    localStorage.setItem('bridgeconnect_active_context', JSON.stringify(userData.activeContext));
+                }
+                
+                showToast(`Welcome back, ${userData.fullName}! 🎉`, 'success');
+                
+                setTimeout(() => {
+                    redirectUser(userData);
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Google sign-in error:', error);
+                let errorMsg = 'Failed to sign in with Google. Please try again.';
+                
+                if (error.code === 'auth/popup-closed-by-user') {
+                    errorMsg = 'Sign-in cancelled. Please try again.';
+                } else if (error.code === 'auth/account-exists-with-different-credential') {
+                    errorMsg = 'An account already exists with a different sign-in method. Please sign in with that method.';
+                }
+                
+                showToast(errorMsg, 'error');
+            } finally {
+                this.disabled = false;
+                this.innerHTML = `
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    <span class="text-button font-button">Continue with Google</span>
+                `;
+            }
+        });
+    }
+
+    // ============================================
+    // ENTER KEY SUPPORT
+    // ============================================
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const activeElement = document.activeElement;
+            if (activeElement && activeElement.tagName !== 'BUTTON') {
+                e.preventDefault();
+                const signInBtn = document.getElementById('signInBtn');
+                if (signInBtn) signInBtn.click();
+            }
+        }
+    });
+
+    // ============================================
+    // FORGOT PASSWORD
+    // ============================================
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', async function() {
+            const identifier = document.getElementById('loginIdentifier')?.value.trim();
+            
+            if (!identifier) {
+                showToast('Please enter your email address to reset your password', 'info');
+                return;
+            }
+            
+            try {
+                let email = identifier;
+                const isPhone = /^[0-9+\s-]{8,}$/.test(identifier);
+                
+                if (isPhone) {
+                    // Clean phone number
+                    let phoneCleaned = identifier.replace(/[\s\-+]/g, '');
+                    if (phoneCleaned.startsWith('233')) {
+                        phoneCleaned = '0' + phoneCleaned.substring(3);
+                    }
+                    
+                    // Find user by phone
+                    try {
+                        const usersRef = db.collection('users');
+                        const snapshot = await usersRef.where('mobile', '==', phoneCleaned).get();
+                        
+                        if (snapshot.empty) {
+                            showToast('No account found with this phone number', 'error');
+                            return;
+                        }
+                        
+                        const userData = snapshot.docs[0].data();
+                        email = userData.email || `${phoneCleaned}@bridgeconnect.local`;
+                    } catch (error) {
+                        console.error('Error finding user by phone:', error);
+                        showToast('Error finding account. Please use email instead.', 'error');
+                        return;
+                    }
+                }
+                
+                // Send password reset email
+                await auth.sendPasswordResetEmail(email);
+                showToast('Password reset email sent! Check your inbox.', 'success');
+                
+            } catch (error) {
+                console.error('Password reset error:', error);
+                showToast('Failed to send reset email. Please try again.', 'error');
+            }
+        });
+    }
+
+    // ============================================
+    // CHECK FOR EXISTING SESSION
+    // ============================================
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            // User is already signed in
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    localStorage.setItem('bridgeconnect_user', JSON.stringify({
+                        uid: user.uid,
+                        ...userData
+                    }));
+                    
+                    // Store active context if available
+                    if (userData.activeContext) {
+                        localStorage.setItem('bridgeconnect_active_context', JSON.stringify(userData.activeContext));
+                    }
+                    
+                    // Redirect based on role
+                    redirectUser(userData);
+                }
+            } catch (error) {
+                console.error('Session check error:', error);
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

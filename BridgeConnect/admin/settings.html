@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Platform Settings - BridgeConnect Admin Portal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzAOMVoTR5YTrZlzedypz_KqQT-lotI1o",
+            authDomain: "bridgeconnect-5b8bd.firebaseapp.com",
+            projectId: "bridgeconnect-5b8bd",
+            storageBucket: "bridgeconnect-5b8bd.firebasestorage.app",
+            messagingSenderId: "231684985335",
+            appId: "1:231684985335:web:3f3bfdf7f2708f0ae81ef2",
+            measurementId: "G-C8QJH73MC0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        db.enablePersistence().catch(err => console.warn('Firestore persistence error:', err));
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .sidebar-active {
+            background-color: #ebf5ff;
+            color: #2563eb;
+            border-right: 4px solid #2563eb;
+        }
+        .settings-nav-active {
+            background-color: #eff6ff;
+            color: #2563eb;
+            border-left: 4px solid #2563eb !important;
+        }
+        .custom-shadow {
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+        
+        /* Sidebar collapse styles */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar.collapsed {
+            width: 72px;
+            min-width: 72px;
+        }
+        .sidebar.collapsed .logo-text,
+        .sidebar.collapsed .dbi-text,
+        .sidebar.collapsed .link-text,
+        .sidebar.collapsed .notif-badge,
+        .sidebar.collapsed .sidebar-footer .link-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-dbi {
+            padding: 6px;
+            justify-content: center;
+        }
+        .sidebar.collapsed .sidebar-dbi .dbi-text {
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-link {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-link i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-logo {
+            justify-content: center;
+            padding: 12px 0;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 {
+            width: 36px;
+            height: 36px;
+        }
+        .sidebar.collapsed .sidebar-logo .w-8 i {
+            font-size: 18px;
+        }
+        .sidebar.collapsed .sidebar-footer {
+            padding: 8px;
+        }
+        .sidebar.collapsed .sidebar-footer a {
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .sidebar-footer a i {
+            font-size: 18px;
+        }
+
+        @media (max-width: 1023px) {
+            .sidebar-container {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                width: 280px;
+                z-index: 1000;
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 4px 0 30px rgba(0,0,0,0.15);
+            }
+            .sidebar-container.mobile-open {
+                left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 999;
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .mobile-header {
+                display: flex !important;
+            }
+            .desktop-header {
+                display: none !important;
+            }
+            .main-content {
+                padding: 1rem !important;
+            }
+            .sidebar.collapsed {
+                width: 280px !important;
+                min-width: 280px !important;
+            }
+            .sidebar.collapsed .logo-text,
+            .sidebar.collapsed .dbi-text,
+            .sidebar.collapsed .link-text,
+            .sidebar.collapsed .notif-badge,
+            .sidebar.collapsed .sidebar-footer .link-text {
+                opacity: 1 !important;
+                display: block !important;
+                width: auto !important;
+            }
+            .sidebar.collapsed .sidebar-link {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-logo {
+                justify-content: flex-start !important;
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer {
+                padding: 16px !important;
+            }
+            .sidebar.collapsed .sidebar-footer a {
+                justify-content: flex-start !important;
+                padding: 10px 12px !important;
+            }
+            .sidebar.collapsed .sidebar-dbi {
+                padding: 12px !important;
+                justify-content: flex-start !important;
+            }
+            .sidebar.collapsed .sidebar-dbi .dbi-text {
+                display: block !important;
+            }
+            .sidebar-toggle-btn {
+                display: none !important;
+            }
+            
+            /* Mobile tab content adjustment */
+            .settings-section {
+                grid-column: span 2 !important;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .mobile-header {
+                display: none !important;
+            }
+            .sidebar-overlay {
+                display: none !important;
+            }
+        }
+        
+        .toast {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+        
+        .settings-nav-active i {
+            color: #2563eb !important;
+        }
+        
+        /* Tab content container */
+        .tab-content-container {
+            min-height: 400px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-700">
+<div class="flex min-h-screen">
+    
+    <!-- MOBILE OVERLAY -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer" class="sidebar-container"></div>
+    
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        
+        <!-- Mobile Header -->
+        <header class="mobile-header bg-white h-16 border-b border-gray-200 flex items-center justify-between px-4 flex-shrink-0 z-10">
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuBtn" class="text-gray-600 hover:text-gray-900 text-xl p-1">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+                        <i class="fas fa-users text-sm"></i>
+                    </div>
+                    <span class="font-bold text-blue-600 text-sm">BridgeConnect</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="relative text-gray-600">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="notif-count absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full text-[9px] text-white flex items-center justify-center font-bold">0</span>
+                </button>
+                <img id="mobileUserAvatar" alt="User" class="w-7 h-7 rounded-full object-cover border-2 border-white shadow-sm" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=32"/>
+            </div>
+        </header>
+        
+        <!-- Desktop Top Bar -->
+        <header class="desktop-header bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 sticky top-0 z-10">
+            <div class="flex items-center gap-4 flex-1 max-w-2xl">
+                <button class="text-gray-400"><i class="fas fa-bars text-xl"></i></button>
+                <div class="relative w-full">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                        <i class="fas fa-search text-sm"></i>
+                    </span>
+                    <input class="block w-full pl-10 pr-12 py-2 border border-gray-200 rounded-lg bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Search users, businesses, organizations..." type="text" id="globalSearch"/>
+                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <kbd class="hidden sm:inline-block px-1.5 py-0.5 text-xs font-semibold text-gray-400 border border-gray-200 rounded bg-white">⌘K</kbd>
+                    </span>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-1.5 bg-gray-50 cursor-pointer" id="districtSelector">
+                    <i class="fas fa-map-pin text-gray-500"></i>
+                    <span class="text-sm font-medium" id="currentDistrictLabel">All Districts</span>
+                    <i class="fas fa-chevron-down text-gray-400 text-sm"></i>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="relative notification-btn cursor-pointer">
+                        <i class="fas fa-bell text-gray-400 text-xl"></i>
+                        <span class="notif-count absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] px-1.5 py-0.5 rounded-full">0</span>
+                    </div>
+                    <div class="relative">
+                        <i class="fas fa-comment-dots text-gray-400 text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">0</span>
+                    </div>
+                </div>
+                <div class="h-8 w-px bg-gray-200"></div>
+                <div class="flex items-center gap-3" id="userProfileBtn">
+                    <div class="text-right hidden md:block">
+                        <p class="text-sm font-semibold" id="userNameDisplay">User</p>
+                        <p class="text-xs text-gray-500" id="userRoleDisplay">Loading...</p>
+                    </div>
+                    <img id="desktopUserAvatar" alt="Profile" class="w-10 h-10 rounded-full border border-gray-200 object-cover" src="https://ui-avatars.com/api/?name=User&background=0052cc&color=fff&size=40"/>
+                    <i class="fas fa-chevron-down text-gray-400 text-sm"></i>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto main-content">
+            <!-- Page Header -->
+            <section class="px-8 py-6 flex justify-between items-start">
+                <div>
+                    <h1 class="text-2xl font-bold flex items-center gap-2 text-slate-800">
+                        <i class="fas fa-sliders-h text-slate-500"></i> Platform Settings
+                    </h1>
+                    <p class="text-sm text-gray-500 mt-1">Configure and manage your platform settings and preferences.</p>
+                </div>
+                <button class="bg-[#2563eb] hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2" id="saveChangesBtn">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </section>
+            
+            <!-- Content Grid Wrapper -->
+            <div class="px-8 pb-10 grid grid-cols-12 gap-6 items-start">
+                <!-- Internal Navigation Sidebar -->
+                <aside class="col-span-12 lg:col-span-2 bg-white rounded-xl border border-gray-200 overflow-hidden custom-shadow">
+                    <nav class="flex flex-col" id="settingsNav">
+                        <a class="flex items-center gap-3 px-4 py-3 text-sm font-medium settings-nav-active" href="#branding" data-section="branding">
+                            <i class="fas fa-palette w-4 text-blue-600"></i> Branding
+                        </a>
+                        <a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 border-l-4 border-transparent" href="#districts" data-section="districts">
+                            <i class="fas fa-map w-4"></i> District Management
+                        </a>
+                        <a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 border-l-4 border-transparent" href="#sms" data-section="sms">
+                            <i class="fas fa-comment-dots w-4"></i> SMS Gateway Settings
+                        </a>
+                        <a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 border-l-4 border-transparent" href="#email" data-section="email">
+                            <i class="fas fa-envelope w-4"></i> Email Settings
+                        </a>
+                        <a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 border-l-4 border-transparent" href="#notifications" data-section="notifications">
+                            <i class="fas fa-bell w-4"></i> Notification Settings
+                        </a>
+                        <a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 border-l-4 border-transparent" href="#security" data-section="security">
+                            <i class="fas fa-shield-alt w-4"></i> Security Settings
+                        </a>
+                        <a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 border-l-4 border-transparent" href="#backup" data-section="backup">
+                            <i class="fas fa-undo-alt w-4"></i> Backup & Recovery
+                        </a>
+                        <a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 border-l-4 border-transparent" href="#api" data-section="api">
+                            <i class="fas fa-key w-4"></i> API Keys
+                        </a>
+                        <a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 border-l-4 border-transparent" href="#maintenance" data-section="maintenance">
+                            <i class="fas fa-tools w-4"></i> Maintenance Mode
+                        </a>
+                        <a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 border-l-4 border-transparent" href="#system-info" data-section="system-info">
+                            <i class="fas fa-info-circle w-4"></i> System Info
+                        </a>
+                    </nav>
+                </aside>
+                
+                <!-- Tab Content Container - All sections will be rendered here -->
+                <div class="col-span-12 lg:col-span-10 tab-content-container">
+                    <!-- Card: Branding -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 custom-shadow settings-section" id="branding">
+                        <div class="mb-4">
+                            <h3 class="font-bold text-gray-800">Branding</h3>
+                            <p class="text-xs text-gray-400">Manage your platform identity and brand assets.</p>
+                        </div>
+                        <div class="flex flex-col gap-6">
+                            <div class="flex items-center gap-4">
+                                <div class="border rounded-lg p-2 bg-gray-50">
+                                    <img id="brandingLogo" alt="Current Logo" class="h-10 w-auto object-contain" src=""/>
+                                </div>
+                                <button class="px-4 py-2 text-xs font-semibold border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                                    <i class="fas fa-upload"></i> Change Logo
+                                </button>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-[11px] font-bold text-gray-400 uppercase">Platform Name</label>
+                                    <input id="platformName" class="w-full mt-1 border-gray-200 rounded-lg text-sm bg-gray-50" type="text" value="BridgeConnect"/>
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-gray-400 uppercase">Tagline</label>
+                                    <input id="platformTagline" class="w-full mt-1 border-gray-200 rounded-lg text-sm bg-gray-50" type="text" value="Connecting Communities. Empowering Lives."/>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="text-[11px] font-bold text-gray-400 uppercase">Primary Color</label>
+                                        <div class="flex items-center mt-1 border border-gray-200 rounded-lg bg-gray-50 p-1">
+                                            <div id="primaryColorPreview" class="w-6 h-6 rounded bg-[#2563eb] mr-2"></div>
+                                            <input id="primaryColor" class="border-0 bg-transparent p-0 text-sm focus:ring-0 uppercase w-full" type="text" value="#2563EB"/>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="text-[11px] font-bold text-gray-400 uppercase">Secondary Color</label>
+                                        <div class="flex items-center mt-1 border border-gray-200 rounded-lg bg-gray-50 p-1">
+                                            <div id="secondaryColorPreview" class="w-6 h-6 rounded bg-[#16A34A] mr-2"></div>
+                                            <input id="secondaryColor" class="border-0 bg-transparent p-0 text-sm focus:ring-0 uppercase w-full" type="text" value="#16A34A"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card: District Management -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 custom-shadow flex flex-col settings-section" id="districts" style="display: none;">
+                        <div class="mb-4">
+                            <h3 class="font-bold text-gray-800">District Management</h3>
+                            <p class="text-xs text-gray-400">Manage districts, regions and communities.</p>
+                        </div>
+                        <div class="flex-1 flex items-center justify-between gap-8">
+                            <div class="bg-green-50 p-6 rounded-full">
+                                <i class="fas fa-building text-green-600 text-3xl"></i>
+                            </div>
+                            <div class="flex-1 grid grid-cols-2 gap-y-4">
+                                <div>
+                                    <p class="text-[11px] font-bold text-gray-400 uppercase">Total Regions</p>
+                                    <p class="text-2xl font-bold text-gray-800" id="totalRegions">0</p>
+                                </div>
+                                <div>
+                                    <p class="text-[11px] font-bold text-gray-400 uppercase">Total Districts</p>
+                                    <p class="text-2xl font-bold text-gray-800" id="totalDistricts">0</p>
+                                </div>
+                                <div class="col-span-2">
+                                    <p class="text-[11px] font-bold text-gray-400 uppercase">Total Communities</p>
+                                    <p class="text-2xl font-bold text-gray-800" id="totalCommunities">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="mt-6 w-full py-2.5 text-sm font-semibold border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center justify-center gap-2">
+                            <i class="fas fa-cog"></i> Manage Districts
+                        </button>
+                    </div>
+                    
+                    <!-- Card: SMS Gateway Settings -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 custom-shadow settings-section" id="sms" style="display: none;">
+                        <div class="mb-4">
+                            <h3 class="font-bold text-gray-800">SMS Gateway Settings</h3>
+                            <p class="text-xs text-gray-400">Configure SMS provider and gateway settings.</p>
+                        </div>
+                        <div class="flex gap-6">
+                            <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-comment-dots text-green-600 text-2xl"></i>
+                            </div>
+                            <div class="flex-1 space-y-4">
+                                <div class="grid grid-cols-3 items-center">
+                                    <label class="text-xs font-medium text-gray-500">Provider</label>
+                                    <select id="smsProvider" class="col-span-2 border-gray-200 rounded-lg text-sm bg-gray-50">
+                                        <option value="arkesel">Arkesel</option>
+                                        <option value="twilio">Twilio</option>
+                                        <option value="africastalking">Africa's Talking</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-3 items-center">
+                                    <label class="text-xs font-medium text-gray-500">Sender ID</label>
+                                    <input id="smsSenderId" class="col-span-2 border-gray-200 rounded-lg text-sm bg-gray-50" type="text" value="BridgeConnect"/>
+                                </div>
+                                <div class="grid grid-cols-3 items-center">
+                                    <label class="text-xs font-medium text-gray-500">API Key</label>
+                                    <div class="col-span-2 relative">
+                                        <input id="smsApiKey" class="w-full border-gray-200 rounded-lg text-sm bg-gray-50" type="password" value=""/>
+                                        <i class="fas fa-eye absolute right-3 top-2.5 text-gray-400 cursor-pointer toggle-password"></i>
+                                    </div>
+                                </div>
+                                <div class="pt-2 flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs font-medium text-gray-500">SMS Balance</span>
+                                        <span class="text-sm font-bold text-green-600" id="smsBalance">0 SMS</span>
+                                    </div>
+                                    <button class="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 check-balance">
+                                        <i class="fas fa-sync-alt"></i> Check Balance
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card: Email Settings -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 custom-shadow settings-section" id="email" style="display: none;">
+                        <div class="mb-4">
+                            <h3 class="font-bold text-gray-800">Email Settings</h3>
+                            <p class="text-xs text-gray-400">Configure email server and sender settings.</p>
+                        </div>
+                        <div class="flex gap-6">
+                            <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0 text-blue-600">
+                                <i class="fas fa-envelope text-2xl"></i>
+                            </div>
+                            <div class="flex-1 space-y-4">
+                                <div class="grid grid-cols-3 items-center">
+                                    <label class="text-xs font-medium text-gray-500">Mailer</label>
+                                    <select id="emailMailer" class="col-span-2 border-gray-200 rounded-lg text-sm bg-gray-50">
+                                        <option value="smtp">SMTP</option>
+                                        <option value="sendgrid">SendGrid</option>
+                                        <option value="mailgun">Mailgun</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-3 items-center">
+                                    <label class="text-xs font-medium text-gray-500">From Name</label>
+                                    <input id="emailFromName" class="col-span-2 border-gray-200 rounded-lg text-sm bg-gray-50" type="text" value="BridgeConnect Team"/>
+                                </div>
+                                <div class="grid grid-cols-3 items-center">
+                                    <label class="text-xs font-medium text-gray-500">From Email</label>
+                                    <input id="emailFromAddress" class="col-span-2 border-gray-200 rounded-lg text-sm bg-gray-50" type="text" value="noreply@bridgeconnect.app"/>
+                                </div>
+                                <div class="pt-2 flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs font-medium text-gray-500">Connection</span>
+                                        <span class="flex items-center gap-1.5 text-[11px] font-bold text-green-600 uppercase" id="emailConnectionStatus">
+                                            <span class="w-2 h-2 rounded-full bg-green-500"></span> Connected
+                                        </span>
+                                    </div>
+                                    <button class="px-3 py-1 text-xs font-semibold border border-gray-200 rounded-md hover:bg-gray-50 test-email">Test Email</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card: Notification Settings -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 custom-shadow settings-section" id="notifications" style="display: none;">
+                        <div class="mb-4">
+                            <h3 class="font-bold text-gray-800">Notification Settings</h3>
+                            <p class="text-xs text-gray-400">Manage in-app, email and SMS notification preferences.</p>
+                        </div>
+                        <div class="flex gap-6">
+                            <div class="w-16 h-16 bg-purple-50 rounded-full flex items-center justify-center flex-shrink-0 text-purple-600">
+                                <i class="fas fa-bell text-2xl"></i>
+                            </div>
+                            <div class="flex-1 space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-semibold">In-app Notifications</p>
+                                        <p class="text-[11px] text-gray-400">Enable in-app push notifications</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input class="sr-only peer toggle-switch" type="checkbox" data-setting="inApp" checked/>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-semibold">Email Notifications</p>
+                                        <p class="text-[11px] text-gray-400">Enable email notifications</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input class="sr-only peer toggle-switch" type="checkbox" data-setting="email" checked/>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-semibold">SMS Notifications</p>
+                                        <p class="text-[11px] text-gray-400">Enable SMS notifications</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input class="sr-only peer toggle-switch" type="checkbox" data-setting="sms" checked/>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                    </label>
+                                </div>
+                                <a class="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 pt-2" href="#">
+                                    Configure Notification Templates <i class="fas fa-arrow-right text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card: Security Settings -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 custom-shadow settings-section" id="security" style="display: none;">
+                        <div class="mb-4">
+                            <h3 class="font-bold text-gray-800">Security Settings</h3>
+                            <p class="text-xs text-gray-400">Manage security policies and authentication.</p>
+                        </div>
+                        <div class="flex gap-6">
+                            <div class="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center flex-shrink-0 text-orange-500">
+                                <i class="fas fa-shield-alt text-2xl"></i>
+                            </div>
+                            <div class="flex-1 space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-semibold">Two-Factor Authentication</p>
+                                        <p class="text-[11px] text-gray-400">Enforce 2FA for admin users</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input class="sr-only peer toggle-switch" type="checkbox" data-setting="twoFactor" checked/>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-semibold">Password Policy</p>
+                                        <p class="text-[11px] text-gray-400">Strong password policy enabled</p>
+                                    </div>
+                                    <button class="px-3 py-1 text-xs font-semibold border border-gray-200 rounded-md hover:bg-gray-50 edit-policy">Edit</button>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-semibold">Session Timeout</p>
+                                        <p class="text-[11px] text-gray-400" id="sessionTimeoutDisplay">30 minutes</p>
+                                    </div>
+                                    <button class="px-3 py-1 text-xs font-semibold border border-gray-200 rounded-md hover:bg-gray-50 edit-timeout">Edit</button>
+                                </div>
+                                <a class="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 pt-2" href="#">
+                                    View Security Logs <i class="fas fa-arrow-right text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card: Backup & Recovery -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 custom-shadow settings-section" id="backup" style="display: none;">
+                        <div class="mb-4">
+                            <h3 class="font-bold text-gray-800">Backup & Recovery</h3>
+                            <p class="text-xs text-gray-400">Manage database backups and restore options.</p>
+                        </div>
+                        <div class="flex gap-6 items-start">
+                            <div class="w-16 h-16 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 text-blue-500">
+                                <i class="fas fa-database text-2xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="space-y-2">
+                                    <div class="flex text-[11px] items-center">
+                                        <span class="w-24 font-bold text-gray-400 uppercase">Last Backup</span>
+                                        <span class="font-medium" id="lastBackup">Loading...</span>
+                                    </div>
+                                    <div class="flex text-[11px] items-center">
+                                        <span class="w-24 font-bold text-gray-400 uppercase">Next Backup</span>
+                                        <span class="font-medium" id="nextBackup">Loading...</span>
+                                    </div>
+                                    <div class="flex text-[11px] items-center">
+                                        <span class="w-24 font-bold text-gray-400 uppercase">Backup Frequency</span>
+                                        <span class="font-medium" id="backupFrequency">Daily</span>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center justify-between">
+                                    <a class="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1" href="#">
+                                        View Backup History <i class="fas fa-arrow-right text-xs"></i>
+                                    </a>
+                                    <button class="px-4 py-1.5 text-xs font-semibold border border-gray-200 rounded-md hover:bg-gray-50 create-backup">Create Backup</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card: API Keys -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 custom-shadow settings-section" id="api" style="display: none;">
+                        <div class="mb-4">
+                            <h3 class="font-bold text-gray-800">API Keys</h3>
+                            <p class="text-xs text-gray-400">Manage API keys for third-party integrations.</p>
+                        </div>
+                        <div class="flex gap-6 items-center">
+                            <div class="w-16 h-16 bg-yellow-50 rounded-full flex items-center justify-center flex-shrink-0 text-yellow-500">
+                                <i class="fas fa-key text-2xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="space-y-3">
+                                    <div class="flex justify-between text-[11px]">
+                                        <span class="font-bold text-gray-400 uppercase">Active Keys</span>
+                                        <span class="font-bold" id="activeKeys">0</span>
+                                    </div>
+                                    <div class="flex justify-between text-[11px]">
+                                        <span class="font-bold text-gray-400 uppercase">Rate Limit</span>
+                                        <span class="font-bold" id="rateLimit">1,000 requests / min</span>
+                                    </div>
+                                </div>
+                                <button class="mt-4 w-full py-2 text-xs font-semibold border border-gray-200 rounded-md hover:bg-gray-50 flex items-center justify-center gap-2">
+                                    <i class="fas fa-cog"></i> Manage API Keys
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card: Maintenance Mode -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 custom-shadow settings-section" id="maintenance" style="display: none;">
+                        <div class="mb-4">
+                            <h3 class="font-bold text-gray-800">Maintenance Mode</h3>
+                            <p class="text-xs text-gray-400">Enable maintenance mode to restrict platform access.</p>
+                        </div>
+                        <div class="flex items-center gap-6">
+                            <div class="w-16 h-16 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0 text-red-500">
+                                <i class="fas fa-hammer text-2xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold">Maintenance Mode</p>
+                                <p class="text-[11px] text-gray-400 leading-tight">When enabled, only administrators can access the platform.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input class="sr-only peer toggle-switch" type="checkbox" data-setting="maintenance"/>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Card: System Information -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 custom-shadow settings-section" id="system-info" style="display: none;">
+                        <div class="mb-4">
+                            <h3 class="font-bold text-gray-800 flex items-center gap-1.5">
+                                System Information <i class="fas fa-info-circle text-gray-400"></i>
+                            </h3>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-12 gap-y-4">
+                            <div class="flex justify-between items-center border-b border-gray-50 pb-2">
+                                <span class="text-[11px] font-bold text-gray-400 uppercase">Platform Version</span>
+                                <span class="text-sm font-medium text-green-600" id="platformVersion">v2.3.1</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b border-gray-50 pb-2">
+                                <span class="text-[11px] font-bold text-gray-400 uppercase">Server Time</span>
+                                <span class="text-[11px] font-medium" id="serverTime">Loading...</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-[11px] font-bold text-gray-400 uppercase">Environment</span>
+                                <span class="text-sm font-medium text-green-600" id="environment">Production</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-[11px] font-bold text-gray-400 uppercase">Uptime</span>
+                                <span class="text-sm font-medium" id="uptime">99.98%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<!-- Load the context manager -->
+<script src="js/context-manager.js"></script>
+
+<!-- Load the settings page -->
+<script src="js/settings.js"></script>
+</body>
+</html>

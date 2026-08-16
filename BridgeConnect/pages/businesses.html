@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>BridgeConnect Business Directory</title>
+    <!-- Font Setup -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzAOMVoTR5YTrZlzedypz_KqQT-lotI1o",
+            authDomain: "bridgeconnect-5b8bd.firebaseapp.com",
+            projectId: "bridgeconnect-5b8bd",
+            storageBucket: "bridgeconnect-5b8bd.firebasestorage.app",
+            messagingSenderId: "231684985335",
+            appId: "1:231684985335:web:3f3bfdf7f2708f0ae81ef2",
+            measurementId: "G-C8QJH73MC0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        db.enablePersistence().catch(err => console.warn('Firestore persistence error:', err));
+    </script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#003f87',
+                        'primary-light': '#e8eeff',
+                        'secondary': '#006e25',
+                        'secondary-light': '#e6f5ec',
+                        'surface': '#f9f9ff',
+                        'surface-container-low': '#f0f3ff',
+                        'surface-container-lowest': '#ffffff',
+                        'brand': { primary: '#003f87', green: '#006e25', light: '#f0f3ff' },
+                        'brandGreen': '#006e25'
+                    },
+                    borderRadius: {
+                        'custom': '8px',
+                        'custom-lg': '16px',
+                        'custom-full': '9999px'
+                    },
+                    boxShadow: {
+                        'card': '0 2px 16px rgba(0,0,0,0.06)',
+                        'card-hover': '0 8px 40px rgba(0,0,0,0.10)',
+                        'soft': '0 4px 20px rgba(0,63,135,0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f5f7fc;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        /* Gradient Hero
+        .hero-gradient {
+            background: linear-gradient(135deg, #003f87 0%, #0055b3 50%, #006e25 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-gradient::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 60%;
+            height: 200%;
+            background: radial-gradient(ellipse, rgba(255,255,255,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-gradient::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            left: -20%;
+            width: 50%;
+            height: 150%;
+            background: radial-gradient(ellipse, rgba(0,110,37,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        */
+
+        /* Bottom Nav */
+        .bottom-nav-wrapper {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 94%;
+            max-width: 480px;
+            z-index: 1000;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        .bottom-nav-wrapper nav { pointer-events: auto; }
+
+        .bottom-nav-glass {
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(18px) saturate(1.4) !important;
+            -webkit-backdrop-filter: blur(18px) saturate(1.4) !important;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            padding: 8px 10px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0px;
+            padding: 4px 8px;
+            border-radius: 30px;
+            transition: all 0.2s ease;
+            position: relative;
+            min-width: 44px;
+            text-decoration: none;
+            color: #9ca3af;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-family: inherit;
+        }
+        .nav-item .nav-icon { font-size: 20px; transition: all 0.2s ease; }
+        .nav-item .nav-label { font-size: 9px; font-weight: 600; letter-spacing: 0.2px; margin-top: 1px; }
+        .nav-item.active { color: #003f87; }
+        .nav-item.active .nav-icon { transform: translateY(-2px); }
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 3px;
+            border-radius: 4px;
+            background: #003f87;
+        }
+        .fab-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: -14px;
+        }
+        .fab-button {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #006e25, #004d1a);
+            border: 3px solid rgba(255,255,255,0.95);
+            box-shadow: 0 8px 24px rgba(0,110,37,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+        }
+        .fab-button:hover { transform: scale(1.06); box-shadow: 0 12px 32px rgba(0,110,37,0.45); }
+        .fab-button:active { transform: scale(0.92); }
+        .fab-label { font-size: 9px; font-weight: 600; color: #9ca3af; margin-top: 2px; letter-spacing: 0.2px; }
+
+        /* Business Card */
+        .business-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #eef2f7;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .business-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 48px rgba(0,0,0,0.08);
+            border-color: #d0d9e6;
+        }
+        .business-card:active {
+            transform: scale(0.98);
+        }
+
+        /* Category Items */
+        .category-item {
+            transition: all 0.2s ease;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .category-item:hover .category-icon {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,63,135,0.15);
+        }
+        .category-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            background: #f0f3ff;
+            color: #003f87;
+            font-size: 20px;
+        }
+        .category-icon.active {
+            background: #003f87;
+            color: white;
+            box-shadow: 0 4px 16px rgba(0,63,135,0.30);
+        }
+        .category-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+            text-align: center;
+            margin-top: 4px;
+            transition: color 0.2s ease;
+        }
+        .category-label.active {
+            color: #003f87;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 3px 12px;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        .status-open {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .status-closed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Rating Stars */
+        .star-filled { color: #f59e0b; }
+        .star-empty { color: #e5e7eb; }
+
+        /* Toast */
+        .toast {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+
+        /* Dropdown */
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+        }
+        .dropdown-menu.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .dropdown-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 40;
+            display: none;
+        }
+        .dropdown-overlay.active {
+            display: block;
+        }
+
+        /* Badge Pulse */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .badge-pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Search Input */
+        .search-input {
+            background: white;
+            border: 2px solid #e5e9f0;
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            border-color: #003f87;
+            box-shadow: 0 0 0 4px rgba(0,63,135,0.10);
+            outline: none;
+        }
+
+        /* Filter Button */
+        .filter-btn {
+            background: #003f87;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .filter-btn:hover {
+            background: #002d61;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0,63,135,0.30);
+        }
+        .filter-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Location Button */
+        .location-btn {
+            background: white;
+            border: 2px solid #e5e9f0;
+            transition: all 0.2s ease;
+        }
+        .location-btn:hover {
+            border-color: #003f87;
+            background: #f8faff;
+        }
+
+        /* Verification Banner */
+        .verification-banner {
+            background: linear-gradient(135deg, #e6f5ec 0%, #d4f0e0 100%);
+            border: 1px solid #b8e0c9;
+            border-radius: 16px;
+        }
+
+        /* Desktop */
+        @media (min-width: 1024px) {
+            .mobile-container {
+                max-width: 1200px;
+                margin: 20px auto;
+                border-radius: 32px;
+                min-height: 90vh;
+                max-height: 950px;
+                background: white;
+                box-shadow: 0 25px 60px -15px rgba(0,0,0,0.08);
+                overflow: hidden;
+                display: block;
+                padding: 0;
+                position: relative;
+            }
+            .main-content {
+                padding: 0;
+                overflow-y: auto;
+                max-height: 90vh;
+                background: #f8faff;
+            }
+            .mobile-header { display: none !important; }
+            .sidebar-nav { display: none !important; }
+
+            .bottom-nav-wrapper {
+                max-width: 560px;
+                bottom: 12px;
+                width: 92%;
+            }
+            .bottom-nav-glass {
+                padding: 10px 14px;
+                border-radius: 48px;
+                background: rgba(255, 255, 255, 0.85) !important;
+                backdrop-filter: blur(22px) saturate(1.5) !important;
+                -webkit-backdrop-filter: blur(22px) saturate(1.5) !important;
+                border: 1px solid rgba(255, 255, 255, 0.8);
+            }
+            .nav-item .nav-icon { font-size: 22px; }
+            .nav-item .nav-label { font-size: 10px; }
+            .fab-button { width: 60px; height: 60px; font-size: 26px; }
+            
+            .business-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+            .category-scroll {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                gap: 0.5rem;
+                overflow: visible;
+            }
+            .hero-section {
+                padding: 2.5rem 2.5rem 2rem;
+                border-radius: 0 0 32px 32px;
+            }
+            .content-section {
+                padding: 2rem 2.5rem 6rem;
+            }
+        }
+
+        @media (max-width: 1023px) {
+            .sidebar-nav { display: none !important; }
+            .main-content {
+                padding: 0 0 100px 0;
+                background: white;
+                overflow: visible;
+            }
+            .mobile-header {
+                display: flex !important;
+                position: sticky;
+                top: 0;
+                background: rgba(255,255,255,0.92);
+                backdrop-filter: blur(8px);
+                z-index: 50;
+                padding: 12px 16px;
+                border-bottom: 1px solid #f0f3f8;
+                justify-content: space-between !important;
+                align-items: center !important;
+            }
+            .bottom-nav-wrapper {
+                bottom: 12px;
+                width: 96%;
+            }
+            .bottom-nav-glass {
+                background: rgba(255, 255, 255, 0.85) !important;
+                backdrop-filter: blur(18px) saturate(1.4) !important;
+                -webkit-backdrop-filter: blur(18px) saturate(1.4) !important;
+            }
+            .business-grid {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .hero-section {
+                padding: 1.5rem 1rem 1.5rem;
+            }
+            .content-section {
+                padding: 1rem 1rem 6rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .business-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            .category-scroll {
+                display: flex;
+                gap: 0.5rem;
+                overflow-x: auto;
+                padding-bottom: 4px;
+            }
+            .category-item {
+                min-width: 68px;
+            }
+            .category-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 16px;
+            }
+            .category-label {
+                font-size: 10px;
+            }
+            .hero-section h1 {
+                font-size: 24px;
+            }
+        }
+
+        #nav-placeholder { display: block; }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Placeholder -->
+<div id="nav-placeholder"></div>
+
+<!-- Dropdown Overlay -->
+<div id="dropdownOverlay" class="dropdown-overlay"></div>
+
+<!-- Main Container -->
+<div class="mobile-container">
+    <nav class="sidebar-nav" style="display:none;"></nav>
+
+    <div class="main-content">
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <div class="flex items-center gap-2">
+                <div class="flex flex-col">
+                    <div class="flex items-center gap-1 text-brand-primary font-bold text-xl leading-none">
+                        <i class="fa-solid fa-store text-brand-primary"></i> BridgeConnect
+                    </div>
+                    <span class="text-[8px] text-brand-green font-medium">Connecting Communities. Empowering Lives.</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="notificationBtn" class="relative text-gray-600 hover:text-brand-primary transition-colors">
+                    <i class="fa-regular fa-bell text-xl"></i>
+                    <span id="notificationBadge" class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-white badge-pulse">3</span>
+                </button>
+                <div class="relative">
+                    <img id="profileImage" alt="User" class="h-9 w-9 rounded-full object-cover border-2 border-white shadow-sm cursor-pointer" src="https://ui-avatars.com/api/?name=User&background=003f87&color=fff&size=200"/>
+                    <div class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 border border-white"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-gradient hero-section">
+            <div class="relative z-10 max-w-6xl mx-auto">
+                <div class="mb-6">
+                    <h1 class="text-3xl md:text-4xl font-bold text-black mb-3">Local Business Directory</h1>
+                    <p class="text-gray-500 text-sm md:text-base max-w-2xl leading-relaxed">Find and support trusted businesses within your community. All service providers are verified for quality and safety.</p>
+                </div>
+                
+                <!-- Search & Filter -->
+                <div class="flex flex-col md:flex-row gap-3">
+                    <div class="relative flex-grow">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input id="searchInput" class="search-input w-full pl-12 pr-4 py-3.5 rounded-xl text-sm font-medium placeholder:text-gray-400" placeholder="Search businesses, services or keywords..." type="text"/>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="filterBtn" class="filter-btn flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-sm shadow-lg shadow-blue-900/20">
+                            <i class="fa-solid fa-sliders"></i>
+                            Filters
+                        </button>
+                        <button id="locationBtn" class="location-btn flex items-center gap-2 px-4 py-3.5 rounded-xl font-medium text-sm text-gray-700">
+                            <i class="fa-solid fa-location-dot text-primary"></i>
+                            <span id="locationText" class="font-semibold">Kwamankese</span>
+                            <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Location Dropdown -->
+                <div id="locationDropdown" class="dropdown-menu absolute z-50 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden" style="display:none;">
+                    <div class="py-1">
+                        <button class="location-option w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 transition-colors flex items-center gap-2" data-location="kwamankese">
+                            <i class="fa-solid fa-location-dot text-brand-primary text-xs"></i> Kwamankese
+                        </button>
+                        <button class="location-option w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 transition-colors flex items-center gap-2" data-location="abura">
+                            <i class="fa-solid fa-location-dot text-brand-primary text-xs"></i> Abura
+                        </button>
+                        <button class="location-option w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 transition-colors flex items-center gap-2" data-location="asebu">
+                            <i class="fa-solid fa-location-dot text-brand-primary text-xs"></i> Asebu
+                        </button>
+                        <button class="location-option w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 transition-colors flex items-center gap-2" data-location="cape_coast">
+                            <i class="fa-solid fa-location-dot text-brand-primary text-xs"></i> Cape Coast
+                        </button>
+                        <button class="location-option w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 transition-colors flex items-center gap-2 border-t border-gray-100 mt-1" data-location="all">
+                            <i class="fa-solid fa-globe text-brand-primary text-xs"></i> All Communities
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Categories -->
+                <div class="mt-6 overflow-x-auto hide-scrollbar category-scroll" id="categoriesContainer">
+                    <!-- Categories will be loaded dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Section -->
+        <section class="content-section max-w-7xl mx-auto">
+            <!-- Header -->
+            <div class="flex justify-between items-end mb-6">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-check-circle text-secondary text-xl"></i>
+                        <h2 class="text-xl font-bold text-gray-800">Verified Businesses</h2>
+                    </div>
+                    <p class="text-sm text-gray-500">Hand-picked services with guaranteed reliability.</p>
+                </div>
+                <button id="viewAllBtn" class="text-secondary font-bold flex items-center gap-1 hover:underline transition-all text-sm">
+                    View All <i class="fa-solid fa-chevron-right text-xs"></i>
+                </button>
+            </div>
+
+            <!-- Business Grid -->
+            <div id="businessGrid" class="business-grid">
+                <!-- Businesses will be loaded dynamically -->
+            </div>
+
+            <!-- Verification Banner -->
+            <div class="mt-8 verification-banner p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-secondary text-white rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-check-circle text-2xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800">All businesses are verified</h4>
+                        <p class="text-sm text-gray-600">We verify businesses to help you connect with trusted and reliable local service providers.</p>
+                    </div>
+                </div>
+                <button class="bg-white text-gray-700 px-8 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-colors border border-gray-200 shadow-sm flex-shrink-0" onclick="showToast('Learn more about verification...', 'info')">
+                    Learn More
+                </button>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<!-- JavaScript -->
+<script src="../pages/js/businesses.js"></script>
+
+</body>
+</html>

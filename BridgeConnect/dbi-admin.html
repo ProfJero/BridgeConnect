@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>DBI Admin · BridgeConnect</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzAOMVoTR5YTrZlzedypz_KqQT-lotI1o",
+            authDomain: "bridgeconnect-5b8bd.firebaseapp.com",
+            projectId: "bridgeconnect-5b8bd",
+            storageBucket: "bridgeconnect-5b8bd.firebasestorage.app",
+            messagingSenderId: "231684985335",
+            appId: "1:231684985335:web:3f3bfdf7f2708f0ae81ef2",
+            measurementId: "G-C8QJH73MC0"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Enable offline persistence
+        db.enablePersistence().catch(err => console.warn('Firestore persistence error:', err));
+    </script>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-tertiary-container": "#aad4ff",
+                        "surface-dim": "#cfdaf1",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#111c2c",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dee8ff",
+                        "on-secondary-container": "#007327",
+                        "on-background": "#111c2c",
+                        "surface-container": "#e7eeff",
+                        "primary-fixed-dim": "#acc7ff",
+                        "outline-variant": "#c2c6d4",
+                        "on-primary-container": "#bbd0ff",
+                        "tertiary": "#00456d",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#66df75",
+                        "tertiary-container": "#005d92",
+                        "on-primary-fixed-variant": "#004491",
+                        "on-tertiary-fixed-variant": "#004a76",
+                        "surface-tint": "#115cb9",
+                        "secondary": "#006e25",
+                        "on-secondary-fixed-variant": "#00531a",
+                        "primary-container": "#0056b3",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#f9f9ff",
+                        "secondary-fixed": "#83fc8e",
+                        "secondary-container": "#80f98b",
+                        "tertiary-fixed": "#cee5ff",
+                        "tertiary-fixed-dim": "#96ccff",
+                        "surface-variant": "#d8e3fa",
+                        "background": "#f9f9ff",
+                        "on-secondary-fixed": "#002106",
+                        "on-tertiary-fixed": "#001d32",
+                        "on-surface-variant": "#424752",
+                        "inverse-on-surface": "#ebf1ff",
+                        "primary": "#003f87",
+                        "surface-container-low": "#f0f3ff",
+                        "on-primary": "#ffffff",
+                        "surface": "#f9f9ff",
+                        "inverse-surface": "#263142",
+                        "inverse-primary": "#acc7ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#001a40",
+                        "surface-container-highest": "#d8e3fa",
+                        "outline": "#727784",
+                        "primary-fixed": "#d7e2ff"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        @media (min-width: 1024px) {
+            .auth-grid {
+                display: grid;
+                grid-template-columns: 1fr 1.2fr;
+                gap: 0;
+                min-height: 90vh;
+                max-height: 950px;
+                background: white;
+                border-radius: 2rem;
+                box-shadow: 0 25px 60px -15px rgba(0,0,0,0.12);
+                overflow: hidden;
+            }
+            .brand-panel {
+                background: linear-gradient(160deg, #f0f5ff 0%, #e8eeff 100%);
+                padding: 3rem 2.5rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border-right: 1px solid rgba(0,0,0,0.04);
+            }
+            .form-panel {
+                padding: 2.5rem 3rem;
+                background: white;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+        }
+
+        .form-input:focus {
+            border-color: #003f87;
+            ring: 2px solid rgba(0, 63, 135, 0.2);
+            outline: none;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            z-index: 9999;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast-success { background: #006e25; }
+        .toast-error { background: #ba1a1a; }
+        .toast-info { background: #003f87; }
+        
+        .loading-spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .security-badge {
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(255, 215, 0, 0.1),
+                rgba(255, 215, 0, 0.1) 10px,
+                rgba(255, 215, 0, 0.05) 10px,
+                rgba(255, 215, 0, 0.05) 20px
+            );
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex items-center justify-center p-4 md:p-8">
+
+<div class="w-full max-w-7xl auth-grid">
+
+    <!-- Brand Panel -->
+    <div class="brand-panel hidden lg:flex">
+        <div class="w-full max-w-sm text-center space-y-8">
+            <svg class="w-20 h-20 mx-auto" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                <path d="M100 80 Q100 40 180 80" fill="none" stroke="#006e25" stroke-linecap="round" stroke-width="12"/>
+                <path d="M100 80 Q100 40 20 80" fill="none" stroke="#006e25" stroke-linecap="round" stroke-width="12"/>
+                <circle cx="100" cy="30" fill="#003f87" r="12"/>
+                <circle cx="150" cy="45" fill="#006e25" r="10"/>
+                <circle cx="50" cy="45" fill="#006e25" r="10"/>
+                <path d="M20 90 Q100 50 180 90 L180 100 Q100 60 20 100 Z" fill="#003f87"/>
+                <rect fill="#003f87" height="30" width="10" x="70" y="80"/>
+                <rect fill="#003f87" height="35" width="10" x="95" y="75"/>
+                <rect fill="#003f87" height="30" width="10" x="120" y="80"/>
+            </svg>
+            
+            <div>
+                <h1 class="text-4xl font-extrabold tracking-tight">
+                    <span class="text-primary">Bridge</span><span class="text-secondary">Connect</span>
+                </h1>
+                <p class="text-primary text-lg font-medium mt-1">Connecting Communities. <span class="text-secondary">Empowering Lives.</span></p>
+            </div>
+
+            <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-outline-variant/30">
+                <div class="flex items-center justify-center gap-2 text-sm text-on-surface-variant">
+                    <span class="material-symbols-outlined text-primary">admin_panel_settings</span>
+                    <span>DBI Admin Portal</span>
+                </div>
+                <div class="flex items-center justify-center gap-1 mt-3 text-xs text-on-surface-variant/70">
+                    <span class="material-symbols-outlined text-[16px]">handshake</span>
+                    <span>Digital Bridge Initiative · DBI</span>
+                </div>
+            </div>
+
+            <div class="security-badge rounded-2xl p-4 border border-yellow-400/30">
+                <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+                    <span class="material-symbols-outlined text-[18px] text-yellow-600">security</span>
+                    <span>Secure admin creation · Developer only</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Panel -->
+    <div class="form-panel">
+        <div class="flex justify-between items-center mb-6 lg:mb-8">
+            <a href="index.html" class="p-2 -ml-2 rounded-full hover:bg-surface-container-low transition-colors text-on-surface">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+            <div class="flex items-center gap-2 border border-outline-variant rounded-lg px-3 py-1.5">
+                <span class="text-label-md font-label-md text-on-surface">🔒 Admin</span>
+            </div>
+        </div>
+
+        <!-- Mobile Brand -->
+        <div class="flex flex-col items-center mb-6 lg:hidden">
+            <svg class="w-16 h-16" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                <path d="M100 80 Q100 40 180 80" fill="none" stroke="#006e25" stroke-linecap="round" stroke-width="12"/>
+                <path d="M100 80 Q100 40 20 80" fill="none" stroke="#006e25" stroke-linecap="round" stroke-width="12"/>
+                <circle cx="100" cy="30" fill="#003f87" r="12"/>
+                <circle cx="150" cy="45" fill="#006e25" r="10"/>
+                <circle cx="50" cy="45" fill="#006e25" r="10"/>
+                <path d="M20 90 Q100 50 180 90 L180 100 Q100 60 20 100 Z" fill="#003f87"/>
+                <rect fill="#003f87" height="30" width="10" x="70" y="80"/>
+                <rect fill="#003f87" height="35" width="10" x="95" y="75"/>
+                <rect fill="#003f87" height="30" width="10" x="120" y="80"/>
+            </svg>
+            <h1 class="text-2xl font-bold mt-2">
+                <span class="text-primary">Bridge</span><span class="text-secondary">Connect</span>
+            </h1>
+            <p class="text-xs text-on-surface-variant">DBI Owner Account Creation</p>
+        </div>
+
+        <!-- Form -->
+        <form id="adminForm" class="w-full max-w-md mx-auto flex flex-col gap-4">
+            
+            <!-- Admin Role Display -->
+            <div class="bg-primary/5 rounded-xl p-4 border border-primary/20">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary text-2xl">admin_panel_settings</span>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-primary">DBI Platform Owner</h3>
+                        <p class="text-xs text-on-surface-variant">Full platform access · Highest authority</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Name -->
+            <div>
+                <label class="text-label-md font-label-md text-on-surface">Full Name <span class="text-error">*</span></label>
+                <input id="fullName" class="form-input w-full rounded-lg border border-outline-variant bg-surface px-4 py-3 text-body-md font-body-md text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all mt-1" placeholder="Enter DBI Owner's full name" type="text" required/>
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label class="text-label-md font-label-md text-on-surface">Email Address <span class="text-error">*</span></label>
+                <input id="email" class="form-input w-full rounded-lg border border-outline-variant bg-surface px-4 py-3 text-body-md font-body-md text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all mt-1" placeholder="owner@bridgeconnect.org" type="email" required/>
+            </div>
+
+            <!-- Phone -->
+            <div>
+                <label class="text-label-md font-label-md text-on-surface">Phone Number <span class="text-error">*</span></label>
+                <input id="phone" class="form-input w-full rounded-lg border border-outline-variant bg-surface px-4 py-3 text-body-md font-body-md text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all mt-1" placeholder="0241234567" type="tel" required/>
+            </div>
+
+            <!-- Password -->
+            <div>
+                <label class="text-label-md font-label-md text-on-surface">Password <span class="text-error">*</span></label>
+                <div class="relative mt-1">
+                    <input id="password" class="form-input w-full rounded-lg border border-outline-variant bg-surface px-4 py-3 text-body-md font-body-md text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all pr-10" placeholder="Enter strong password" type="password" required/>
+                    <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors">
+                        <span class="material-symbols-outlined text-[20px] password-toggle-icon">visibility</span>
+                    </button>
+                </div>
+                <p class="text-[11px] text-on-surface-variant mt-1">Minimum 8 characters with mix of letters, numbers and symbols</p>
+            </div>
+
+            <!-- Confirm Password -->
+            <div>
+                <label class="text-label-md font-label-md text-on-surface">Confirm Password <span class="text-error">*</span></label>
+                <div class="relative mt-1">
+                    <input id="confirmPassword" class="form-input w-full rounded-lg border border-outline-variant bg-surface px-4 py-3 text-body-md font-body-md text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all pr-10" placeholder="Confirm password" type="password" required/>
+                    <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors">
+                        <span class="material-symbols-outlined text-[20px] password-toggle-icon">visibility</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Create Button -->
+            <button id="createAdminBtn" class="w-full mt-2 flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-secondary text-on-primary rounded-lg py-3.5 px-4 hover:opacity-90 transition-opacity shadow-sm" type="button">
+                <span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+                <span class="text-button font-button">Create DBI Owner Account</span>
+            </button>
+
+            <div class="text-center mt-2">
+                <p class="text-xs text-on-surface-variant">
+                    <span class="material-symbols-outlined text-[14px] align-middle">shield</span>
+                    This action creates the highest-level admin account
+                </p>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script>
+    function showToast(message, type = 'info') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast toast-${type}`;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 4000);
+    }
+
+    // Password visibility toggle
+    document.querySelectorAll('.password-toggle-icon').forEach((icon) => {
+        const parent = icon.closest('.relative');
+        const input = parent.querySelector('input');
+        const btn = parent.querySelector('button');
+        
+        btn.addEventListener('click', () => {
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = 'visibility_off';
+            } else {
+                input.type = 'password';
+                icon.textContent = 'visibility';
+            }
+        });
+    });
+
+    // Create DBI Owner Account
+    document.getElementById('createAdminBtn').addEventListener('click', async function() {
+        const fullName = document.getElementById('fullName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        // Validation
+        if (!fullName) { showToast('Please enter the full name', 'error'); return; }
+        if (!email) { showToast('Please enter the email address', 'error'); return; }
+        if (!phone) { showToast('Please enter the phone number', 'error'); return; }
+        if (!password) { showToast('Please enter a password', 'error'); return; }
+        if (password.length < 8) { showToast('Password must be at least 8 characters', 'error'); return; }
+        if (password !== confirmPassword) { showToast('Passwords do not match', 'error'); return; }
+
+        if (!confirm('⚠️ This will create the DBI Platform Owner account with full admin privileges. Continue?')) {
+            return;
+        }
+
+        this.disabled = true;
+        this.innerHTML = '<span class="loading-spinner"></span> Creating DBI Owner account...';
+
+        try {
+            // 1. Create user in Firebase Auth
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+
+            // 2. Format phone number
+            let phoneFormatted = phone.replace(/[\s\-+]/g, '');
+            if (phoneFormatted.startsWith('233')) {
+                phoneFormatted = '0' + phoneFormatted.substring(3);
+            }
+
+            // 3. Generate username
+            const username = fullName.toLowerCase().replace(/\s/g, '_') + '_dbi';
+
+            // 4. Define context for Platform Owner
+            const contexts = [
+                {
+                    type: 'platform_owner',
+                    id: 'platform',
+                    label: 'Platform Owner',
+                    icon: 'fa-globe',
+                    permissions: ['*']
+                }
+            ];
+
+            // 5. Save user data to Firestore with new context-based structure
+            const userData = {
+                uid: user.uid,
+                fullName: fullName.toUpperCase(),
+                email: email.toLowerCase(),
+                mobile: phoneFormatted,
+                username: username,
+                gender: 'Male',
+                region: 'all',
+                district: 'all',
+                community: 'all',
+                role: 'platform_owner',
+                contexts: contexts,
+                activeContext: {
+                    type: 'platform_owner',
+                    id: 'platform'
+                },
+                interests: ['all'],
+                communicationPreferences: ['Email', 'SMS'],
+                receiveAlerts: true,
+                status: 'active',
+                isVerified: true,
+                isApproved: true,
+                approvalStatus: 'approved',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                // Legacy fields for backward compatibility
+                isPlatformOwner: true,
+                permissions: ['*'],
+                createdBy: 'developer',
+                createdByUid: 'system'
+            };
+
+            // Save to users collection
+            await db.collection('users').doc(user.uid).set(userData);
+
+            // 6. Also save to usernames collection for availability checking
+            await db.collection('usernames').doc(username).set({
+                uid: user.uid,
+                username: username,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // 7. Also create admin record (optional but useful)
+            try {
+                await db.collection('admins').doc(user.uid).set({
+                    uid: user.uid,
+                    fullName: fullName,
+                    email: email,
+                    role: 'platform_owner',
+                    permissions: ['*'],
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'active'
+                });
+            } catch (adminErr) {
+                console.warn('Admin record creation skipped:', adminErr.message);
+                // This is not critical - the user data is already saved
+            }
+
+            // 8. Send email verification
+            try {
+                await user.sendEmailVerification();
+            } catch (emailErr) {
+                console.warn('Email verification skipped:', emailErr.message);
+            }
+
+            showToast('✅ DBI Owner account created successfully!', 'success');
+
+            // Store the new owner info in localStorage for quick access
+            localStorage.setItem('bridgeconnect_user', JSON.stringify({
+                uid: user.uid,
+                ...userData
+            }));
+
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 2500);
+
+        } catch (error) {
+            console.error('Admin creation error:', error);
+            let errorMsg = 'Failed to create DBI Owner account. Please try again.';
+
+            if (error.code === 'auth/email-already-in-use') {
+                errorMsg = 'This email is already registered. Please use a different email.';
+            } else if (error.code === 'auth/weak-password') {
+                errorMsg = 'Password is too weak. Please use a stronger password.';
+            } else if (error.code === 'auth/invalid-email') {
+                errorMsg = 'Invalid email address. Please check and try again.';
+            } else if (error.code === 'auth/network-request-failed') {
+                errorMsg = 'Network error. Please check your internet connection.';
+            }
+
+            showToast(errorMsg, 'error');
+        } finally {
+            this.disabled = false;
+            this.innerHTML = `
+                <span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+                <span class="text-button font-button">Create DBI Owner Account</span>
+            `;
+        }
+    });
+
+    // Enter key support
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const activeElement = document.activeElement;
+            if (activeElement && activeElement.tagName !== 'BUTTON') {
+                e.preventDefault();
+                document.getElementById('createAdminBtn').click();
+            }
+        }
+    });
+
+    // Check if owner already exists
+    async function checkExistingOwner() {
+        try {
+            const snapshot = await db.collection('users')
+                .where('role', '==', 'platform_owner')
+                .where('status', '==', 'active')
+                .limit(1)
+                .get();
+
+            if (!snapshot.empty) {
+                const ownerData = snapshot.docs[0].data();
+                const warning = document.createElement('div');
+                warning.className = 'bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4';
+                warning.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-yellow-600">warning</span>
+                        <div>
+                            <p class="text-sm font-medium text-yellow-800">Existing DBI Owner Found</p>
+                            <p class="text-xs text-yellow-700 mt-1">
+                                An active DBI Owner account already exists: <strong>${ownerData.fullName}</strong>
+                                ${ownerData.email ? `(${ownerData.email})` : ''}
+                            </p>
+                            <p class="text-xs text-yellow-700 mt-1">
+                                Creating another DBI Owner account will create a second platform owner.
+                            </p>
+                        </div>
+                    </div>
+                `;
+                const form = document.getElementById('adminForm');
+                form.insertBefore(warning, form.firstChild);
+            }
+        } catch (error) {
+            console.warn('Error checking existing owner:', error);
+        }
+    }
+
+    checkExistingOwner();
+</script>
+
+</body>
+</html>
