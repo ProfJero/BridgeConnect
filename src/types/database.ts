@@ -1,10 +1,4 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
   public: {
@@ -1050,7 +1044,7 @@ export type Database = {
           moderation_reason?: string | null;
           online_url?: string | null;
           search?: never;
-          slug: string;
+          slug?: string;
           starts_at: string;
           status?: Database["public"]["Enums"]["event_status"];
           title: string;
@@ -1292,7 +1286,7 @@ export type Database = {
           salary_min?: number | null;
           salary_period?: Database["public"]["Enums"]["pay_period"] | null;
           search?: never;
-          slug: string;
+          slug?: string;
           status?: Database["public"]["Enums"]["job_status"];
           title: string;
           updated_at?: string;
@@ -2051,7 +2045,7 @@ export type Database = {
           name: string;
           price: number;
           search?: never;
-          slug: string;
+          slug?: string;
           status?: Database["public"]["Enums"]["product_status"];
           stock_quantity?: number | null;
           unit?: string | null;
@@ -2427,7 +2421,7 @@ export type Database = {
           price_note?: string | null;
           search?: never;
           service_area?: string | null;
-          slug: string;
+          slug?: string;
           status?: Database["public"]["Enums"]["service_status"];
           updated_at?: string;
         };
@@ -2740,15 +2734,9 @@ export type Database = {
         Args: { p_entity: string };
         Returns: Database["public"]["Enums"]["entity_capability"][];
       };
-      entity_remove_member: {
-        Args: { p_membership: string };
-        Returns: undefined;
-      };
+      entity_remove_member: { Args: { p_membership: string }; Returns: undefined };
       entity_update_member_role: {
-        Args: {
-          p_membership: string;
-          p_role: Database["public"]["Enums"]["membership_role"];
-        };
+        Args: { p_membership: string; p_role: Database["public"]["Enums"]["membership_role"] };
         Returns: undefined;
       };
       issue_emergency_alert: {
@@ -2766,10 +2754,7 @@ export type Database = {
         };
         Returns: string;
       };
-      mark_all_notifications_read: {
-        Args: Record<PropertyKey, never>;
-        Returns: undefined;
-      };
+      mark_all_notifications_read: { Args: Record<PropertyKey, never>; Returns: undefined };
       moderate_content: {
         Args: {
           p_action: Database["public"]["Enums"]["moderation_action_type"];
@@ -2827,21 +2812,11 @@ export type Database = {
         Returns: undefined;
       };
       review_entity_application: {
-        Args: {
-          p_action: string;
-          p_application: string;
-          p_internal?: boolean;
-          p_note?: string;
-        };
+        Args: { p_action: string; p_application: string; p_internal?: boolean; p_note?: string };
         Returns: string;
       };
       search_directory: {
-        Args: {
-          p_community?: string;
-          p_kinds?: string[];
-          p_limit?: number;
-          p_query: string;
-        };
+        Args: { p_community?: string; p_kinds?: string[]; p_limit?: number; p_query: string };
         Returns: {
           community_id: string;
           id: string;
@@ -2861,10 +2836,7 @@ export type Database = {
         Returns: undefined;
       };
       update_emergency_alert_status: {
-        Args: {
-          p_alert: string;
-          p_status: Database["public"]["Enums"]["alert_status"];
-        };
+        Args: { p_alert: string; p_status: Database["public"]["Enums"]["alert_status"] };
         Returns: undefined;
       };
       update_order_status: {
@@ -2883,21 +2855,12 @@ export type Database = {
         };
         Returns: undefined;
       };
-      withdraw_entity_application: {
-        Args: { p_application: string };
-        Returns: undefined;
-      };
+      withdraw_entity_application: { Args: { p_application: string }; Returns: undefined };
     };
     Enums: {
       account_status: "active" | "suspended" | "deactivated";
       ad_placement: "home_feed" | "explore" | "marketplace";
-      ad_status:
-        | "draft"
-        | "pending_review"
-        | "approved"
-        | "rejected"
-        | "paused"
-        | "archived";
+      ad_status: "draft" | "pending_review" | "approved" | "rejected" | "paused" | "archived";
       alert_category:
         | "fire"
         | "flood"
@@ -2920,12 +2883,7 @@ export type Database = {
         | "withdrawn"
         | "note";
       application_status:
-        | "submitted"
-        | "under_review"
-        | "info_requested"
-        | "approved"
-        | "rejected"
-        | "withdrawn";
+        "submitted" | "under_review" | "info_requested" | "approved" | "rejected" | "withdrawn";
       content_status: "published" | "pending_review" | "hidden" | "removed";
       emergency_service:
         | "police"
@@ -2969,40 +2927,17 @@ export type Database = {
       event_status: "draft" | "published" | "cancelled" | "removed";
       fulfilment_method: "pickup" | "delivery";
       job_application_status:
-        | "submitted"
-        | "reviewing"
-        | "shortlisted"
-        | "rejected"
-        | "hired"
-        | "withdrawn";
+        "submitted" | "reviewing" | "shortlisted" | "rejected" | "hired" | "withdrawn";
       job_status: "draft" | "open" | "closed" | "archived" | "removed";
       listing_domain: "product" | "service" | "job" | "event";
       membership_role: "owner" | "manager" | "editor" | "member";
       moderation_action_type:
-        | "approve"
-        | "hide"
-        | "remove"
-        | "restore"
-        | "dismiss_report"
-        | "warn_user";
-      moderation_target:
-        "post" | "comment" | "product" | "service" | "job" | "event";
-      order_status:
-        | "pending"
-        | "confirmed"
-        | "ready"
-        | "completed"
-        | "cancelled"
-        | "declined";
+        "approve" | "hide" | "remove" | "restore" | "dismiss_report" | "warn_user";
+      moderation_target: "post" | "comment" | "product" | "service" | "job" | "event";
+      order_status: "pending" | "confirmed" | "ready" | "completed" | "cancelled" | "declined";
       pay_period: "hour" | "day" | "week" | "month" | "year" | "fixed";
-      post_kind:
-        | "general"
-        | "question"
-        | "recommendation"
-        | "lost_and_found"
-        | "announcement";
-      product_status:
-        "draft" | "active" | "out_of_stock" | "archived" | "removed";
+      post_kind: "general" | "question" | "recommendation" | "lost_and_found" | "announcement";
+      product_status: "draft" | "active" | "out_of_stock" | "archived" | "removed";
       report_reason:
         | "spam"
         | "scam_or_fraud"
@@ -3049,10 +2984,7 @@ export type Database = {
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<
-  keyof Database,
-  "public"
->];
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
@@ -3064,19 +2996,15 @@ export type Tables<
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R;
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R;
       }
       ? R
@@ -3091,9 +3019,7 @@ export type TablesInsert<
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I;
     }
@@ -3115,9 +3041,7 @@ export type TablesUpdate<
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U;
     }
@@ -3139,9 +3063,7 @@ export type Enums<
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never) = never,
-> = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
+> = DefaultSchemaEnumNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
@@ -3149,16 +3071,13 @@ export type Enums<
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["CompositeTypes"] | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never) = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
@@ -3169,14 +3088,7 @@ export const Constants = {
     Enums: {
       account_status: ["active", "suspended", "deactivated"],
       ad_placement: ["home_feed", "explore", "marketplace"],
-      ad_status: [
-        "draft",
-        "pending_review",
-        "approved",
-        "rejected",
-        "paused",
-        "archived",
-      ],
+      ad_status: ["draft", "pending_review", "approved", "rejected", "paused", "archived"],
       alert_category: [
         "fire",
         "flood",
@@ -3273,37 +3185,11 @@ export const Constants = {
         "dismiss_report",
         "warn_user",
       ],
-      moderation_target: [
-        "post",
-        "comment",
-        "product",
-        "service",
-        "job",
-        "event",
-      ],
-      order_status: [
-        "pending",
-        "confirmed",
-        "ready",
-        "completed",
-        "cancelled",
-        "declined",
-      ],
+      moderation_target: ["post", "comment", "product", "service", "job", "event"],
+      order_status: ["pending", "confirmed", "ready", "completed", "cancelled", "declined"],
       pay_period: ["hour", "day", "week", "month", "year", "fixed"],
-      post_kind: [
-        "general",
-        "question",
-        "recommendation",
-        "lost_and_found",
-        "announcement",
-      ],
-      product_status: [
-        "draft",
-        "active",
-        "out_of_stock",
-        "archived",
-        "removed",
-      ],
+      post_kind: ["general", "question", "recommendation", "lost_and_found", "announcement"],
+      product_status: ["draft", "active", "out_of_stock", "archived", "removed"],
       report_reason: [
         "spam",
         "scam_or_fraud",

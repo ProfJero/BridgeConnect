@@ -6,11 +6,13 @@ import { CreatePostForm } from "@/features/community/components/create-post-form
 import { getCommunityOptions } from "@/features/locations/queries";
 import { canUseCapability, type EntityCapability } from "@/lib/auth/permissions";
 import { requireViewer } from "@/lib/auth/session";
+import { uuidParam } from "@/lib/search-params";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Create a post" };
 
-export default async function CreatePostPage() {
+export default async function CreatePostPage({ searchParams }: PageProps<"/community/new">) {
+  const as = uuidParam((await searchParams).as);
   const viewer = await requireViewer("/community/new");
   if (!viewer.isActive) {
     return (
@@ -43,7 +45,8 @@ export default async function CreatePostPage() {
         <CreatePostForm
           userId={viewer.id}
           communities={communities}
-          defaultCommunityId={viewer.profile.home_community_id ?? undefined}
+          defaultCommunityId={eligible.find((w) => w.entityId === as)?.communityId ?? viewer.profile.home_community_id ?? undefined}
+          defaultEntityId={eligible.some((w) => w.entityId === as) ? as : undefined}
           workspaces={eligible}
         />
       </div>

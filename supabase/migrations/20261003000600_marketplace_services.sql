@@ -51,7 +51,7 @@ create table public.products (
   entity_id uuid not null references public.entities (id) on delete cascade,
   category_id uuid references public.listing_categories (id) on delete set null,
   name text not null check (char_length(name) between 2 and 120),
-  slug text not null unique,
+  slug text not null unique default '', -- always set by private.assign_listing_slug()
   description text check (char_length(description) <= 5000),
   price numeric(12, 2) not null check (price >= 0 and price <= 10000000),
   currency char(3) not null default 'GHS' check (currency ~ '^[A-Z]{3}$'),
@@ -94,7 +94,7 @@ create table public.services (
   entity_id uuid not null references public.entities (id) on delete cascade,
   category_id uuid references public.listing_categories (id) on delete set null,
   name text not null check (char_length(name) between 2 and 120),
-  slug text not null unique,
+  slug text not null unique default '', -- always set by private.assign_listing_slug()
   description text check (char_length(description) <= 5000),
   price_from numeric(12, 2) check (price_from >= 0 and price_from <= 10000000),
   currency char(3) not null default 'GHS' check (currency ~ '^[A-Z]{3}$'),

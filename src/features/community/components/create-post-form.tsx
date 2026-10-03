@@ -19,8 +19,10 @@ export function CreatePostForm({
   userId,
   communities,
   defaultCommunityId,
+  defaultEntityId,
   workspaces,
 }: {
+  defaultEntityId?: string;
   userId: string;
   communities: CommunityChoice[];
   defaultCommunityId?: string;
@@ -30,7 +32,7 @@ export function CreatePostForm({
   const router = useRouter();
   const [images, setImages] = useState<UploadedImage[]>([]);
   const { form, onSubmit, pending, formError, errorFor } = useActionForm(createPostSchema, createPostAction, {
-    defaultValues: { communityId: defaultCommunityId ?? "", kind: "general", title: "", body: "", entityId: "" },
+    defaultValues: { communityId: defaultCommunityId ?? "", kind: defaultEntityId ? "announcement" : "general", title: "", body: "", entityId: defaultEntityId ?? "" },
     onSuccess: ({ data }) => router.push(data ? `/community/posts/${data.id}` : "/community"),
   });
   const entityId = form.watch("entityId");

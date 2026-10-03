@@ -38,7 +38,7 @@ create table public.jobs (
   category_id uuid references public.listing_categories (id) on delete set null,
   community_id uuid not null references public.communities (id) on delete restrict,
   title text not null check (char_length(title) between 3 and 140),
-  slug text not null unique,
+  slug text not null unique default '', -- always set by private.assign_listing_slug()
   description text not null check (char_length(description) between 20 and 8000),
   requirements text check (char_length(requirements) <= 4000),
   employment_type public.employment_type not null,
@@ -207,7 +207,7 @@ create table public.events (
   category_id uuid references public.listing_categories (id) on delete set null,
   community_id uuid not null references public.communities (id) on delete restrict,
   title text not null check (char_length(title) between 3 and 140),
-  slug text not null unique,
+  slug text not null unique default '', -- always set by private.assign_listing_slug()
   description text not null check (char_length(description) between 10 and 8000),
   venue text check (char_length(venue) <= 200),
   is_online boolean not null default false,

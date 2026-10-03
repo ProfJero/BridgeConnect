@@ -52,8 +52,8 @@
   --input: oklch(0.88 0.012 255);
   --ring: oklch(0.55 0.19 263);
 
-  --chart-1: oklch(0.52 0.19 263);
-  --chart-2: oklch(0.6 0.14 152);
+  --chart-1: #2c5fd6; /* validated: dataviz palette checks pass on card surface */
+  --chart-2: #1e8f4e;
   --chart-3: oklch(0.72 0.14 75);
   --chart-4: oklch(0.6 0.15 25);
   --chart-5: oklch(0.55 0.1 300);
