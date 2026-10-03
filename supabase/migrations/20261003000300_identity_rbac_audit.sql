@@ -44,6 +44,7 @@ set search_path = ''
 as $$
 declare
   requested_name text := nullif(trim(new.raw_user_meta_data ->> 'display_name'), '');
+  requested_community uuid;
 begin
   if requested_name is null or char_length(requested_name) < 2 then
     requested_name := split_part(coalesce(new.email, 'Resident'), '@', 1);
@@ -52,10 +53,24 @@ begin
     requested_name := 'Resident';
   end if;
 
-  insert into public.profiles (id, display_name, is_demo)
+  -- Optional home community chosen at sign-up; kept only if it is a real,
+  -- active community (a preference, never an authorization input).
+  begin
+    requested_community := (new.raw_user_meta_data ->> 'home_community_id')::uuid;
+  exception when others then
+    requested_community := null;
+  end;
+  if requested_community is not null and not exists (
+    select 1 from public.communities where id = requested_community and is_active
+  ) then
+    requested_community := null;
+  end if;
+
+  insert into public.profiles (id, display_name, home_community_id, is_demo)
   values (
     new.id,
     left(requested_name, 80),
+    requested_community,
     coalesce((new.raw_app_meta_data ->> 'is_demo')::boolean, false)
   );
   return new;
