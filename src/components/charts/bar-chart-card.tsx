@@ -4,6 +4,8 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
+import { CHART_COLORS } from "./chart-colors";
+
 export type BarDatum = { label: string; value: number };
 
 /**
@@ -15,7 +17,7 @@ export function BarChartCard({
   title,
   description,
   data,
-  color = "var(--chart-1)",
+  color = CHART_COLORS.primary,
   layout = "vertical-bars",
   valueLabel = "Count",
   height = 220,
@@ -45,20 +47,20 @@ export function BarChartCard({
           <div style={{ height }} aria-hidden>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data} layout={horizontal ? "vertical" : "horizontal"} margin={{ top: 4, right: 8, bottom: 0, left: horizontal ? 8 : -16 }} barCategoryGap={horizontal ? 6 : 2}>
-                <CartesianGrid stroke="var(--border)" strokeDasharray="0" vertical={horizontal} horizontal={!horizontal} />
+                <CartesianGrid stroke={CHART_COLORS.grid} strokeDasharray="0" vertical={horizontal} horizontal={!horizontal} />
                 {horizontal ? (
                   <>
-                    <XAxis type="number" allowDecimals={false} tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
-                    <YAxis type="category" dataKey="label" width={120} tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: "var(--foreground)" }} />
+                    <XAxis type="number" allowDecimals={false} tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: CHART_COLORS.axis }} />
+                    <YAxis type="category" dataKey="label" width={120} tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: CHART_COLORS.axisStrong }} />
                   </>
                 ) : (
                   <>
-                    <XAxis dataKey="label" tickLine={false} axisLine={false} interval="preserveStartEnd" minTickGap={24} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
-                    <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={40} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
+                    <XAxis dataKey="label" tickLine={false} axisLine={false} interval="preserveStartEnd" minTickGap={24} tick={{ fontSize: 11, fill: CHART_COLORS.axis }} />
+                    <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={40} tick={{ fontSize: 11, fill: CHART_COLORS.axis }} />
                   </>
                 )}
                 <Tooltip
-                  cursor={{ fill: "var(--accent)" }}
+                  cursor={{ fill: CHART_COLORS.grid, fillOpacity: 0.5 }}
                   content={({ active, payload, label }) =>
                     active && payload?.length ? (
                       <div className="rounded-lg border bg-popover px-3 py-2 text-sm shadow-md">
@@ -68,7 +70,7 @@ export function BarChartCard({
                     ) : null
                   }
                 />
-                <Bar dataKey="value" fill={color} radius={horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0]} maxBarSize={horizontal ? 18 : 14} />
+                <Bar dataKey="value" isAnimationActive={false} fill={color} radius={horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0]} maxBarSize={horizontal ? 18 : 14} />
               </BarChart>
             </ResponsiveContainer>
           </div>
