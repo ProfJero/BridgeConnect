@@ -12,6 +12,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // BridgeConnect: legacy static prototype and generated artefacts.
+    "legacy/**",
+    "playwright-report/**",
+    "test-results/**",
+    "coverage/**",
+    "scripts/.*",
   ]),
 ]);
 
