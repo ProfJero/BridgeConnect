@@ -9,7 +9,11 @@ Target: **Vercel** (Next.js) + **Supabase** (hosted project).
    npx supabase link --project-ref <ref>
    npx supabase db push
    ```
-   (The development project *ProfJero Digital Studio* already has these migrations applied.)
+   **Status of the development project *ProfJero Digital Studio* (`mptavpfiweavlhmmasii`):** migrations 0001,
+   0002 and the first part of 0003 were applied through the Supabase MCP connector; the remaining SQL is in a
+   one-time script (`remote-setup/01_complete_schema.sql`, generated from the migrations and verified to produce a
+   schema identical to a clean build) to run in the dashboard SQL editor. It also aligns the project's migration
+   history with this repository, after which `supabase db push` works normally.
 2. **Do not run `seed.sql` in production.** For a staging/demo project you may load it, then purge it before launch
    with `supabase/scripts/remove_demo_data.sql`.
 3. Authentication settings:

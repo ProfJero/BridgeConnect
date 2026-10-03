@@ -49,3 +49,6 @@ supabase/.temp
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+# one-off remote bootstrap scripts (may contain credentials)
+/remote-setup/
