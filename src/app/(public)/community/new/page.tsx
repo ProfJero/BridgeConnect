@@ -8,8 +8,9 @@ import { canUseCapability, type EntityCapability } from "@/lib/auth/permissions"
 import { requireViewer } from "@/lib/auth/session";
 import { uuidParam } from "@/lib/search-params";
 import { createClient } from "@/lib/supabase/server";
+import { noIndex } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Create a post" };
+export const metadata: Metadata = { title: "Create a post", robots: noIndex };
 
 export default async function CreatePostPage({ searchParams }: PageProps<"/community/new">) {
   const as = uuidParam((await searchParams).as);

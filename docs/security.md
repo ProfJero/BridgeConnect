@@ -76,7 +76,8 @@ and a sufficient membership role. Suspending an entity instantly removes it and 
   `job-applications` (private PDFs; applicant + the hiring entity's editors). Buckets enforce MIME/size; SVG and
   HTML are rejected.
 - **Links:** notification links and ad destinations must be in-app paths (prevents phishing/open redirects).
-- **Output:** all user content is rendered as text by React; no `dangerouslySetInnerHTML`.
+- **Output:** all user content is rendered as text by React. The only `dangerouslySetInnerHTML` is the JSON-LD
+  component (`components/shared/json-ld.tsx`), which escapes `<` as `\u003c` (unit-tested).
 - **Headers:** CSP (self + the Supabase project), `X-Frame-Options: DENY`, `nosniff`, strict referrer policy,
   HSTS in production.
 - **Errors:** only deliberate, user-safe database messages are shown; everything else is replaced and reported.

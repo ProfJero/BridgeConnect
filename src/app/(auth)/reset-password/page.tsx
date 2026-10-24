@@ -4,8 +4,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ResetPasswordForm } from "@/features/auth/components/password-forms";
 import { getViewer } from "@/lib/auth/session";
+import { noIndex } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Choose a new password" };
+export const metadata: Metadata = { title: "Choose a new password", robots: noIndex };
 
 export default async function ResetPasswordPage() {
   const viewer = await getViewer();

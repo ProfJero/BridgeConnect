@@ -13,8 +13,9 @@ import { ENTITY_TYPE_LABEL } from "@/features/directory/constants";
 import { getCommunityName } from "@/features/locations/queries";
 import { requireViewer } from "@/lib/auth/session";
 import { humanize } from "@/lib/format";
+import { noIndex } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "My profile" };
+export const metadata: Metadata = { title: "My profile", robots: noIndex };
 
 export default async function ProfilePage() {
   const viewer = await requireViewer("/profile");

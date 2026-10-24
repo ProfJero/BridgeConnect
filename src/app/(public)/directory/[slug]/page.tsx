@@ -8,10 +8,12 @@ import { ProductCard } from "@/components/cards/product-card";
 import { EventCard, JobCard } from "@/components/cards/listing-cards";
 import { EntityAvatar } from "@/components/shared/avatars";
 import { Section } from "@/components/shared/page-header";
+import { JsonLd } from "@/components/shared/json-ld";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { VerifiedBadge } from "@/components/shared/verified-badge";
 import { FavouriteButton } from "@/components/widgets/favourite-button";
 import { ReportDialog } from "@/components/widgets/report-dialog";
+import { ShareButton } from "@/components/widgets/share-button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,8 +22,11 @@ import { ENTITY_TYPE_LABEL, SECTOR_LABEL } from "@/features/directory/constants"
 import { getEntityBySlug, getEntityListings } from "@/features/directory/queries";
 import { isFavourite } from "@/features/favourites/queries";
 import { getViewer } from "@/lib/auth/session";
+import { telLink, whatsappLink } from "@/lib/contact";
 import { formatDate, formatMoney, formatRelative } from "@/lib/format";
+import { excerpt, pageMetadata } from "@/lib/seo";
 import { publicMediaUrl } from "@/lib/storage";
+import { breadcrumbSchema, entitySchema } from "@/lib/structured-data";
 
 const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
 const DAY_LABEL: Record<(typeof DAYS)[number], string> = {
@@ -31,7 +36,18 @@ type Hours = Partial<Record<(typeof DAYS)[number], { open: string; close: string
 
 export async function generateMetadata({ params }: PageProps<"/directory/[slug]">): Promise<Metadata> {
   const entity = await getEntityBySlug((await params).slug);
-  return entity ? { title: entity.name, description: entity.tagline ?? undefined } : { title: "Not found" };
+  if (!entity) return { title: "Not found" };
+  const place = entity.communities ? ` in ${entity.communities.name}` : "";
+  return pageMetadata({
+    title: `${entity.name} — ${ENTITY_TYPE_LABEL[entity.entity_type]}${place}`,
+    description: excerpt(
+      [entity.tagline, entity.description, `${SECTOR_LABEL[entity.sector]}${place}. Verified on BridgeConnect.`]
+        .filter(Boolean)
+        .join(" "),
+    ),
+    path: `/directory/${entity.slug}`,
+    image: publicMediaUrl(entity.cover_path) ?? publicMediaUrl(entity.logo_path),
+  });
 }
 
 export default async function EntityProfilePage({ params }: PageProps<"/directory/[slug]">) {
@@ -49,10 +65,22 @@ export default async function EntityProfilePage({ params }: PageProps<"/director
   const community = entity.communities;
   const about = entity.organisation_profiles?.mission;
   const biz = entity.business_profiles;
-  const whatsapp = entity.whatsapp?.replace(/[^0-9]/g, "");
+  const whatsapp = whatsappLink(entity.whatsapp, `Hello ${entity.name}, I found you on BridgeConnect.`);
+  const call = telLink(entity.phone);
 
   return (
     <div className="space-y-6">
+      {entity.status === "active" ? (
+        <JsonLd
+          data={entitySchema({
+            ...entity,
+            logo_url: publicMediaUrl(entity.logo_path),
+            cover_url: cover,
+            opening_hours: hours,
+          })}
+        />
+      ) : null}
+      <JsonLd data={breadcrumbSchema([{ name: "Directory", path: "/explore" }, { name: entity.name, path: `/directory/${entity.slug}` }])} />
       {entity.status !== "active" ? (
         <Alert variant="warning">
           <AlertDescription>
@@ -79,6 +107,7 @@ export default async function EntityProfilePage({ params }: PageProps<"/director
                 </Button>
               ) : null}
               <FavouriteButton kind="entity" id={entity.id} initial={saved} signedIn={Boolean(viewer)} />
+              <ShareButton path={`/directory/${entity.slug}`} title={entity.name} text={entity.tagline ?? undefined} />
               {!isMember ? <ReportDialog targetKind="entity" targetId={entity.id} signedIn={Boolean(viewer)} variant="outline" /> : null}
             </div>
           </div>
@@ -101,16 +130,16 @@ export default async function EntityProfilePage({ params }: PageProps<"/director
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            {entity.phone ? (
+            {call ? (
               <Button asChild>
-                <a href={`tel:${entity.phone.replace(/\s/g, "")}`}>
+                <a href={call}>
                   <Phone aria-hidden /> Call
                 </a>
               </Button>
             ) : null}
             {whatsapp ? (
               <Button asChild variant="green">
-                <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer">
+                <a href={whatsapp} target="_blank" rel="noopener noreferrer">
                   <MessageCircle aria-hidden /> WhatsApp
                 </a>
               </Button>

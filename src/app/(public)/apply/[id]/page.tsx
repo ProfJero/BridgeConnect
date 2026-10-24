@@ -14,8 +14,9 @@ import { DocumentUploader } from "@/features/applications/components/document-up
 import { getApplication, signDocumentUrls } from "@/features/applications/queries";
 import { ENTITY_TYPE_LABEL, SECTOR_LABEL } from "@/features/directory/constants";
 import { isUuid, requireViewer } from "@/lib/auth/session";
+import { noIndex } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Application" };
+export const metadata: Metadata = { title: "Application", robots: noIndex };
 
 export default async function ApplicationPage({ params }: PageProps<"/apply/[id]">) {
   const { id } = await params;

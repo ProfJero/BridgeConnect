@@ -77,3 +77,14 @@ describe("BarChartCard", () => {
     expect(screen.getByText("No data for this period yet.")).toBeInTheDocument();
   });
 });
+
+describe("JsonLd", () => {
+  it("escapes < so user content cannot close the script element", async () => {
+    const { JsonLd } = await import("@/components/shared/json-ld");
+    const { container } = render(<JsonLd data={{ name: "</script><script>alert(1)</script>" }} />);
+    const script = container.querySelector('script[type="application/ld+json"]')!;
+    expect(script.innerHTML).not.toContain("</script>");
+    expect(script.innerHTML).toContain("\\u003c/script>");
+    expect(JSON.parse(script.textContent!)).toEqual({ name: "</script><script>alert(1)</script>" });
+  });
+});

@@ -29,7 +29,7 @@ decides what to show.
 Next.js 16 (App Router, Server Components, Server Actions) · React 19 · TypeScript (strict) · Tailwind CSS 4 ·
 shadcn/ui-style components on Radix · Lucide · Supabase (Postgres 17, Auth, Storage, Realtime) via `@supabase/ssr` ·
 Zod · React Hook Form · TanStack Table · Recharts · Vitest + React Testing Library · Playwright · pgTAP ·
-Sentry-ready · Vercel-compatible.
+Sentry-ready · deployed on Cloudflare Workers (OpenNext) · installable PWA.
 
 ## Quick start (local)
 
@@ -66,6 +66,8 @@ must never exist in production (see [docs/deployment.md](docs/deployment.md)).
 | --- | --- |
 | `npm run dev` / `build` / `start` | Next.js |
 | `npm run check` | Typecheck + lint + unit/component tests |
+| `npm run preview` | Build for Cloudflare and run it locally in the Workers runtime (port 8787) |
+| `npm run deploy` | Build and deploy to Cloudflare from your machine (`wrangler login` first) |
 | `npm test` | Unit + component tests (Vitest) |
 | `npm run test:integration` | API-level security tests against the local stack |
 | `npm run test:db` | pgTAP database security suite |
@@ -80,7 +82,7 @@ must never exist in production (see [docs/deployment.md](docs/deployment.md)).
 - [docs/security.md](docs/security.md) — authentication & authorization model
 - [docs/database.md](docs/database.md) — schema, migrations, RLS conventions
 - [docs/environment.md](docs/environment.md) — environment variables
-- [docs/deployment.md](docs/deployment.md) — Supabase + Vercel deployment and go-live checklist
+- [docs/deployment.md](docs/deployment.md) — Supabase + Cloudflare deployment, Search Console and go-live checklist
 - [docs/testing.md](docs/testing.md) — test strategy and how to run each suite
 
 The original static HTML prototype is preserved for reference in [`legacy/prototype`](legacy/prototype); it is

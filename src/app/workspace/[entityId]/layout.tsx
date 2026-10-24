@@ -1,4 +1,5 @@
 import { ExternalLink } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Logo } from "@/components/brand/logo";
@@ -11,6 +12,9 @@ import { WORKSPACE_MODULES } from "@/features/workspace/modules";
 import { hasMembershipRole } from "@/lib/auth/permissions";
 import { getWorkspace } from "@/lib/auth/session";
 import { humanize } from "@/lib/format";
+import { noIndex } from "@/lib/seo";
+
+export const metadata: Metadata = { robots: noIndex };
 
 export default async function WorkspaceLayout({ children, params }: LayoutProps<"/workspace/[entityId]">) {
   const { entityId } = await params;

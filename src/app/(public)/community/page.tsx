@@ -12,8 +12,14 @@ import { getMyReactions, listFeed } from "@/features/community/queries";
 import { getCommunityOptions } from "@/features/locations/queries";
 import { getViewer } from "@/lib/auth/session";
 import { uuidParam } from "@/lib/search-params";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Community" };
+export const metadata: Metadata = pageMetadata({
+  title: "Community",
+  description:
+    "Local news, questions, recommendations and lost & found posts from your neighbours.",
+  path: "/community",
+});
 
 export default async function CommunityPage({ searchParams }: PageProps<"/community">) {
   const sp = await searchParams;

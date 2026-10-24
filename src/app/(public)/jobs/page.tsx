@@ -14,8 +14,14 @@ import { listJobs } from "@/features/jobs/queries";
 import { getCommunityOptions } from "@/features/locations/queries";
 import { getCategories } from "@/features/marketplace/queries";
 import { stringParam, uuidParam } from "@/lib/search-params";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Jobs" };
+export const metadata: Metadata = pageMetadata({
+  title: "Jobs",
+  description:
+    "Latest job vacancies from verified employers in your community: full-time, part-time, internships and apprenticeships.",
+  path: "/jobs",
+});
 
 export default async function JobsPage({ searchParams }: PageProps<"/jobs">) {
   const sp = await searchParams;

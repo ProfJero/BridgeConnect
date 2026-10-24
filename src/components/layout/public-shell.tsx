@@ -11,6 +11,7 @@ import { AccountMenu } from "./account-menu";
 import { EmergencyBanner } from "./emergency-banner";
 import { NotificationBell } from "./notification-bell";
 import { DesktopNav, MobileTabBar } from "./public-nav";
+import { SiteFooter } from "./site-footer";
 
 export async function PublicShell({ children }: { children: React.ReactNode }) {
   const viewer = await getViewer();
@@ -63,15 +64,10 @@ export async function PublicShell({ children }: { children: React.ReactNode }) {
           Your account is suspended. You can browse BridgeConnect but cannot post, order or apply.
         </div>
       ) : null}
-      <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 pt-5 pb-28 lg:pb-12">
+      <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 pt-5 pb-10 lg:pb-12">
         {children}
       </main>
-      <footer className="hidden border-t bg-card lg:block">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-6 text-sm text-muted-foreground">
-          <Logo showTagline />
-          <p>© {new Date().getFullYear()} Digital Bridge Initiative</p>
-        </div>
-      </footer>
+      <SiteFooter />
       <MobileTabBar />
     </div>
   );

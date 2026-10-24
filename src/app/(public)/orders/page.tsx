@@ -9,8 +9,9 @@ import { Button } from "@/components/ui/button";
 import { listMyOrders } from "@/features/orders/queries";
 import { requireViewer } from "@/lib/auth/session";
 import { formatDate, formatMoney } from "@/lib/format";
+import { noIndex } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "My orders" };
+export const metadata: Metadata = { title: "My orders", robots: noIndex };
 
 export default async function OrdersPage() {
   const viewer = await requireViewer("/orders");

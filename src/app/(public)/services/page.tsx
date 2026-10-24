@@ -11,8 +11,14 @@ import { SearchForm } from "@/components/widgets/search-form";
 import { getCommunityOptions } from "@/features/locations/queries";
 import { getCategories, listServices } from "@/features/marketplace/queries";
 import { stringParam, uuidParam } from "@/lib/search-params";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Services" };
+export const metadata: Metadata = pageMetadata({
+  title: "Local services",
+  description:
+    "Find trusted local service providers — artisans, repairs, transport, beauty, tutoring and more — verified by BridgeConnect.",
+  path: "/services",
+});
 
 export default async function ServicesPage({ searchParams }: PageProps<"/services">) {
   const sp = await searchParams;

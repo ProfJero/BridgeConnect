@@ -5,9 +5,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { EntityAvatar } from "@/components/shared/avatars";
+import { JsonLd } from "@/components/shared/json-ld";
 import { VerifiedBadge } from "@/components/shared/verified-badge";
 import { FavouriteButton } from "@/components/widgets/favourite-button";
 import { ReportDialog } from "@/components/widgets/report-dialog";
+import { ShareButton } from "@/components/widgets/share-button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,11 +18,20 @@ import { getEventBySlug, getMyRsvp } from "@/features/events/queries";
 import { isFavourite } from "@/features/favourites/queries";
 import { getViewer } from "@/lib/auth/session";
 import { formatDateTime } from "@/lib/format";
+import { excerpt, pageMetadata } from "@/lib/seo";
 import { publicMediaUrl } from "@/lib/storage";
+import { breadcrumbSchema, eventSchema } from "@/lib/structured-data";
 
 export async function generateMetadata({ params }: PageProps<"/events/[slug]">): Promise<Metadata> {
   const event = await getEventBySlug((await params).slug);
-  return { title: event?.title ?? "Event not found" };
+  if (!event) return { title: "Event not found" };
+  const where = event.is_online ? "Online" : [event.venue, event.communities?.name].filter(Boolean).join(", ");
+  return pageMetadata({
+    title: event.title,
+    description: excerpt(`${formatDateTime(event.starts_at)} · ${where}. ${event.description}`),
+    path: `/events/${event.slug}`,
+    image: publicMediaUrl(event.cover_path),
+  });
 }
 
 export default async function EventPage({ params }: PageProps<"/events/[slug]">) {
@@ -37,6 +48,8 @@ export default async function EventPage({ params }: PageProps<"/events/[slug]">)
 
   return (
     <article className="mx-auto max-w-3xl space-y-6">
+      <JsonLd data={eventSchema({ ...event, cover_url: cover })} />
+      <JsonLd data={breadcrumbSchema([{ name: "Events", path: "/events" }, { name: event.title, path: `/events/${event.slug}` }])} />
       {cover ? (
         <div className="relative aspect-[2/1] overflow-hidden rounded-2xl bg-muted">
           <Image src={cover} alt="" fill priority sizes="(min-width: 768px) 768px, 100vw" className="object-cover" />
@@ -76,8 +89,9 @@ export default async function EventPage({ params }: PageProps<"/events/[slug]">)
         <h2 className="text-lg font-semibold">About this event</h2>
         <p className="leading-relaxed whitespace-pre-line">{event.description}</p>
       </section>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <FavouriteButton kind="event" id={event.id} initial={saved} signedIn={Boolean(viewer)} />
+        <ShareButton path={`/events/${event.slug}`} title={event.title} text={formatDateTime(event.starts_at)} />
         <ReportDialog targetKind="event" targetId={event.id} signedIn={Boolean(viewer)} variant="outline" />
       </div>
     </article>

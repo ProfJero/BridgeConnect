@@ -1,54 +1,123 @@
 # Deployment
 
-Target: **Vercel** (Next.js) + **Supabase** (hosted project).
+Target: **Cloudflare Workers** (Next.js via the [OpenNext Cloudflare adapter](https://opennext.js.org/cloudflare))
++ **Supabase** (hosted project *ProfJero Digital Studio*, ref `mptavpfiweavlhmmasii`).
 
-## 1. Supabase project
+> **Pages or Workers?** Cloudflare now recommends Workers (with static assets) for full-stack Next.js. The old
+> Pages adapter `@cloudflare/next-on-pages` is deprecated. Both live under **Workers & Pages** in the dashboard
+> and both connect to GitHub the same way; choose **Workers → Import a repository**. Server rendering, Server
+> Actions, middleware and the static files all run in that one Worker — there is nothing extra to wire up.
 
-1. Apply migrations (from a machine with the Supabase CLI linked to the project):
-   ```bash
-   npx supabase link --project-ref <ref>
-   npx supabase db push
-   ```
-   **Status of the development project *ProfJero Digital Studio* (`mptavpfiweavlhmmasii`):** migrations 0001,
-   0002 and the first part of 0003 were applied through the Supabase MCP connector; the remaining SQL is in a
-   one-time script (`remote-setup/01_complete_schema.sql`, generated from the migrations and verified to produce a
-   schema identical to a clean build) to run in the dashboard SQL editor. It also aligns the project's migration
-   history with this repository, after which `supabase db push` works normally.
-2. **Do not run `seed.sql` in production.** For a staging/demo project you may load it, then purge it before launch
-   with `supabase/scripts/remove_demo_data.sql`.
-3. Authentication settings:
-   - URL configuration → Site URL: `https://<your-domain>`; Redirect URLs: `https://<your-domain>/auth/callback`,
-     `https://<your-domain>/auth/confirm` (plus preview URLs if used).
-   - Email: keep **Confirm email** enabled; set minimum password length to **10** and require lower/upper/digits
-     (matches the app's validation).
-   - Enable leaked-password protection and CAPTCHA (hCaptcha/Turnstile) for sign-up if abuse appears.
-   - Configure a custom SMTP provider for production email deliverability.
-4. Storage buckets and policies are created by migrations — verify `public-media`, `verification-documents`
-   and `job-applications` exist.
-5. Bootstrap the first owner: sign up in the app, then run `supabase/scripts/grant_platform_owner.sql` (edit the
-   email) in the SQL editor. Grant every other role from **/admin/users**.
-6. Review **Advisors → Security / Performance** in the dashboard after each migration.
+## 1. Supabase project (done for `mptavpfiweavlhmmasii`)
 
-## 2. Vercel
+Status: all migrations applied (history matches `supabase/migrations/`), 42 tables all with RLS, storage buckets
+and policies in place, launch locations loaded (`supabase/production/initial_locations.sql`), Security Advisor
+shows only the expected warnings listed in [security.md](security.md#supabase-advisor-baseline). No demo data.
 
-1. Import the repository; framework preset **Next.js** (build `next build`, Node 20.9+).
-2. Environment variables (Production and Preview): see [environment.md](environment.md).
-3. Deploy. The app is fully dynamic (per-user rendering), so no special caching configuration is required.
+For future migrations: `npx supabase link --project-ref mptavpfiweavlhmmasii && npx supabase db push`.
 
-## 3. Go-live checklist
+**Dashboard settings to check before launch** (Supabase → your project):
+
+1. **Authentication → URL Configuration**
+   - Site URL: `https://<your-domain>`
+   - Redirect URLs: `https://<your-domain>/auth/callback`, `https://<your-domain>/auth/confirm`, and
+     `https://bridgeconnect.<your-subdomain>.workers.dev/**` while testing on the workers.dev URL.
+2. **Authentication → Providers → Email**: keep *Confirm email* on.
+   **Authentication → Policies / Passwords**: minimum length **10**, require lower + upper case + digits, enable
+   *leaked password protection*.
+3. **Authentication → Emails → SMTP**: configure a real SMTP provider (Resend, Brevo, Postmark, …). Supabase's
+   built-in mailer is limited to a few emails per hour — not enough for launch.
+4. **Authentication → Attack protection**: enable CAPTCHA (Cloudflare Turnstile) if sign-up abuse appears.
+5. Bootstrap the first owner: sign up on the live site, confirm the email, then run
+   `supabase/scripts/grant_platform_owner.sql` (edit the email) in the SQL editor. Grant all other roles from
+   **/admin/users**.
+
+**Never run `supabase/seed.sql` in production** (demo data). `supabase/scripts/remove_demo_data.sql` purges it
+from a staging project.
+
+## 2. Cloudflare (Workers Builds, connected to GitHub)
+
+Dashboard → **Workers & Pages → Create → Workers → Import a repository** → pick `ProfJero/BridgeConnect`.
+
+| Setting | Value |
+| --- | --- |
+| Project / Worker name | `bridgeconnect` (must match `name` in `wrangler.jsonc`) |
+| Production branch | `main` (merge the release branch into it) |
+| Root directory | `/` |
+| Build command | `npx opennextjs-cloudflare build` |
+| Deploy command | `npx opennextjs-cloudflare deploy` |
+| Non-production branch deploy command | `npx wrangler versions upload` (preview URLs for other branches) |
+
+**Build variables** (Settings → Build → *Variables and secrets*). `NEXT_PUBLIC_*` values are baked into the
+bundle at build time, so they **must** be build variables:
+
+| Name | Value |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://mptavpfiweavlhmmasii.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `sb_publishable_JmZZfIPo6bnPPYjn9Iayzg_DRm0_ue3` |
+| `NEXT_PUBLIC_SITE_URL` | `https://<your-domain>` (no trailing slash) |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | the `content` value of Search Console's HTML tag (optional) |
+| `NEXT_PUBLIC_SENTRY_DSN` | Sentry DSN (optional, recommended) |
+| `NODE_VERSION` | `22` |
+
+Add the same `NEXT_PUBLIC_*` values under Settings → *Variables and secrets* (runtime) too — harmless, and keeps
+server code consistent if a value is ever read at runtime. There are **no secrets** to add: the app has no
+service-role key by design.
+
+Then **Save and deploy**. Every push to `main` redeploys; pull requests get preview URLs.
+
+**Custom domain:** Worker → Settings → *Domains & Routes* → Add → Custom domain (e.g. `bridgeconnect.org` and
+`www.`). The domain's DNS must be on Cloudflare. Update `NEXT_PUBLIC_SITE_URL` and the Supabase URL settings, then
+redeploy.
+
+**Manual deploy from a laptop** (alternative to Git integration):
+
+```bash
+npm ci
+npx wrangler login
+npm run deploy        # = opennextjs-cloudflare build && opennextjs-cloudflare deploy
+```
+
+**Local production preview** in the Workers runtime: `npm run preview` (http://localhost:8787).
+
+### How it is wired
+
+- `open-next.config.ts` — adapter config (no incremental cache: every page is per-user and dynamic).
+- `wrangler.jsonc` — Worker name, `nodejs_compat`, static assets binding, self-reference service binding, and
+  `global_fetch_strictly_public` (blocks server-side fetches to private IPs — SSRF hardening).
+- `src/middleware.ts` — Supabase session refresh. Kept on the Edge `middleware` convention because OpenNext does not
+  yet officially support Next 16's Node `proxy.ts`.
+- `public/_headers` — cache and service-worker headers for files served straight from Cloudflare's asset store.
+- Images are served unoptimised from Supabase Storage's CDN (no paid Cloudflare Images binding needed).
+
+## 3. Google Search Console
+
+1. Search Console → *Add property* → **Domain** (verify with a DNS TXT record in Cloudflare DNS — easiest), or
+   **URL prefix** with the *HTML tag* method: copy the `content="…"` value into
+   `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` and redeploy.
+2. *Sitemaps* → submit `https://<your-domain>/sitemap.xml` (lists hubs plus every public business, product,
+   service, open job and upcoming event; regenerated on each request).
+3. Use *URL Inspection* on the home page and one job page; the Rich Results Test should detect **JobPosting**,
+   **Event**, **Product**, **LocalBusiness/Organization**, **BreadcrumbList** and the **WebSite** search box.
+4. `robots.txt` blocks admin, workspaces, auth and personal pages; those pages also send `noindex`.
+
+## 4. Go-live checklist
 
 - [ ] `npm run check`, `npm run test:db`, `npm run test:integration`, `npm run test:e2e` green on the release commit
-- [ ] Migrations applied; `supabase migration list` matches the repo
-- [ ] No demo accounts: `select count(*) from profiles where is_demo` returns 0
-- [ ] First platform owner granted; demo/test roles revoked
-- [ ] Auth URLs, password policy, email confirmation and SMTP configured
-- [ ] Supabase Security Advisor shows no errors
-- [ ] `NEXT_PUBLIC_SENTRY_DSN` set (recommended) and an error test event received
-- [ ] Locations for the launch area created/activated in **/admin/locations**
-- [ ] Platform settings reviewed in **/admin/settings** (e.g. post approval, rate limits)
-- [ ] Custom domain with HTTPS; HSTS header present
+- [ ] Cloudflare build green; site loads on the workers.dev URL, then on the custom domain (HTTPS)
+- [ ] `NEXT_PUBLIC_SITE_URL` = final domain; Supabase Site URL + redirect URLs updated
+- [ ] Custom SMTP configured; sign-up confirmation and password-reset emails arrive and links work
+- [ ] First platform owner granted (`grant_platform_owner.sql`); no demo accounts
+      (`select count(*) from profiles where is_demo` = 0)
+- [ ] Launch locations active in **/admin/locations**; platform settings reviewed in **/admin/settings**
+- [ ] Supabase Security Advisor: only the expected warnings
+- [ ] Sentry DSN set and a test error received (optional)
+- [ ] Search Console verified, sitemap submitted
+- [ ] PWA: Chrome DevTools → Application → Manifest shows no errors; "Install app" works on Android
+- [ ] Supabase project on a paid plan (free projects pause after a week of inactivity)
 
 ## Rollbacks
 
-Migrations are forward-only. To undo a change, write a new migration that reverses it. Never edit an applied
-migration or modify production tables by hand.
+- **App:** Cloudflare dashboard → Worker → *Deployments* → roll back to a previous version (instant).
+- **Database:** migrations are forward-only. Write a new migration that reverses the change; never edit an
+  applied migration or modify production tables by hand.

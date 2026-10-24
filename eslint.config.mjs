@@ -17,6 +17,9 @@ const eslintConfig = defineConfig([
     "playwright-report/**",
     "test-results/**",
     "coverage/**",
+    ".open-next/**",
+    ".wrangler/**",
+    "cloudflare-env.d.ts",
     "scripts/.*",
   ]),
 ]);

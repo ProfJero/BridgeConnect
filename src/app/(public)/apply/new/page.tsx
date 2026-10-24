@@ -5,8 +5,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ApplicationForm } from "@/features/applications/components/application-form";
 import { getCommunityOptions } from "@/features/locations/queries";
 import { requireViewer } from "@/lib/auth/session";
+import { noIndex } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "New application" };
+export const metadata: Metadata = { title: "New application", robots: noIndex };
 
 export default async function NewApplicationPage() {
   const viewer = await requireViewer("/apply/new");

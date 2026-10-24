@@ -3,8 +3,14 @@ import type { Metadata } from "next";
 import { parsePage } from "@/components/shared/pagination";
 import { DirectoryListing } from "@/features/directory/components/directory-listing";
 import { stringParam, uuidParam } from "@/lib/search-params";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "NGOs & community organisations" };
+export const metadata: Metadata = pageMetadata({
+  title: "NGOs & community organisations",
+  description:
+    "NGOs, faith organisations and community groups working in your area.",
+  path: "/ngos",
+});
 
 export default async function Page({ searchParams }: PageProps<"/ngos">) {
   const sp = await searchParams;

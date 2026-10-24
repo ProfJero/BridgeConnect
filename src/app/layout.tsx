@@ -1,8 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 
+import { InstallPrompt } from "@/components/pwa/install-prompt";
+import { ServiceWorker } from "@/components/pwa/service-worker";
 import { Toaster } from "@/components/ui/sonner";
 import { env } from "@/lib/env";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from "@/lib/seo";
 
 import "./globals.css";
 
@@ -11,12 +14,37 @@ const inter = Inter({ variable: "--font-inter", subsets: ["latin"], display: "sw
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
   title: {
-    default: "BridgeConnect — Connecting Communities. Empowering Lives.",
-    template: "%s · BridgeConnect",
+    default: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    template: `%s · ${SITE_NAME}`,
   },
-  description:
-    "BridgeConnect connects residents with trusted businesses, organisations, services, jobs, events and emergency information in their community. A Digital Bridge Initiative platform.",
-  applicationName: "BridgeConnect",
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    "Ghana community platform",
+    "Central Region",
+    "Abura-Asebu-Kwamankese",
+    "local businesses Ghana",
+    "jobs in Ghana",
+    "community events",
+    "emergency alerts Ghana",
+    "Digital Bridge Initiative",
+  ],
+  authors: [{ name: "Digital Bridge Initiative" }],
+  creator: "Digital Bridge Initiative",
+  publisher: "Digital Bridge Initiative",
+  category: "community",
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: "en_GH",
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+  },
+  twitter: { card: "summary_large_image", title: `${SITE_NAME} — ${SITE_TAGLINE}`, description: SITE_DESCRIPTION },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
+  appleWebApp: { capable: true, title: SITE_NAME, statusBarStyle: "default" },
+  formatDetection: { telephone: false },
+  verification: env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ? { google: env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } : undefined,
 };
 
 export const viewport: Viewport = {
@@ -38,6 +66,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         {children}
         <Toaster />
+        <InstallPrompt />
+        <ServiceWorker />
       </body>
     </html>
   );

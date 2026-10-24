@@ -1,10 +1,12 @@
 import { ArrowRight, MapPin, PlusCircle, Siren } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ProductCard } from "@/components/cards/product-card";
 import { EventCard, JobCard } from "@/components/cards/listing-cards";
 import { DIRECTORY_NAV } from "@/components/layout/nav-config";
 import { EmptyState } from "@/components/shared/empty-state";
+import { JsonLd } from "@/components/shared/json-ld";
 import { Section } from "@/components/shared/page-header";
 import { SeverityBadge } from "@/components/shared/status-badge";
 import { SearchForm } from "@/components/widgets/search-form";
@@ -18,6 +20,20 @@ import { getCommunityName } from "@/features/locations/queries";
 import { listProducts } from "@/features/marketplace/queries";
 import { AdSlot } from "@/features/ads/components/ad-slot";
 import { getViewer } from "@/lib/auth/session";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from "@/lib/seo";
+import { organizationSchema, websiteSchema } from "@/lib/structured-data";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: SITE_NAME,
+    locale: "en_GH",
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+  },
+};
 
 export default async function HomePage() {
   const viewer = await getViewer();
@@ -35,6 +51,7 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-8">
+      <JsonLd data={[organizationSchema(), websiteSchema()]} />
       <section className="overflow-hidden rounded-2xl bg-primary px-5 py-6 text-primary-foreground sm:px-8 sm:py-10">
         <p className="text-sm font-medium opacity-90">
           {firstName ? `Good to see you, ${firstName}` : "Welcome to BridgeConnect"}

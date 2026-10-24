@@ -7,8 +7,9 @@ import { Pagination, parsePage } from "@/components/shared/pagination";
 import { NotificationList } from "@/features/notifications/components/notification-list";
 import { getUnreadNotificationCount, listNotifications } from "@/features/notifications/queries";
 import { requireViewer } from "@/lib/auth/session";
+import { noIndex } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Notifications" };
+export const metadata: Metadata = { title: "Notifications", robots: noIndex };
 
 export default async function NotificationsPage({ searchParams }: PageProps<"/notifications">) {
   await requireViewer("/notifications");

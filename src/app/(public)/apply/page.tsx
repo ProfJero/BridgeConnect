@@ -9,8 +9,14 @@ import { listMyApplications } from "@/features/applications/queries";
 import { ENTITY_TYPE_LABEL } from "@/features/directory/constants";
 import { requireViewer } from "@/lib/auth/session";
 import { formatDate } from "@/lib/format";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Register your organisation" };
+export const metadata: Metadata = pageMetadata({
+  title: "Register your organisation",
+  description:
+    "Get your business or organisation verified on BridgeConnect to sell, hire, post events and reach your community.",
+  path: "/apply",
+});
 
 const STEPS = [
   { icon: FileCheck2, title: "Apply", text: "Tell us about your business or organisation." },

@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import { createClient } from "@/lib/supabase/server";
 
 export const EVENT_CARD_FIELDS =
@@ -33,16 +35,16 @@ export async function listEvents(filters: {
 
 export type EventCardData = Awaited<ReturnType<typeof listEvents>>["items"][number];
 
-export async function getEventBySlug(slug: string) {
+export const getEventBySlug = cache(async (slug: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("events")
-    .select("*, listing_categories(name), communities(name), entities!inner(id, name, slug, logo_path)")
+    .select("*, listing_categories(name), communities(name, districts(name, regions(name))), entities!inner(id, name, slug, logo_path, website)")
     .eq("slug", slug)
     .maybeSingle();
   if (error) throw error;
   return data;
-}
+});
 
 export async function getMyRsvp(eventId: string, userId: string) {
   const supabase = await createClient();

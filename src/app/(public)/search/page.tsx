@@ -10,8 +10,9 @@ import { SEARCH_KINDS, searchDirectory, searchResultHref, type SearchKind } from
 import { getViewer } from "@/lib/auth/session";
 import { enumParam, stringParam } from "@/lib/search-params";
 import { cn } from "@/lib/utils";
+import { noIndex } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Search" };
+export const metadata: Metadata = { title: "Search", robots: noIndex };
 
 const KIND_LABEL: Record<SearchKind, string> = {
   entity: "Organisations",

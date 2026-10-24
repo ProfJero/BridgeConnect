@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
 
@@ -32,16 +34,16 @@ export async function listJobs(filters: {
 
 export type JobCardData = Awaited<ReturnType<typeof listJobs>>["items"][number];
 
-export async function getJobBySlug(slug: string) {
+export const getJobBySlug = cache(async (slug: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("jobs")
-    .select("*, listing_categories(name), communities(name), entities!inner(id, name, slug, logo_path, entity_type)")
+    .select("*, listing_categories(name), communities(name, districts(name, regions(name))), entities!inner(id, name, slug, logo_path, entity_type, website)")
     .eq("slug", slug)
     .maybeSingle();
   if (error) throw error;
   return data;
-}
+});
 
 export async function getMyApplicationForJob(jobId: string, userId: string) {
   const supabase = await createClient();

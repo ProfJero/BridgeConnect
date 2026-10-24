@@ -5,8 +5,9 @@ import { redirect } from "next/navigation";
 import { SignUpForm } from "@/features/auth/components/sign-up-form";
 import { getCommunityOptions } from "@/features/locations/queries";
 import { getViewer } from "@/lib/auth/session";
+import { noIndex } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Create an account" };
+export const metadata: Metadata = { title: "Create an account", robots: noIndex };
 
 export default async function SignUpPage() {
   if (await getViewer()) redirect("/");

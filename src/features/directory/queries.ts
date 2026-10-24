@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import { createClient } from "@/lib/supabase/server";
 
 import type { EntityType, Sector } from "./constants";
@@ -37,7 +39,7 @@ export async function listEntities(filters: EntityFilters) {
 
 export type EntityCardData = Awaited<ReturnType<typeof listEntities>>["items"][number];
 
-export async function getEntityBySlug(slug: string) {
+export const getEntityBySlug = cache(async (slug: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("entities")
@@ -48,7 +50,7 @@ export async function getEntityBySlug(slug: string) {
     .maybeSingle();
   if (error) throw error;
   return data;
-}
+});
 
 /** Public listings published by an entity (each query is RLS-filtered). */
 export async function getEntityListings(entityId: string) {

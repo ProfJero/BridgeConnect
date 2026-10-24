@@ -5,8 +5,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getCommunityOptions } from "@/features/locations/queries";
 import { ProfileForm } from "@/features/profile/components/profile-form";
 import { requireViewer } from "@/lib/auth/session";
+import { noIndex } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Edit profile" };
+export const metadata: Metadata = { title: "Edit profile", robots: noIndex };
 
 export default async function EditProfilePage() {
   const viewer = await requireViewer("/profile/edit");

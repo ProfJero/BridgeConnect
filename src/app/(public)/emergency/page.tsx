@@ -11,8 +11,14 @@ import { getCommunityOptions, resolveCommunity } from "@/features/locations/quer
 import { getViewer } from "@/lib/auth/session";
 import { formatRelative, humanize } from "@/lib/format";
 import { uuidParam } from "@/lib/search-params";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Emergency" };
+export const metadata: Metadata = pageMetadata({
+  title: "Emergency information",
+  description:
+    "Active emergency alerts and essential emergency numbers — police 191, fire 192, ambulance 193, national 112.",
+  path: "/emergency",
+});
 
 export default async function EmergencyPage({ searchParams }: PageProps<"/emergency">) {
   const sp = await searchParams;

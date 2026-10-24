@@ -21,6 +21,12 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
+      - name: Cloudflare (OpenNext) build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder_key
+          NEXT_PUBLIC_SITE_URL: https://bridgeconnect.example
+        run: npm run cf:build
 
   database-and-e2e:
     runs-on: ubuntu-latest

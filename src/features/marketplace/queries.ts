@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
 
@@ -48,18 +50,18 @@ export async function listProducts(filters: {
 
 export type ProductCardData = Awaited<ReturnType<typeof listProducts>>["items"][number];
 
-export async function getProductBySlug(slug: string) {
+export const getProductBySlug = cache(async (slug: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
     .select(
-      "*, listing_categories(name, slug), entities!inner(id, name, slug, phone, whatsapp, logo_path, community_id, communities(name), business_profiles(delivery_available, accepts_mobile_money)), product_media(position, media_assets(storage_path, alt_text))",
+      "*, listing_categories(name, slug), entities!inner(id, name, slug, phone, whatsapp, logo_path, community_id, communities(name, districts(name, regions(name))), business_profiles(delivery_available, accepts_mobile_money)), product_media(position, media_assets(storage_path, alt_text))",
     )
     .eq("slug", slug)
     .maybeSingle();
   if (error) throw error;
   return data;
-}
+});
 
 export const SERVICE_CARD_FIELDS =
   "id, name, slug, description, price_from, currency, price_note, service_area, entity_id, entities!inner(name, slug, sector, community_id, communities(name))" as const;
@@ -88,13 +90,13 @@ export async function listServices(filters: {
 
 export type ServiceCardData = Awaited<ReturnType<typeof listServices>>["items"][number];
 
-export async function getServiceBySlug(slug: string) {
+export const getServiceBySlug = cache(async (slug: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("services")
-    .select("*, listing_categories(name), entities!inner(id, name, slug, phone, whatsapp, email, logo_path, communities(name))")
+    .select("*, listing_categories(name), entities!inner(id, name, slug, phone, whatsapp, email, logo_path, communities(name, districts(name, regions(name))))")
     .eq("slug", slug)
     .maybeSingle();
   if (error) throw error;
   return data;
-}
+});

@@ -10,8 +10,14 @@ import { AdSlot } from "@/features/ads/components/ad-slot";
 import { listEntities } from "@/features/directory/queries";
 import { listServices } from "@/features/marketplace/queries";
 import { getViewer } from "@/lib/auth/session";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Explore" };
+export const metadata: Metadata = pageMetadata({
+  title: "Explore your community",
+  description:
+    "Browse verified businesses, schools, health facilities, government offices, NGOs and community groups near you in Ghana.",
+  path: "/explore",
+});
 
 export default async function ExplorePage() {
   const viewer = await getViewer();

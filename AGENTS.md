@@ -29,7 +29,8 @@ BridgeConnect is a production community platform. Read `README.md`, `docs/archit
 - Redirect targets from user input must go through `safeRedirectPath()`.
 - Uploads: validate type/size with `validateFile()`, upload into the caller's own folder, and rely on Storage RLS.
   Private files are served only through short-lived signed URLs.
-- Render user content as text (React escaping). `dangerouslySetInnerHTML` is forbidden.
+- Render user content as text (React escaping). `dangerouslySetInnerHTML` is forbidden — the only exception is
+  `components/shared/json-ld.tsx`, which escapes `<` so structured data can never break out of its script tag.
 
 ## Database
 

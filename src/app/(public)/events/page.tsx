@@ -12,8 +12,14 @@ import { listEvents } from "@/features/events/queries";
 import { getCommunityOptions } from "@/features/locations/queries";
 import { getCategories } from "@/features/marketplace/queries";
 import { stringParam, uuidParam } from "@/lib/search-params";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Events" };
+export const metadata: Metadata = pageMetadata({
+  title: "Events",
+  description:
+    "Upcoming community events, workshops, festivals, health screenings and meetings near you. RSVP in one tap.",
+  path: "/events",
+});
 
 export default async function EventsPage({ searchParams }: PageProps<"/events">) {
   const sp = await searchParams;

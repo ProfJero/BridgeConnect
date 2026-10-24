@@ -14,8 +14,14 @@ import { AdSlot } from "@/features/ads/components/ad-slot";
 import { getCommunityOptions } from "@/features/locations/queries";
 import { getCategories, listProducts } from "@/features/marketplace/queries";
 import { stringParam, uuidParam } from "@/lib/search-params";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Marketplace" };
+export const metadata: Metadata = pageMetadata({
+  title: "Marketplace",
+  description:
+    "Buy fresh produce, crafts and everyday goods from verified local sellers. Order for pickup or delivery and pay with mobile money.",
+  path: "/marketplace",
+});
 
 export default async function MarketplacePage({ searchParams }: PageProps<"/marketplace">) {
   const sp = await searchParams;

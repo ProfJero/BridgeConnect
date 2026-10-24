@@ -3,8 +3,8 @@
 BridgeConnect is a **modular monolith**: one Next.js application and one Supabase project, organised by domain.
 
 ```
-Browser ──► Next.js (Vercel)                     Supabase
-            ├─ proxy.ts  (refresh session, coarse redirect)
+Browser ──► Next.js (CF Worker)                     Supabase
+            ├─ middleware.ts (refresh session, coarse redirect)
             ├─ Server Components ──── supabase-js (as the user) ──► PostgREST ─► Postgres + RLS
             ├─ Server Actions ─────── Zod ─► supabase-js / RPC  ──►           ─► SECURITY DEFINER fns
             └─ Client Components ─── direct upload ─────────────► Storage (bucket RLS)
@@ -62,7 +62,7 @@ legacy/prototype/           Original static HTML prototype (reference only)
 
 ## Request flow
 
-1. **`src/proxy.ts`** (Next 16's replacement for middleware) refreshes the Supabase session cookie on every request
+1. **`src/middleware.ts`** (Edge middleware; kept instead of Next 16's `proxy.ts` for Cloudflare/OpenNext support) refreshes the Supabase session cookie on every request
    and redirects anonymous users away from obviously protected prefixes. UX only.
 2. **Layouts/pages** call the DAL: `getViewer()` (cached per request; validates the session with
    `auth.getUser()`), then `requireViewer`, `requireAdminPermission(permission)`, `getWorkspace(entityId)` or

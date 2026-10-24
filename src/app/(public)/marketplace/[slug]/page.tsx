@@ -1,14 +1,17 @@
-import { MapPin, Store } from "lucide-react";
+import { MapPin, MessageCircle, Phone, Store } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { EntityAvatar } from "@/components/shared/avatars";
+import { JsonLd } from "@/components/shared/json-ld";
+import { SafetyTips } from "@/components/shared/safety-tips";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { VerifiedBadge } from "@/components/shared/verified-badge";
 import { FavouriteButton } from "@/components/widgets/favourite-button";
 import { ReportDialog } from "@/components/widgets/report-dialog";
+import { ShareButton } from "@/components/widgets/share-button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,13 +20,26 @@ import { isFavourite } from "@/features/favourites/queries";
 import { OrderForm } from "@/features/marketplace/components/order-form";
 import { getProductBySlug } from "@/features/marketplace/queries";
 import { getViewer } from "@/lib/auth/session";
+import { telLink, whatsappLink } from "@/lib/contact";
 import { formatMoney } from "@/lib/format";
 import { orderedMedia } from "@/lib/media";
+import { absoluteUrl, excerpt, pageMetadata } from "@/lib/seo";
 import { publicMediaUrl } from "@/lib/storage";
+import { breadcrumbSchema, productSchema } from "@/lib/structured-data";
 
 export async function generateMetadata({ params }: PageProps<"/marketplace/[slug]">): Promise<Metadata> {
   const product = await getProductBySlug((await params).slug);
-  return { title: product?.name ?? "Product not found" };
+  if (!product) return { title: "Product not found" };
+  const cover = orderedMedia(product.product_media)[0];
+  const price = formatMoney(product.price, product.currency);
+  return pageMetadata({
+    title: `${product.name} — ${price}`,
+    description: excerpt(
+      `${price}${product.unit ? ` ${product.unit}` : ""} from ${product.entities.name}${product.entities.communities ? `, ${product.entities.communities.name}` : ""}. ${product.description ?? ""}`,
+    ),
+    path: `/marketplace/${product.slug}`,
+    image: cover ? publicMediaUrl(cover.path) : null,
+  });
 }
 
 export default async function ProductPage({ params }: PageProps<"/marketplace/[slug]">) {
@@ -35,9 +51,26 @@ export default async function ProductPage({ params }: PageProps<"/marketplace/[s
   const seller = product.entities;
   const isOwnEntity = viewer?.workspaces.some((w) => w.entityId === seller.id) ?? false;
   const orderable = product.status === "active";
+  const enquiry = `Hello ${seller.name}, I saw "${product.name}" on BridgeConnect and I'm interested: ${absoluteUrl(`/marketplace/${product.slug}`)}`;
+  const whatsapp = whatsappLink(seller.whatsapp ?? seller.phone, enquiry);
+  const call = telLink(seller.phone);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+      <JsonLd
+        data={productSchema({
+          ...product,
+          images: media.map((m) => publicMediaUrl(m.path)!),
+          category: product.listing_categories?.name,
+          seller,
+        })}
+      />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Marketplace", path: "/marketplace" },
+          { name: product.name, path: `/marketplace/${product.slug}` },
+        ])}
+      />
       <div className="space-y-5">
         <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border bg-muted">
           {media[0] ? (
@@ -67,8 +100,9 @@ export default async function ProductPage({ params }: PageProps<"/marketplace/[s
           </p>
           {product.description ? <p className="leading-relaxed whitespace-pre-line text-muted-foreground">{product.description}</p> : null}
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <FavouriteButton kind="product" id={product.id} initial={saved} signedIn={Boolean(viewer)} />
+          <ShareButton path={`/marketplace/${product.slug}`} title={product.name} text={formatMoney(product.price, product.currency)} />
           {!isOwnEntity ? <ReportDialog targetKind="product" targetId={product.id} signedIn={Boolean(viewer)} variant="outline" /> : null}
         </div>
       </div>
@@ -92,6 +126,24 @@ export default async function ProductPage({ params }: PageProps<"/marketplace/[s
                 ) : null}
               </div>
             </Link>
+            {!isOwnEntity && (whatsapp || call) ? (
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {whatsapp ? (
+                  <Button asChild variant="green">
+                    <a href={whatsapp} target="_blank" rel="noopener noreferrer">
+                      <MessageCircle aria-hidden /> WhatsApp
+                    </a>
+                  </Button>
+                ) : null}
+                {call ? (
+                  <Button asChild variant="outline">
+                    <a href={call}>
+                      <Phone aria-hidden /> Call
+                    </a>
+                  </Button>
+                ) : null}
+              </div>
+            ) : null}
           </CardContent>
         </Card>
         <Card>
@@ -128,6 +180,7 @@ export default async function ProductPage({ params }: PageProps<"/marketplace/[s
             )}
           </CardContent>
         </Card>
+        {!isOwnEntity ? <SafetyTips /> : null}
       </div>
     </div>
   );

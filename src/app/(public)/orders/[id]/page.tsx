@@ -6,8 +6,9 @@ import { OrderDetail } from "@/features/orders/components/order-detail";
 import { getOrder } from "@/features/orders/queries";
 import { BUYER_CANCELLABLE } from "@/features/orders/schemas";
 import { isUuid, requireViewer } from "@/lib/auth/session";
+import { noIndex } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Order" };
+export const metadata: Metadata = { title: "Order", robots: noIndex };
 
 export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
   const { id } = await params;

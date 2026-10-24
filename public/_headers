@@ -1,0 +1,13 @@
+# Cloudflare Workers static assets: these files are served without running the Worker, so headers from
+# next.config.ts do not apply to them. https://developers.cloudflare.com/workers/static-assets/headers/
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+  Service-Worker-Allowed: /
+  X-Content-Type-Options: nosniff
+
+/icons/*
+  Cache-Control: public, max-age=604800
+  X-Content-Type-Options: nosniff

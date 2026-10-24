@@ -5,10 +5,12 @@ import { notFound } from "next/navigation";
 
 import { salaryText } from "@/components/cards/listing-cards";
 import { EntityAvatar } from "@/components/shared/avatars";
+import { JsonLd } from "@/components/shared/json-ld";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { VerifiedBadge } from "@/components/shared/verified-badge";
 import { FavouriteButton } from "@/components/widgets/favourite-button";
 import { ReportDialog } from "@/components/widgets/report-dialog";
+import { ShareButton } from "@/components/widgets/share-button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,10 +20,20 @@ import { ApplyForm } from "@/features/jobs/components/apply-form";
 import { getJobBySlug, getMyApplicationForJob } from "@/features/jobs/queries";
 import { getViewer } from "@/lib/auth/session";
 import { formatDate, formatRelative, humanize } from "@/lib/format";
+import { excerpt, pageMetadata } from "@/lib/seo";
+import { publicMediaUrl } from "@/lib/storage";
+import { breadcrumbSchema, jobPostingSchema } from "@/lib/structured-data";
 
 export async function generateMetadata({ params }: PageProps<"/jobs/[slug]">): Promise<Metadata> {
   const job = await getJobBySlug((await params).slug);
-  return { title: job?.title ?? "Job not found" };
+  if (!job) return { title: "Job not found" };
+  const where = job.communities ? ` in ${job.communities.name}` : "";
+  return pageMetadata({
+    title: `${job.title} at ${job.entities.name}`,
+    description: excerpt(`${humanize(job.employment_type)} job${where}. ${job.description}`),
+    path: `/jobs/${job.slug}`,
+    image: publicMediaUrl(job.entities.logo_path),
+  });
 }
 
 export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
@@ -40,6 +52,10 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+      {job.status === "open" ? (
+        <JsonLd data={jobPostingSchema({ ...job, entities: { ...employer, logo_url: publicMediaUrl(employer.logo_path) } })} />
+      ) : null}
+      <JsonLd data={breadcrumbSchema([{ name: "Jobs", path: "/jobs" }, { name: job.title, path: `/jobs/${job.slug}` }])} />
       <article className="space-y-5">
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2">
@@ -69,8 +85,9 @@ export default async function JobPage({ params }: PageProps<"/jobs/[slug]">) {
             <p className="leading-relaxed whitespace-pre-line">{job.requirements}</p>
           </section>
         ) : null}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <FavouriteButton kind="job" id={job.id} initial={saved} signedIn={Boolean(viewer)} />
+          <ShareButton path={`/jobs/${job.slug}`} title={`${job.title} — ${employer.name}`} />
           {!isEmployer ? <ReportDialog targetKind="job" targetId={job.id} signedIn={Boolean(viewer)} variant="outline" /> : null}
         </div>
       </article>

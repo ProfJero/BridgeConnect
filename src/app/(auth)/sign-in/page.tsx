@@ -5,8 +5,9 @@ import { redirect } from "next/navigation";
 import { SignInForm } from "@/features/auth/components/sign-in-form";
 import { getViewer } from "@/lib/auth/session";
 import { safeRedirectPath } from "@/lib/safe-redirect";
+import { noIndex } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Sign in" };
+export const metadata: Metadata = { title: "Sign in", robots: noIndex };
 
 export default async function SignInPage({ searchParams }: PageProps<"/sign-in">) {
   const { next } = await searchParams;

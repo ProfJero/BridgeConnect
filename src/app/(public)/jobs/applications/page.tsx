@@ -10,8 +10,9 @@ import { WithdrawApplicationButton } from "@/features/jobs/components/withdraw-b
 import { listMyJobApplications } from "@/features/jobs/queries";
 import { requireViewer } from "@/lib/auth/session";
 import { formatDate } from "@/lib/format";
+import { noIndex } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "My job applications" };
+export const metadata: Metadata = { title: "My job applications", robots: noIndex };
 
 export default async function MyApplicationsPage() {
   await requireViewer("/jobs/applications");

@@ -10,8 +10,9 @@ import { ENTITY_TYPE_LABEL } from "@/features/directory/constants";
 import { listMyFavourites } from "@/features/favourites/queries";
 import { requireViewer } from "@/lib/auth/session";
 import { formatDateTime, formatMoney } from "@/lib/format";
+import { noIndex } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Favourites" };
+export const metadata: Metadata = { title: "Favourites", robots: noIndex };
 
 export default async function FavouritesPage() {
   await requireViewer("/favourites");
