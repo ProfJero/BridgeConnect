@@ -28,11 +28,13 @@ insert into public.communities (id, district_id, name, slug, description) values
   ('30000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000001',
    'Kwamankese', 'kwamankese', 'Farming and trading community in the Abura-Asebu-Kwamankese District.'),
   ('30000000-0000-4000-8000-000000000002', '20000000-0000-4000-8000-000000000001',
-   'Abakrampa', 'abakrampa', 'District capital of Abura-Asebu-Kwamankese.'),
+   'Abakrampa', 'abakrampa', 'Traditional capital of the Abura-Asebu-Kwamankese area; seat of the Omanhene of Abura.'),
   ('30000000-0000-4000-8000-000000000003', '20000000-0000-4000-8000-000000000001',
    'Asebu', 'asebu', 'Historic Fante community.'),
   ('30000000-0000-4000-8000-000000000004', '20000000-0000-4000-8000-000000000002',
-   'Cape Coast', 'cape-coast', 'Regional capital of the Central Region.');
+   'Cape Coast', 'cape-coast', 'Regional capital of the Central Region.'),
+  ('30000000-0000-4000-8000-000000000005', '20000000-0000-4000-8000-000000000001',
+   'Abura-Dunkwa', 'abura-dunkwa', 'District capital of Abura-Asebu-Kwamankese.');
 
 -- ---------------------------------------------------------------------------
 -- Demo accounts

@@ -12,7 +12,7 @@
 -- =============================================================================
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(53);
+select plan(57);
 
 -- Helper: impersonate a user for the rest of the statement batch.
 create or replace function pg_temp.login(uid uuid) returns void language plpgsql as $$
@@ -216,6 +216,16 @@ select pg_temp.login('a0000000-0000-4000-8000-000000000007');
 select throws_ok($$insert into public.posts (community_id, body)
   values ('30000000-0000-4000-8000-000000000001', 'Still posting?')$$,
   '42501', null, 'suspended user cannot post');
+
+-- ---------------------------------------------------------------------------
+-- 7. Signed-in-only RPCs are not executable by anon (advisor 0028)
+-- ---------------------------------------------------------------------------
+select ok(not has_function_privilege('anon', 'public.my_access()', 'execute'), 'anon cannot call my_access');
+select ok(not has_function_privilege('anon', 'public.my_workspaces()', 'execute'), 'anon cannot call my_workspaces');
+select ok(not has_function_privilege('anon', 'public.entity_capabilities(uuid)', 'execute'),
+  'anon cannot call entity_capabilities');
+select ok(has_function_privilege('authenticated', 'public.entity_capabilities(uuid)', 'execute'),
+  'authenticated can call entity_capabilities');
 
 select * from finish();
 rollback;

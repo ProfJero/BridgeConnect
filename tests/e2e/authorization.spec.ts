@@ -21,9 +21,9 @@ test.describe("authentication & authorization", () => {
     await expect(page.getByRole("alert").filter({ hasText: "The email or password is incorrect." })).toBeVisible();
   });
 
-  test("open redirects are neutralised", async ({ page }) => {
+  test("open redirects are neutralised", async ({ page, baseURL }) => {
     await signIn(page, "resident@demo.bridgeconnect.test", "https://evil.example/");
-    await expect(page).toHaveURL("http://localhost:3000/");
+    await expect(page).toHaveURL(`${baseURL}/`);
   });
 
   test("residents get 403 on the admin console (direct URL access)", async ({ page }) => {

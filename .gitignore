@@ -52,3 +52,8 @@ supabase/.temp
 
 # one-off remote bootstrap scripts (may contain credentials)
 /remote-setup/
+
+# cloudflare / opennext
+.open-next/
+.wrangler/
+.dev.vars*

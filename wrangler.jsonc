@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bridgeconnect",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      // Self-reference used by OpenNext for internal revalidation requests.
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "bridgeconnect"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+  // Public configuration (NEXT_PUBLIC_*) is inlined at build time: set it as
+  // *build* variables in Cloudflare (see docs/deployment.md), not here.
+}

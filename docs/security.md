@@ -87,3 +87,15 @@ and a sufficient membership role. Suspending an entity instantly removes it and 
   escalation, manipulated inserts, suspended users.
 - `npm run test:integration` — the same attacks through the public Supabase API, plus Storage access control.
 - `npm run test:e2e` — direct-URL access, 403/404 behaviour, XSS rendering, open-redirect, full workflows.
+
+## Supabase advisor baseline
+
+After `20261024051808_advisor_hardening` the Security Advisor reports only expected warnings:
+
+- **0029 – signed-in users can execute SECURITY DEFINER functions.** These are the platform's privileged RPCs
+  (`admin_*`, `review_*`, `moderate_content`, `place_order`, `issue_emergency_alert`, …). Calling them is the
+  intended path for sensitive transitions; each one checks `private.has_permission` / `private.entity_can` and
+  scope before doing anything, and pgTAP covers the negative cases.
+- **0028 – anon can execute `record_ad_click`.** Intentional: anonymous visitors clicking an ad are counted.
+
+Any other finding is a regression. Performance "unused index" notices are expected until real traffic arrives.

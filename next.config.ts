@@ -41,6 +41,10 @@ const nextConfig: NextConfig = {
     serverActions: { bodySizeLimit: "2mb" },
   },
   images: {
+    // Served directly from Supabase Storage's CDN. Cloudflare Workers has no
+    // built-in Next image optimiser without a paid Images binding; uploads are
+    // already size-limited (5 MB) and validated.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: supabase.protocol.replace(":", "") as "http" | "https",
@@ -53,7 +57,18 @@ const nextConfig: NextConfig = {
     dangerouslyAllowLocalIP: isDev,
   },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      {
+        // The service worker must always be revalidated so updates roll out.
+        source: "/sw.js",
+        headers: [
+          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
+    ];
   },
 };
 
