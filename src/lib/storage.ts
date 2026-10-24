@@ -1,3 +1,4 @@
+import { cloudinaryImageUrl, isCloudinaryEnabled } from "@/lib/cloudinary";
 import { env } from "@/lib/env";
 
 export const PUBLIC_MEDIA_BUCKET = "public-media";
@@ -21,9 +22,13 @@ export function extensionFor(mime: string): string | null {
   return EXTENSION_BY_MIME[mime] ?? null;
 }
 
-/** Public URL for an object in the public-media bucket (no network call). */
-export function publicMediaUrl(path: string | null | undefined): string | null {
+/**
+ * Public URL for a public image (no network call): Cloudinary when configured, otherwise the Supabase
+ * public-media bucket. `width` caps the delivered size on Cloudinary.
+ */
+export function publicMediaUrl(path: string | null | undefined, width?: number): string | null {
   if (!path) return null;
+  if (isCloudinaryEnabled()) return cloudinaryImageUrl(path, width);
   const safe = path.split("/").map(encodeURIComponent).join("/");
   return `${env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${PUBLIC_MEDIA_BUCKET}/${safe}`;
 }

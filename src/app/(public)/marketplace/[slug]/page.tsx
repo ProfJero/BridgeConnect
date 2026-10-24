@@ -83,7 +83,7 @@ export default async function ProductPage({ params }: PageProps<"/marketplace/[s
           <ul className="grid grid-cols-4 gap-2">
             {media.slice(1).map((m) => (
               <li key={m.path} className="relative aspect-square overflow-hidden rounded-lg bg-muted">
-                <Image src={publicMediaUrl(m.path)!} alt={m.alt} fill sizes="25vw" className="object-cover" />
+                <Image src={publicMediaUrl(m.path, 480)!} alt={m.alt} fill sizes="25vw" className="object-cover" />
               </li>
             ))}
           </ul>

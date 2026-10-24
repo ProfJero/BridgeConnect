@@ -14,7 +14,7 @@ export function UserAvatar({
   path?: string | null;
   className?: string;
 }) {
-  const src = publicMediaUrl(path);
+  const src = publicMediaUrl(path, 192);
   return (
     <Avatar className={className}>
       {src ? <AvatarImage src={src} alt="" /> : null}
@@ -32,7 +32,7 @@ export function EntityAvatar({
   path?: string | null;
   className?: string;
 }) {
-  const src = publicMediaUrl(path);
+  const src = publicMediaUrl(path, 192);
   return (
     <Avatar className={cn("rounded-xl", className)}>
       {src ? <AvatarImage src={src} alt="" /> : null}

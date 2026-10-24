@@ -5,12 +5,12 @@
  * icons and public Supabase media are cached. Non-GET requests, auth, API and back-office routes are never
  * touched.
  */
-const VERSION = "v1";
+const VERSION = "v2";
 const STATIC_CACHE = `bc-static-${VERSION}`;
 const MEDIA_CACHE = `bc-media-${VERSION}`;
 const OFFLINE_URL = "/offline";
 const PRECACHE = [OFFLINE_URL, "/icon.svg", "/icons/icon-192.png", "/icons/icon-512.png"];
-const MEDIA_LIMIT = 120;
+const MEDIA_LIMIT = 60;
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -91,8 +91,9 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Public Supabase Storage objects (listing photos, logos). Private buckets use signed URLs and are skipped.
-  if (url.pathname.includes("/storage/v1/object/public/")) {
+  // Public images: Cloudinary delivery URLs and public Supabase Storage objects. Private buckets use signed
+  // URLs and are skipped.
+  if (url.hostname === "res.cloudinary.com" || url.pathname.includes("/storage/v1/object/public/")) {
     event.respondWith(staleWhileRevalidate(event));
   }
 });

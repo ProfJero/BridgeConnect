@@ -1,6 +1,6 @@
 <!-- BEGIN:nextjs-agent-rules -->
 
-# This is NOT the Next.js you know
+## This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
 
@@ -17,6 +17,8 @@ BridgeConnect is a production community platform. Read `README.md`, `docs/archit
 
 - **The database is the security boundary.** Every exposed table has RLS and explicit column-level grants.
   Never disable RLS, never add `grant all`, never use a service-role key in app code (there is none).
+  The only server secret is `CLOUDINARY_API_SECRET` (Worker secret, used in `lib/cloudinary.server.ts` to sign
+  uploads). `.env.production` holds public values only — never put a secret in it.
 - **Never trust the client.** Re-validate all input on the server with the feature's Zod schema. Prices,
   statuses, ownership, author ids and slugs are set by the database, never taken from the request.
 - **UI checks are UX only.** `lib/auth/permissions.ts` mirrors the SQL helpers so the UI can hide things; it is
@@ -27,8 +29,9 @@ BridgeConnect is a production community platform. Read `README.md`, `docs/archit
   `SECURITY DEFINER` functions with `set search_path = ''` that check permission + scope and write an audit log.
 - Never log or return passwords, tokens or raw database errors. Use `dbFailure()` / `toUserMessage()`.
 - Redirect targets from user input must go through `safeRedirectPath()`.
-- Uploads: validate type/size with `validateFile()`, upload into the caller's own folder, and rely on Storage RLS.
-  Private files are served only through short-lived signed URLs.
+- Uploads: validate type/size with `validateFile()`, upload into the caller's own folder, and rely on Storage RLS
+  (or, for public images on Cloudinary, a server signature for that exact path plus a server-side size/format check).
+  Private files stay in Supabase Storage and are served only through short-lived signed URLs.
 - Render user content as text (React escaping). `dangerouslySetInnerHTML` is forbidden — the only exception is
   `components/shared/json-ld.tsx`, which escapes `<` so structured data can never break out of its script tag.
 

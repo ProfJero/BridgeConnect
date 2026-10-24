@@ -35,7 +35,7 @@ export function MediaGallery({ entityId, items }: { entityId: string; items: { i
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
           {items.map((m) => (
             <li key={m.id} className="group relative aspect-square overflow-hidden rounded-lg border bg-muted">
-              <Image src={publicMediaUrl(m.storage_path)!} alt={m.alt_text ?? ""} fill sizes="200px" className="object-cover" />
+              <Image src={publicMediaUrl(m.storage_path, 480)!} alt={m.alt_text ?? ""} fill sizes="200px" className="object-cover" />
               <Button
                 variant="destructive"
                 size="icon-sm"
