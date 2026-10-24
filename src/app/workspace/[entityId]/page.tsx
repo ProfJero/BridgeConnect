@@ -29,7 +29,7 @@ export default async function WorkspaceDashboard({ params }: PageProps<"/workspa
           ) : null
         }
       />
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         {ctx.can("orders") ? <StatCard label="Pending orders" value={summary.pendingOrders} icon={Package} tone={summary.pendingOrders ? "warning" : "primary"} href={`${base}/orders?status=pending`} /> : null}
         {ctx.can("products") ? <StatCard label="Active products" value={summary.products} icon={ShoppingBag} href={`${base}/products`} /> : null}
         {ctx.can("services") ? <StatCard label="Active services" value={summary.services} icon={Wrench} tone="green" href={`${base}/services`} /> : null}
@@ -59,7 +59,7 @@ export default async function WorkspaceDashboard({ params }: PageProps<"/workspa
       ) : null}
       <Section title="Your workspace">
         <p className="text-sm text-muted-foreground">
-          Modules available to {ENTITY_TYPE_LABEL[ctx.entity.entity_type].toLowerCase()}s: {ctx.capabilities.join(", ").replace(/_/g, " ")}.
+          Modules enabled for this {ENTITY_TYPE_LABEL[ctx.entity.entity_type].toLowerCase()}: {ctx.capabilities.join(", ").replace(/_/g, " ")}.
           Need something else? Contact Digital Bridge Initiative.
         </p>
       </Section>

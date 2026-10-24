@@ -87,7 +87,7 @@ export default async function ServicePage({ params }: PageProps<"/services/[slug
         <ShareButton path={`/services/${service.slug}`} title={`${service.name} — ${provider.name}`} />
         <ReportDialog targetKind="service" targetId={service.id} signedIn={Boolean(viewer)} variant="outline" />
       </div>
-      <SafetyTips />
+      <SafetyTips kind="service" />
     </article>
   );
 }

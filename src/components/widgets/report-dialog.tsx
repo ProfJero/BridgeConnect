@@ -42,11 +42,14 @@ export function ReportDialog({
     },
   });
 
+  // Outline buttons sit beside full-size actions on detail pages; ghost ones live in compact card footers.
+  const size = variant === "outline" ? "default" : "sm";
+
   if (!signedIn) {
     return (
       <Button
         variant={variant}
-        size="sm"
+        size={size}
         onClick={() => router.push(`/sign-in?next=${encodeURIComponent(window.location.pathname)}`)}
       >
         <Flag aria-hidden /> Report
@@ -57,7 +60,7 @@ export function ReportDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={variant} size="sm">
+        <Button variant={variant} size={size}>
           <Flag aria-hidden /> Report
         </Button>
       </DialogTrigger>

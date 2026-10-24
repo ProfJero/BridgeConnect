@@ -16,7 +16,7 @@ export default async function WorkspaceAnalyticsPage({ params }: PageProps<"/wor
   return (
     <div className="space-y-5">
       <PageHeader title="Analytics" description="How residents engage with your organisation." />
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <StatCard label="Saved by residents" value={a.favourites} icon={Bookmark} />
         {ctx.can("orders") ? <StatCard label="Completed sales (30 days)" value={formatMoney(a.revenue_30d)} icon={Coins} tone="green" /> : null}
         {ctx.can("products") ? <StatCard label="Active products" value={a.products_active} icon={ShoppingBag} /> : null}

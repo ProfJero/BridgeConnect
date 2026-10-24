@@ -13,7 +13,7 @@ import { listAdminEntities } from "../queries";
 
 export async function EntityListPage({ basePath, title, types, q, status, page }: { basePath: string; title: string; types: EntityType[]; q?: string; status?: "active" | "suspended" | "archived"; page: number }) {
   const { items, total, pageSize } = await listAdminEntities({ types, q, status, page });
-  const chip = (active: boolean) => cn("rounded-full border px-3 py-1 text-sm font-medium", active ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-accent");
+  const chip = (active: boolean) => cn("whitespace-nowrap rounded-full border px-3 py-1 text-sm font-medium capitalize", active ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-accent");
   return (
     <div className="space-y-5">
       <PageHeader title={title} description={`${total} verified ${title.toLowerCase()} in your scope`} />

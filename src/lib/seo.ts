@@ -7,6 +7,12 @@ export const SITE_TAGLINE = "Connecting Communities. Empowering Lives.";
 export const SITE_DESCRIPTION =
   "BridgeConnect connects residents with trusted businesses, organisations, services, jobs, events and emergency information in their community. A Digital Bridge Initiative platform.";
 
+/**
+ * Site-wide share image (`src/app/opengraph-image.png`). Pages that define their own `openGraph` replace the
+ * file-convention default, so `pageMetadata` always sets an image explicitly.
+ */
+export const DEFAULT_OG_IMAGE = { url: "/opengraph-image.png", width: 1200, height: 630, alt: `${SITE_NAME} — ${SITE_TAGLINE}` };
+
 /** Absolute URL on the canonical site origin. */
 export function absoluteUrl(path = "/"): string {
   return new URL(path, env.NEXT_PUBLIC_SITE_URL).toString();
@@ -23,7 +29,7 @@ export function excerpt(text: string | null | undefined, max = 160): string | un
 
 /**
  * Page metadata with a canonical URL and matching Open Graph / Twitter cards. `image` is an absolute URL
- * (e.g. a Supabase public-media URL); without it the site-wide `opengraph-image.png` is used.
+ * (e.g. a Supabase public-media URL); without it the site-wide share image is used.
  */
 export function pageMetadata({
   title,
@@ -38,7 +44,7 @@ export function pageMetadata({
   image?: string | null;
   type?: "website" | "article";
 }): Metadata {
-  const images = image ? [{ url: image, alt: title }] : undefined;
+  const images = [image ? { url: image, alt: title } : DEFAULT_OG_IMAGE];
   return {
     title,
     description,

@@ -29,7 +29,7 @@ export default async function AdminDashboard() {
       ) : (
         <>
           <Section title="Needs attention">
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
               {can("entities.verify") ? <StatCard label="Pending verifications" value={stats.pending_applications} icon={BadgeCheck} tone={stats.pending_applications ? "warning" : "green"} href="/admin/verification" /> : null}
               {can("reports.read") ? <StatCard label="Open reports" value={stats.open_reports} icon={Flag} tone={stats.open_reports ? "destructive" : "green"} href="/admin/reports" /> : null}
               {can("ads.review") ? <StatCard label="Ads awaiting review" value={stats.pending_ads} icon={Megaphone} tone={stats.pending_ads ? "warning" : "green"} href="/admin/advertisements" /> : null}
@@ -37,7 +37,7 @@ export default async function AdminDashboard() {
             </div>
           </Section>
           <Section title="Platform">
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            <div className="grid grid-cols-2 gap-3 xl:grid-cols-5">
               <StatCard label="Active residents" value={stats.residents} icon={Users} href={can("users.read") ? "/admin/users" : undefined} />
               <StatCard label="Active products" value={stats.active_products} icon={ShoppingBag} />
               <StatCard label="Orders (30 days)" value={stats.orders_30d} icon={Package} tone="green" />

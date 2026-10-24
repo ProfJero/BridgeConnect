@@ -12,11 +12,20 @@ export function LogoMark({ className }: { className?: string }) {
   );
 }
 
-export function Logo({ className, showTagline = false }: { className?: string; showTagline?: boolean }) {
+export function Logo({
+  className,
+  wordmarkClassName,
+  showTagline = false,
+}: {
+  className?: string;
+  /** e.g. hide the wordmark on very narrow screens where the header is crowded. */
+  wordmarkClassName?: string;
+  showTagline?: boolean;
+}) {
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       <LogoMark />
-      <span className="flex flex-col leading-none">
+      <span className={cn("flex flex-col leading-none", wordmarkClassName)}>
         <span className="text-lg font-bold tracking-tight">
           Bridge<span className="text-brand-green">Connect</span>
         </span>

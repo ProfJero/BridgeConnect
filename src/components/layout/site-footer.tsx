@@ -25,7 +25,7 @@ const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
     ],
   },
   {
-    title: "Community",
+    title: "Get involved",
     links: [
       { href: "/community", label: "Community feed" },
       { href: "/emergency", label: "Emergency" },

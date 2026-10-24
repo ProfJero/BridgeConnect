@@ -11,7 +11,7 @@ test("trust workflow: application → review → approval → workspace", async 
   await page.getByLabel(/^Sector/).selectOption("commerce");
   await page.getByLabel(/Official name/).fill(name);
   await page.getByLabel(/What do you do/).fill("Fresh bread and pastries baked daily for the Kwamankese community.");
-  await page.getByLabel(/^Community/).selectOption({ label: "Kwamankese" });
+  await page.getByRole("combobox", { name: /^Community/ }).selectOption({ label: "Kwamankese" });
   await page.getByLabel(/^Phone/).fill("+233 24 555 0101");
   await page.getByRole("button", { name: "Submit application" }).click();
   await expect(page.getByRole("heading", { name })).toBeVisible();

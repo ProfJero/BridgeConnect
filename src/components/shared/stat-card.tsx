@@ -31,12 +31,12 @@ export function StatCard({
       </span>
       <span className="min-w-0">
         <span className="block text-2xl leading-tight font-bold tabular-nums">{typeof value === "number" ? value.toLocaleString("en-GH") : value}</span>
-        <span className="block truncate text-sm text-muted-foreground">{label}</span>
+        <span className="block text-sm text-muted-foreground">{label}</span>
         {hint ? <span className="block text-xs text-muted-foreground">{hint}</span> : null}
       </span>
     </>
   );
-  const cls = "flex items-center gap-3 rounded-xl border bg-card p-4 shadow-xs";
+  const cls = "flex flex-col items-start gap-2 rounded-xl border bg-card p-4 shadow-xs min-[420px]:flex-row min-[420px]:items-center min-[420px]:gap-3";
   return href ? (
     <Link href={href} className={cn(cls, "transition-shadow hover:shadow-md")}>{body}</Link>
   ) : (

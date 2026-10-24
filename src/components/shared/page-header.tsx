@@ -39,9 +39,9 @@ export function Section({
   className?: string;
 }) {
   return (
-    <section className={cn("space-y-3", className)}>
+    <section className={cn("min-w-0 space-y-3", className)}>
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
+        <h2 className="min-w-0 text-lg font-semibold tracking-tight">{title}</h2>
         {action}
       </div>
       {children}

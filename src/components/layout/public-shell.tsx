@@ -23,9 +23,10 @@ export async function PublicShell({ children }: { children: React.ReactNode }) {
         <EmergencyBanner communityId={viewer?.profile.home_community_id ?? null} />
       </React.Suspense>
       <header className="sticky top-0 z-30 border-b bg-card/95 pt-safe backdrop-blur supports-[backdrop-filter]:bg-card/80">
-        <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
+        <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:gap-3">
           <Link href="/" aria-label="BridgeConnect home" className="shrink-0">
-            <Logo />
+            {/* Signed-in headers carry two more icons; drop the wordmark where it would push them off-screen. */}
+            <Logo wordmarkClassName={viewer ? "max-[400px]:hidden" : "max-[359px]:hidden"} />
           </Link>
           <div className="flex-1 lg:flex-none" />
           <DesktopNav />
@@ -52,7 +53,7 @@ export async function PublicShell({ children }: { children: React.ReactNode }) {
                 />
               </>
             ) : (
-              <Button asChild size="sm" className="ml-1">
+              <Button asChild size="sm" className="ml-0.5">
                 <Link href="/sign-in">Sign in</Link>
               </Button>
             )}

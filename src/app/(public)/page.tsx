@@ -20,7 +20,7 @@ import { getCommunityName } from "@/features/locations/queries";
 import { listProducts } from "@/features/marketplace/queries";
 import { AdSlot } from "@/features/ads/components/ad-slot";
 import { getViewer } from "@/lib/auth/session";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from "@/lib/seo";
+import { DEFAULT_OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from "@/lib/seo";
 import { organizationSchema, websiteSchema } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
@@ -32,6 +32,7 @@ export const metadata: Metadata = {
     locale: "en_GH",
     title: `${SITE_NAME} — ${SITE_TAGLINE}`,
     description: SITE_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 

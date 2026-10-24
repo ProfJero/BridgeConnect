@@ -180,7 +180,7 @@ export default async function ProductPage({ params }: PageProps<"/marketplace/[s
             )}
           </CardContent>
         </Card>
-        {!isOwnEntity ? <SafetyTips /> : null}
+        {!isOwnEntity ? <SafetyTips kind="product" /> : null}
       </div>
     </div>
   );

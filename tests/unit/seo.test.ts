@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { telLink, toInternationalDigits, whatsappLink } from "@/lib/contact";
-import { absoluteUrl, excerpt } from "@/lib/seo";
+import { absoluteUrl, DEFAULT_OG_IMAGE, excerpt, pageMetadata } from "@/lib/seo";
 import { entitySchema, eventSchema, jobPostingSchema, productSchema } from "@/lib/structured-data";
 
 const place = { name: "Kwamankese", districts: { name: "AAK", regions: { name: "Central Region" } } };
@@ -26,6 +26,14 @@ describe("contact links", () => {
 describe("seo helpers", () => {
   it("builds absolute URLs on the site origin", () => {
     expect(absoluteUrl("/jobs/x")).toMatch(/^https?:\/\/[^/]+\/jobs\/x$/);
+  });
+
+  it("always sets a canonical URL and a share image", () => {
+    const fallback = pageMetadata({ title: "Jobs", path: "/jobs" });
+    expect(fallback.alternates?.canonical).toBe("/jobs");
+    expect(fallback.openGraph?.images).toEqual([DEFAULT_OG_IMAGE]);
+    const custom = pageMetadata({ title: "X", path: "/x", image: "https://cdn.example/x.jpg" });
+    expect(custom.openGraph?.images).toEqual([{ url: "https://cdn.example/x.jpg", alt: "X" }]);
   });
 
   it("collapses whitespace and truncates on a word boundary", () => {
