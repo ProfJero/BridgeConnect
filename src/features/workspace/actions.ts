@@ -21,6 +21,8 @@ import {
   productSchema,
   serviceSchema,
 } from "./schemas";
+import { isCloudinaryEnabled } from "@/lib/cloudinary";
+import { destroyImages } from "@/lib/cloudinary.server";
 
 /**
  * Early, user-friendly workspace check for actions. The database enforces the
@@ -272,7 +274,11 @@ export async function deleteEntityMediaAction(entityId: string, mediaId: string)
   const supabase = await createClient();
   const { data, error } = await supabase.from("media_assets").delete().eq("id", mediaId).eq("entity_id", entityId).select("storage_path");
   if (error) return dbFailure(error, "workspace.deleteMedia");
-  if (data?.length) await supabase.storage.from("public-media").remove(data.map((d) => d.storage_path));
+  if (data?.length) {
+    const paths = data.map((d) => d.storage_path);
+    if (isCloudinaryEnabled()) await destroyImages(paths);
+    else await supabase.storage.from("public-media").remove(paths);
+  }
   revalidatePath(`/workspace/${entityId}/media`);
   return success("Image deleted.");
 }

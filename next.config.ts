@@ -7,15 +7,16 @@ const isDev = process.env.NODE_ENV !== "production";
 /**
  * Content Security Policy. Next.js injects inline bootstrap scripts, so
  * 'unsafe-inline' is required for scripts unless nonces are introduced; all
- * other sources are locked to self + the configured Supabase project.
+ * other sources are locked to self, the configured Supabase project and
+ * Cloudinary (image delivery + signed direct uploads).
  */
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob: ${supabase.origin}`,
+  `img-src 'self' data: blob: ${supabase.origin} https://res.cloudinary.com`,
   "font-src 'self' data:",
-  `connect-src 'self' ${supabase.origin} ${supabase.origin.replace(/^http/, "ws")} https://*.ingest.sentry.io https://*.ingest.de.sentry.io`,
+  `connect-src 'self' ${supabase.origin} ${supabase.origin.replace(/^http/, "ws")} https://api.cloudinary.com https://*.ingest.sentry.io https://*.ingest.de.sentry.io`,
   "frame-ancestors 'none'",
   "object-src 'none'",
   "base-uri 'self'",

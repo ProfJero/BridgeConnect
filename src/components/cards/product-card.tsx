@@ -27,7 +27,7 @@ export function ProductCard({ product }: { product: ProductCardProps }) {
     >
       <div className="relative aspect-[4/3] bg-muted">
         {image ? (
-          <Image src={publicMediaUrl(image.path)!} alt={image.alt || product.name} fill sizes="(min-width: 1024px) 25vw, 50vw" className="object-cover" />
+          <Image src={publicMediaUrl(image.path, 640)!} alt={image.alt || product.name} fill sizes="(min-width: 1024px) 25vw, 50vw" className="object-cover" />
         ) : (
           <div className="flex size-full items-center justify-center text-muted-foreground">
             <ShoppingBag aria-hidden className="size-8" />
