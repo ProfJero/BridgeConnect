@@ -14,6 +14,21 @@ It has three experiences on one identity and authorization system:
 | **Entity workspaces** | Members of *verified* businesses and organisations | `/workspace/[entityId]` |
 | **DBI administration** (desktop-first) | Staff with scoped roles | `/admin` |
 
+## What's inside
+
+- **Directory & trust:** verified businesses, NGOs, schools, clinics and agencies; ratings & reviews with public
+  replies; follow organisations for their updates and events.
+- **Marketplace & services:** products with server-priced orders; services with online **booking requests**.
+- **Inbox:** private messaging between residents and verified organisations (live updates).
+- **Community:** posts, questions, recommendations, lost & found, **help needed / offering help**, **polls**,
+  comments, reactions, reports and moderation.
+- **Jobs & events**, **emergency alerts and contacts**, notifications, favourites, search.
+- **Workspaces:** each organisation gets its own dashboard — inbox, bookings, orders, reviews, listings, team,
+  ads, analytics and a support line to DBI.
+- **Administration:** scoped roles, verification queue, moderation, reports, **support desk**, analytics, audit.
+- **App experience:** installable PWA, bottom tab bar, dark mode, offline page; privacy self-service (data export,
+  account deletion).
+
 ## Trust model in one paragraph
 
 Residents can post to their community (moderated and reportable), but **cannot create structured listings**.

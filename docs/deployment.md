@@ -15,13 +15,19 @@ Visitor ──► https://dbibridgeconnect.pages.dev  (Cloudflare Pages project 
 Two Cloudflare projects are built from the same GitHub repository: the **Worker** (the app) and the **Pages**
 project (the short public address). Deploy the Worker first — the Pages project binds to it by name.
 
-## 1. Supabase project (done for `mptavpfiweavlhmmasii`)
+## 1. Supabase project (done for `dcixvvjgdnldcrrpojuy`, organisation *Digital Bridge Initiative*)
 
-Status: all migrations applied (history matches `supabase/migrations/`), 42 tables all with RLS, storage buckets
-and policies in place, launch locations loaded (`supabase/production/initial_locations.sql`), Security Advisor
-shows only the expected warnings listed in [security.md](security.md#supabase-advisor-baseline). No demo data.
+Status (21 Nov 2026): all 17 migrations applied (history in `supabase_migrations.schema_migrations` uses the
+same versions as `supabase/migrations/`), every public table has RLS, storage buckets and policies in place,
+launch locations loaded (`supabase/production/initial_locations.sql`), Security Advisor shows only the expected
+warnings listed in [security.md](security.md#supabase-advisor-baseline). No demo data.
 
-For future migrations: `npx supabase link --project-ref mptavpfiweavlhmmasii && npx supabase db push`.
+**Platform owner:** `profjero947@gmail.com` is registered in `private.owner_bootstrap`. The moment that address
+signs up on the live site **and confirms the email**, a trigger grants `platform_owner` once (audited) and removes
+the entry. An unconfirmed sign-up with that address gets nothing. To bootstrap another owner later, run
+`insert into private.owner_bootstrap (email) values ('someone@example.org');` in the SQL editor.
+
+For future migrations: `npx supabase link --project-ref dcixvvjgdnldcrrpojuy && npx supabase db push`.
 
 **Dashboard settings to check before launch** (Supabase → your project):
 
@@ -35,9 +41,8 @@ For future migrations: `npx supabase link --project-ref mptavpfiweavlhmmasii && 
 3. **Authentication → Emails → SMTP**: configure a real SMTP provider (Resend, Brevo, Postmark, …). Supabase's
    built-in mailer is limited to a few emails per hour — not enough for launch.
 4. **Authentication → Attack protection**: enable CAPTCHA (Cloudflare Turnstile) if sign-up abuse appears.
-5. Bootstrap the first owner: sign up on the live site, confirm the email, then run
-   `supabase/scripts/grant_platform_owner.sql` (edit the email) in the SQL editor. Grant all other roles from
-   **/admin/users**.
+5. First owner: already handled by the bootstrap above — just sign up with `profjero947@gmail.com` and confirm
+   the email. Grant all other roles (including the new **Support Agent**) from **/admin/users**.
 
 **Never run `supabase/seed.sql` in production** (demo data). `supabase/scripts/remove_demo_data.sql` purges it
 from a staging project.
@@ -46,6 +51,8 @@ from a staging project.
 
 ### 2a. Worker `bridgeconnect` (the app)
 
+Connected to GitHub with **Workers Builds** (Worker → *Settings → Builds*): pushes to `main` build and deploy
+automatically with the settings below. To set it up from scratch:
 Dashboard → **Workers & Pages → Create → Workers → Import a repository** → `ProfJero/BridgeConnect`.
 
 | Setting | Value |
@@ -154,7 +161,7 @@ npx wrangler pages deploy cloudflare-pages/public --project-name dbibridgeconnec
 - [ ] Cloudinary: cloud name set, `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` Worker secrets added, a test
       photo upload works
 - [ ] Custom SMTP configured; sign-up confirmation and password-reset emails arrive and links work
-- [ ] First platform owner granted (`grant_platform_owner.sql`); no demo accounts
+- [ ] `profjero947@gmail.com` signed up + confirmed → owner granted automatically; no demo accounts
       (`select count(*) from profiles where is_demo` = 0)
 - [ ] Launch locations active in **/admin/locations**; platform settings reviewed in **/admin/settings**
 - [ ] Supabase Security Advisor: only the expected warnings

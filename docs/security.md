@@ -87,9 +87,28 @@ and a sufficient membership role. Suspending an entity instantly removes it and 
   HSTS in production.
 - **Errors:** only deliberate, user-safe database messages are shown; everything else is replaced and reported.
 
+## Engagement features (Nov 2026 release)
+
+- **Reviews:** one per user per entity; members can't review their own entity; only the entity's managers can
+  reply (`respond_to_review`); the rating is recomputed by trigger; reviews are reportable, auto-held after N
+  reports and moderated with `moderate_content('review', …)`.
+- **Inbox:** residents ↔ verified entities only. No client write grants — `start_conversation` / `send_message`
+  derive the sender side server-side (no impersonating the business), rate-limit (60/h) and notify only when the
+  recipient had caught up. Managers can block a contact (audited). Realtime is RLS-filtered.
+- **Bookings:** `request_booking` checks the service is active, bookable and public, the date window, duplicates
+  and a daily limit; `update_booking_status` enforces who may move a booking to which state.
+- **Polls:** options only by the author and frozen once voting starts; one vote per user; closing time enforced.
+- **Support desk:** tickets visible to the requester and `support.manage` (platform scope) only. Suspended users can
+  still open tickets (to appeal).
+- **Privacy:** `/account/export` returns only the caller's rows (RLS); `delete_my_account` refuses sole owners and
+  the last platform owner, deletes the account, or — when marketplace orders must be kept for sellers —
+  anonymises the profile, scrambles the login and bans it.
+- **Owner bootstrap:** granted only to an address in `private.owner_bootstrap` (not readable by API roles) after the
+  email is confirmed; consumed on use.
+
 ## Verifying it
 
-- `npm run test:db` — 53 pgTAP assertions: anonymous access, cross-user, cross-entity, cross-community, role
+- `npm run test:db` — 130 pgTAP assertions: anonymous access, cross-user, cross-entity, cross-community, role
   escalation, manipulated inserts, suspended users.
 - `npm run test:integration` — the same attacks through the public Supabase API, plus Storage access control.
 - `npm run test:e2e` — direct-URL access, 403/404 behaviour, XSS rendering, open-redirect, full workflows.

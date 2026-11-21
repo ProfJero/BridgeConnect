@@ -34,7 +34,8 @@ in-app-only links), error sanitisation (no internal messages leak), file validat
 text, pagination preserving filters, chart data tables and empty states, sign-in form client validation and
 generic server errors.
 
-**pgTAP (53 assertions)** — anonymous access; residents cannot create entities, change protected profile columns,
+**pgTAP (130 assertions, two files)** — `002_engagement` covers reviews, follows, inbox, bookings, polls, support
+desk, account deletion and the owner bootstrap with cross-user/entity and escalation cases. The original suite: — anonymous access; residents cannot create entities, change protected profile columns,
 edit other profiles, self-approve, assign roles, publish announcements, post as an entity, list products,
 create notifications or audit logs, or issue alerts; entity owners are isolated from other entities and cannot set
 moderator-only statuses or rename verified entities; NGOs lack product capability; editors cannot manage members;

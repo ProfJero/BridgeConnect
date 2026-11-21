@@ -19,6 +19,10 @@ PostgreSQL 17 on Supabase. All changes are migrations in `supabase/migrations/`;
 | `…0900_ads_emergency` | `advertisements` (+ review guard), `emergency_alerts`, `emergency_contacts`, alert RPCs |
 | `…1000_storage_search_analytics_realtime` | Storage buckets + policies, `search_directory`, analytics RPCs, realtime publication |
 | `…1100_reference_data` | Permissions, system roles and grants, capability defaults, listing categories |
+| `…051808_advisor_hardening` | Revokes anon EXECUTE on signed-in RPCs, covering indexes for foreign keys |
+| `20261121…0100_feature_enums` | New enum values (capabilities `messages`/`bookings`/`reviews`, post kinds, review moderation) |
+| `20261121…0200_engagement` | `entity_reviews` (+ ratings, replies, reports, moderation), `entity_follows`, inbox (`conversations`, `conversation_messages`, realtime), `service_bookings`, polls (`poll_options`, `poll_votes`), support desk (`support_tickets`, `support_ticket_messages`, `support.manage`, Support Agent role), `delete_my_account`, platform-owner bootstrap |
+| `20261121…0300_public_entity_features` | `entity_public_features()` — the three engagement flags anonymous visitors may see |
 
 ## Conventions
 
