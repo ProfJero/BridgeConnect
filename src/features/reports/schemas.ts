@@ -26,7 +26,7 @@ export const REPORT_REASON_LABEL: Record<(typeof REPORT_REASONS)[number], string
   other: "Something else",
 };
 
-export const REPORT_TARGETS = ["post", "comment", "entity", "product", "service", "job", "event", "profile"] as const;
+export const REPORT_TARGETS = ["post", "comment", "entity", "product", "service", "job", "event", "profile", "review"] as const;
 export type ReportTargetKind = (typeof REPORT_TARGETS)[number];
 
 export const reportSchema = z.object({

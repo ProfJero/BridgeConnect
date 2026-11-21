@@ -138,7 +138,7 @@ export async function listReports(params: { status?: Enums["report_status"]; pag
   let q = supabase
     .from("reports")
     .select(
-      "id, reason, details, status, created_at, resolution_note, post_id, comment_id, entity_id, product_id, service_id, job_id, event_id, profile_id, communities(name), reporter:profiles!reports_reporter_id_fkey(display_name)",
+      "id, reason, details, status, created_at, resolution_note, post_id, comment_id, entity_id, product_id, service_id, job_id, event_id, profile_id, review_id, communities(name), reporter:profiles!reports_reporter_id_fkey(display_name)",
       { count: "exact" },
     );
   q = params.status ? q.eq("status", params.status) : q.in("status", ["open", "reviewing"]);

@@ -19,6 +19,7 @@ const STATUSES = ["open", "reviewing", "resolved", "dismissed"] as const;
 function target(r: Awaited<ReturnType<typeof listReports>>["items"][number]) {
   if (r.post_id) return { type: "post" as const, id: r.post_id, href: `/community/posts/${r.post_id}` };
   if (r.comment_id) return { type: "comment" as const, id: r.comment_id, href: null };
+  if (r.review_id) return { type: "review" as const, id: r.review_id, href: null };
   if (r.product_id) return { type: "product" as const, id: r.product_id, href: null };
   if (r.service_id) return { type: "service" as const, id: r.service_id, href: null };
   if (r.job_id) return { type: "job" as const, id: r.job_id, href: null };

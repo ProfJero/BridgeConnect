@@ -404,6 +404,108 @@ export type Database = {
           },
         ];
       };
+      conversation_messages: {
+        Row: {
+          body: string;
+          conversation_id: string;
+          created_at: string;
+          id: string;
+          sender_id: string | null;
+          sender_side: string;
+        };
+        Insert: {
+          body: string;
+          conversation_id: string;
+          created_at?: string;
+          id?: string;
+          sender_id?: string | null;
+          sender_side: string;
+        };
+        Update: {
+          body?: string;
+          conversation_id?: string;
+          created_at?: string;
+          id?: string;
+          sender_id?: string | null;
+          sender_side?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "conversation_messages_conversation_id_fkey";
+            columns: ["conversation_id"];
+            isOneToOne: false;
+            referencedRelation: "conversations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "conversation_messages_sender_id_fkey";
+            columns: ["sender_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      conversations: {
+        Row: {
+          created_at: string;
+          entity_id: string;
+          entity_last_read_at: string | null;
+          id: string;
+          last_message_at: string;
+          last_message_preview: string | null;
+          last_sender_side: string | null;
+          status: Database["public"]["Enums"]["conversation_status"];
+          subject: string | null;
+          updated_at: string;
+          user_id: string;
+          user_last_read_at: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          entity_id: string;
+          entity_last_read_at?: string | null;
+          id?: string;
+          last_message_at?: string;
+          last_message_preview?: string | null;
+          last_sender_side?: string | null;
+          status?: Database["public"]["Enums"]["conversation_status"];
+          subject?: string | null;
+          updated_at?: string;
+          user_id: string;
+          user_last_read_at?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          entity_id?: string;
+          entity_last_read_at?: string | null;
+          id?: string;
+          last_message_at?: string;
+          last_message_preview?: string | null;
+          last_sender_side?: string | null;
+          status?: Database["public"]["Enums"]["conversation_status"];
+          subject?: string | null;
+          updated_at?: string;
+          user_id?: string;
+          user_last_read_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "conversations_entity_id_fkey";
+            columns: ["entity_id"];
+            isOneToOne: false;
+            referencedRelation: "entities";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "conversations_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       districts: {
         Row: {
           created_at: string;
@@ -666,11 +768,14 @@ export type Database = {
           description: string | null;
           email: string | null;
           entity_type: Database["public"]["Enums"]["entity_type"];
+          follower_count: number;
           id: string;
           logo_path: string | null;
           name: string;
           opening_hours: Json | null;
           phone: string | null;
+          rating_avg: number | null;
+          rating_count: number;
           search: unknown;
           sector: Database["public"]["Enums"]["sector"];
           slug: string;
@@ -691,11 +796,14 @@ export type Database = {
           description?: string | null;
           email?: string | null;
           entity_type: Database["public"]["Enums"]["entity_type"];
+          follower_count?: number;
           id?: string;
           logo_path?: string | null;
           name: string;
           opening_hours?: Json | null;
           phone?: string | null;
+          rating_avg?: number | null;
+          rating_count?: number;
           search?: never;
           sector: Database["public"]["Enums"]["sector"];
           slug: string;
@@ -716,11 +824,14 @@ export type Database = {
           description?: string | null;
           email?: string | null;
           entity_type?: Database["public"]["Enums"]["entity_type"];
+          follower_count?: number;
           id?: string;
           logo_path?: string | null;
           name?: string;
           opening_hours?: Json | null;
           phone?: string | null;
+          rating_avg?: number | null;
+          rating_count?: number;
           search?: never;
           sector?: Database["public"]["Enums"]["sector"];
           slug?: string;
@@ -901,6 +1012,39 @@ export type Database = {
           },
         ];
       };
+      entity_follows: {
+        Row: {
+          created_at: string;
+          entity_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          entity_id: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          entity_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "entity_follows_entity_id_fkey";
+            columns: ["entity_id"];
+            isOneToOne: false;
+            referencedRelation: "entities";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "entity_follows_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       entity_memberships: {
         Row: {
           created_at: string;
@@ -947,6 +1091,79 @@ export type Database = {
           {
             foreignKeyName: "entity_memberships_user_id_fkey";
             columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      entity_reviews: {
+        Row: {
+          author_id: string;
+          body: string | null;
+          created_at: string;
+          edited_at: string | null;
+          entity_id: string;
+          id: string;
+          moderation_reason: string | null;
+          rating: number;
+          responded_at: string | null;
+          responded_by: string | null;
+          response: string | null;
+          status: Database["public"]["Enums"]["content_status"];
+          title: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          author_id?: string;
+          body?: string | null;
+          created_at?: string;
+          edited_at?: string | null;
+          entity_id: string;
+          id?: string;
+          moderation_reason?: string | null;
+          rating: number;
+          responded_at?: string | null;
+          responded_by?: string | null;
+          response?: string | null;
+          status?: Database["public"]["Enums"]["content_status"];
+          title?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          author_id?: string;
+          body?: string | null;
+          created_at?: string;
+          edited_at?: string | null;
+          entity_id?: string;
+          id?: string;
+          moderation_reason?: string | null;
+          rating?: number;
+          responded_at?: string | null;
+          responded_by?: string | null;
+          response?: string | null;
+          status?: Database["public"]["Enums"]["content_status"];
+          title?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "entity_reviews_author_id_fkey";
+            columns: ["author_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "entity_reviews_entity_id_fkey";
+            columns: ["entity_id"];
+            isOneToOne: false;
+            referencedRelation: "entities";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "entity_reviews_responded_by_fkey";
+            columns: ["responded_by"];
             isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
@@ -1784,6 +2001,81 @@ export type Database = {
           },
         ];
       };
+      poll_options: {
+        Row: {
+          id: string;
+          label: string;
+          position: number;
+          post_id: string;
+          vote_count: number;
+        };
+        Insert: {
+          id?: string;
+          label: string;
+          position: number;
+          post_id: string;
+          vote_count?: number;
+        };
+        Update: {
+          id?: string;
+          label?: string;
+          position?: number;
+          post_id?: string;
+          vote_count?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "poll_options_post_id_fkey";
+            columns: ["post_id"];
+            isOneToOne: false;
+            referencedRelation: "posts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      poll_votes: {
+        Row: {
+          created_at: string;
+          option_id: string;
+          post_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          option_id: string;
+          post_id: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          option_id?: string;
+          post_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "poll_votes_option_id_fkey";
+            columns: ["option_id"];
+            isOneToOne: false;
+            referencedRelation: "poll_options";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "poll_votes_post_id_fkey";
+            columns: ["post_id"];
+            isOneToOne: false;
+            referencedRelation: "posts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "poll_votes_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       post_comments: {
         Row: {
           author_id: string;
@@ -1910,7 +2202,9 @@ export type Database = {
           id: string;
           kind: Database["public"]["Enums"]["post_kind"];
           moderation_reason: string | null;
+          poll_closes_at: string | null;
           reaction_count: number;
+          resolved_at: string | null;
           search: unknown;
           status: Database["public"]["Enums"]["content_status"];
           title: string | null;
@@ -1927,7 +2221,9 @@ export type Database = {
           id?: string;
           kind?: Database["public"]["Enums"]["post_kind"];
           moderation_reason?: string | null;
+          poll_closes_at?: string | null;
           reaction_count?: number;
+          resolved_at?: string | null;
           search?: never;
           status?: Database["public"]["Enums"]["content_status"];
           title?: string | null;
@@ -1944,7 +2240,9 @@ export type Database = {
           id?: string;
           kind?: Database["public"]["Enums"]["post_kind"];
           moderation_reason?: string | null;
+          poll_closes_at?: string | null;
           reaction_count?: number;
+          resolved_at?: string | null;
           search?: never;
           status?: Database["public"]["Enums"]["content_status"];
           title?: string | null;
@@ -2192,6 +2490,7 @@ export type Database = {
           reporter_id: string;
           resolution_note: string | null;
           resolved_at: string | null;
+          review_id: string | null;
           service_id: string | null;
           status: Database["public"]["Enums"]["report_status"];
           updated_at: string;
@@ -2213,6 +2512,7 @@ export type Database = {
           reporter_id?: string;
           resolution_note?: string | null;
           resolved_at?: string | null;
+          review_id?: string | null;
           service_id?: string | null;
           status?: Database["public"]["Enums"]["report_status"];
           updated_at?: string;
@@ -2234,6 +2534,7 @@ export type Database = {
           reporter_id?: string;
           resolution_note?: string | null;
           resolved_at?: string | null;
+          review_id?: string | null;
           service_id?: string | null;
           status?: Database["public"]["Enums"]["report_status"];
           updated_at?: string;
@@ -2317,6 +2618,13 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
+            foreignKeyName: "reports_review_id_fkey";
+            columns: ["review_id"];
+            isOneToOne: false;
+            referencedRelation: "entity_reviews";
+            referencedColumns: ["id"];
+          },
+          {
             foreignKeyName: "reports_service_id_fkey";
             columns: ["service_id"];
             isOneToOne: false;
@@ -2388,8 +2696,79 @@ export type Database = {
         };
         Relationships: [];
       };
+      service_bookings: {
+        Row: {
+          booking_number: number;
+          contact_phone: string | null;
+          created_at: string;
+          customer_id: string;
+          customer_note: string | null;
+          entity_id: string;
+          entity_note: string | null;
+          id: string;
+          requested_date: string;
+          requested_time: string | null;
+          service_id: string;
+          status: Database["public"]["Enums"]["booking_status"];
+          updated_at: string;
+        };
+        Insert: {
+          booking_number?: never;
+          contact_phone?: string | null;
+          created_at?: string;
+          customer_id: string;
+          customer_note?: string | null;
+          entity_id: string;
+          entity_note?: string | null;
+          id?: string;
+          requested_date: string;
+          requested_time?: string | null;
+          service_id: string;
+          status?: Database["public"]["Enums"]["booking_status"];
+          updated_at?: string;
+        };
+        Update: {
+          booking_number?: never;
+          contact_phone?: string | null;
+          created_at?: string;
+          customer_id?: string;
+          customer_note?: string | null;
+          entity_id?: string;
+          entity_note?: string | null;
+          id?: string;
+          requested_date?: string;
+          requested_time?: string | null;
+          service_id?: string;
+          status?: Database["public"]["Enums"]["booking_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "service_bookings_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "service_bookings_entity_id_fkey";
+            columns: ["entity_id"];
+            isOneToOne: false;
+            referencedRelation: "entities";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "service_bookings_service_id_fkey";
+            columns: ["service_id"];
+            isOneToOne: false;
+            referencedRelation: "services";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       services: {
         Row: {
+          accepts_bookings: boolean;
           category_id: string | null;
           created_at: string;
           created_by: string | null;
@@ -2408,6 +2787,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
+          accepts_bookings?: boolean;
           category_id?: string | null;
           created_at?: string;
           created_by?: string | null;
@@ -2426,6 +2806,7 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
+          accepts_bookings?: boolean;
           category_id?: string | null;
           created_at?: string;
           created_by?: string | null;
@@ -2463,6 +2844,118 @@ export type Database = {
             columns: ["entity_id"];
             isOneToOne: false;
             referencedRelation: "entities";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      support_ticket_messages: {
+        Row: {
+          author_id: string | null;
+          body: string;
+          created_at: string;
+          id: string;
+          is_staff: boolean;
+          ticket_id: string;
+        };
+        Insert: {
+          author_id?: string | null;
+          body: string;
+          created_at?: string;
+          id?: string;
+          is_staff?: boolean;
+          ticket_id: string;
+        };
+        Update: {
+          author_id?: string | null;
+          body?: string;
+          created_at?: string;
+          id?: string;
+          is_staff?: boolean;
+          ticket_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "support_ticket_messages_author_id_fkey";
+            columns: ["author_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "support_ticket_messages_ticket_id_fkey";
+            columns: ["ticket_id"];
+            isOneToOne: false;
+            referencedRelation: "support_tickets";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      support_tickets: {
+        Row: {
+          assigned_to: string | null;
+          category: Database["public"]["Enums"]["ticket_category"];
+          created_at: string;
+          entity_id: string | null;
+          id: string;
+          last_activity_at: string;
+          priority: string;
+          requester_id: string;
+          resolved_at: string | null;
+          status: Database["public"]["Enums"]["ticket_status"];
+          subject: string;
+          ticket_number: number;
+          updated_at: string;
+        };
+        Insert: {
+          assigned_to?: string | null;
+          category: Database["public"]["Enums"]["ticket_category"];
+          created_at?: string;
+          entity_id?: string | null;
+          id?: string;
+          last_activity_at?: string;
+          priority?: string;
+          requester_id: string;
+          resolved_at?: string | null;
+          status?: Database["public"]["Enums"]["ticket_status"];
+          subject: string;
+          ticket_number?: never;
+          updated_at?: string;
+        };
+        Update: {
+          assigned_to?: string | null;
+          category?: Database["public"]["Enums"]["ticket_category"];
+          created_at?: string;
+          entity_id?: string | null;
+          id?: string;
+          last_activity_at?: string;
+          priority?: string;
+          requester_id?: string;
+          resolved_at?: string | null;
+          status?: Database["public"]["Enums"]["ticket_status"];
+          subject?: string;
+          ticket_number?: never;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "support_tickets_assigned_to_fkey";
+            columns: ["assigned_to"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "support_tickets_entity_id_fkey";
+            columns: ["entity_id"];
+            isOneToOne: false;
+            referencedRelation: "entities";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "support_tickets_requester_id_fkey";
+            columns: ["requester_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
         ];
@@ -2721,6 +3214,16 @@ export type Database = {
           isSetofReturn: true;
         };
       };
+      create_support_ticket: {
+        Args: {
+          p_body: string;
+          p_category: Database["public"]["Enums"]["ticket_category"];
+          p_entity?: string;
+          p_subject: string;
+        };
+        Returns: string;
+      };
+      delete_my_account: { Args: { p_confirm: string }; Returns: string };
       entity_add_member: {
         Args: {
           p_email: string;
@@ -2734,7 +3237,16 @@ export type Database = {
         Args: { p_entity: string };
         Returns: Database["public"]["Enums"]["entity_capability"][];
       };
+      entity_public_features: {
+        Args: { p_entity: string };
+        Returns: {
+          bookings: boolean;
+          messages: boolean;
+          reviews: boolean;
+        }[];
+      };
       entity_remove_member: { Args: { p_membership: string }; Returns: undefined };
+      entity_unread_message_count: { Args: { p_entity: string }; Returns: number };
       entity_update_member_role: {
         Args: { p_membership: string; p_role: Database["public"]["Enums"]["membership_role"] };
         Returns: undefined;
@@ -2755,6 +3267,7 @@ export type Database = {
         Returns: string;
       };
       mark_all_notifications_read: { Args: Record<PropertyKey, never>; Returns: undefined };
+      mark_conversation_read: { Args: { p_conversation: string }; Returns: undefined };
       moderate_content: {
         Args: {
           p_action: Database["public"]["Enums"]["moderation_action_type"];
@@ -2775,6 +3288,7 @@ export type Database = {
           scope: Database["public"]["Enums"]["scope_level"];
         }[];
       };
+      my_unread_message_count: { Args: Record<PropertyKey, never>; Returns: number };
       my_workspaces: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -2799,6 +3313,18 @@ export type Database = {
         Returns: string;
       };
       record_ad_click: { Args: { p_ad: string }; Returns: undefined };
+      reply_support_ticket: { Args: { p_body: string; p_ticket: string }; Returns: string };
+      request_booking: {
+        Args: {
+          p_date: string;
+          p_note?: string;
+          p_phone?: string;
+          p_service: string;
+          p_time?: string;
+        };
+        Returns: string;
+      };
+      respond_to_review: { Args: { p_response: string; p_review: string }; Returns: undefined };
       resubmit_entity_application: {
         Args: { p_application: string; p_note?: string };
         Returns: undefined;
@@ -2827,11 +3353,31 @@ export type Database = {
           title: string;
         }[];
       };
+      send_message: { Args: { p_body: string; p_conversation: string }; Returns: string };
+      set_conversation_status: {
+        Args: {
+          p_conversation: string;
+          p_status: Database["public"]["Enums"]["conversation_status"];
+        };
+        Returns: undefined;
+      };
       set_job_application_status: {
         Args: {
           p_application: string;
           p_note?: string;
           p_status: Database["public"]["Enums"]["job_application_status"];
+        };
+        Returns: undefined;
+      };
+      start_conversation: {
+        Args: { p_body: string; p_entity: string; p_subject: string };
+        Returns: string;
+      };
+      update_booking_status: {
+        Args: {
+          p_booking: string;
+          p_note?: string;
+          p_status: Database["public"]["Enums"]["booking_status"];
         };
         Returns: undefined;
       };
@@ -2852,6 +3398,16 @@ export type Database = {
           p_note?: string;
           p_report: string;
           p_status: Database["public"]["Enums"]["report_status"];
+        };
+        Returns: undefined;
+      };
+      update_support_ticket: {
+        Args: {
+          p_assignee?: string;
+          p_priority?: string;
+          p_status?: Database["public"]["Enums"]["ticket_status"];
+          p_ticket: string;
+          p_unassign?: boolean;
         };
         Returns: undefined;
       };
@@ -2884,7 +3440,9 @@ export type Database = {
         | "note";
       application_status:
         "submitted" | "under_review" | "info_requested" | "approved" | "rejected" | "withdrawn";
+      booking_status: "requested" | "confirmed" | "declined" | "cancelled" | "completed";
       content_status: "published" | "pending_review" | "hidden" | "removed";
+      conversation_status: "open" | "closed" | "blocked";
       emergency_service:
         | "police"
         | "fire"
@@ -2913,7 +3471,10 @@ export type Database = {
         | "analytics"
         | "advertising"
         | "orders"
-        | "emergency_alerts";
+        | "emergency_alerts"
+        | "messages"
+        | "bookings"
+        | "reviews";
       entity_status: "active" | "suspended" | "archived";
       entity_type:
         | "business"
@@ -2933,10 +3494,18 @@ export type Database = {
       membership_role: "owner" | "manager" | "editor" | "member";
       moderation_action_type:
         "approve" | "hide" | "remove" | "restore" | "dismiss_report" | "warn_user";
-      moderation_target: "post" | "comment" | "product" | "service" | "job" | "event";
+      moderation_target: "post" | "comment" | "product" | "service" | "job" | "event" | "review";
       order_status: "pending" | "confirmed" | "ready" | "completed" | "cancelled" | "declined";
       pay_period: "hour" | "day" | "week" | "month" | "year" | "fixed";
-      post_kind: "general" | "question" | "recommendation" | "lost_and_found" | "announcement";
+      post_kind:
+        | "general"
+        | "question"
+        | "recommendation"
+        | "lost_and_found"
+        | "announcement"
+        | "poll"
+        | "help_request"
+        | "help_offer";
       product_status: "draft" | "active" | "out_of_stock" | "archived" | "removed";
       report_reason:
         | "spam"
@@ -2967,6 +3536,9 @@ export type Database = {
         | "artisan"
         | "other";
       service_status: "draft" | "active" | "archived" | "removed";
+      ticket_category:
+        "account" | "verification" | "marketplace" | "safety" | "bug" | "feedback" | "other";
+      ticket_status: "open" | "pending" | "resolved" | "closed";
       verification_document_type:
         | "business_registration"
         | "tax_certificate"
@@ -3120,7 +3692,9 @@ export const Constants = {
         "rejected",
         "withdrawn",
       ],
+      booking_status: ["requested", "confirmed", "declined", "cancelled", "completed"],
       content_status: ["published", "pending_review", "hidden", "removed"],
+      conversation_status: ["open", "closed", "blocked"],
       emergency_service: [
         "police",
         "fire",
@@ -3152,6 +3726,9 @@ export const Constants = {
         "advertising",
         "orders",
         "emergency_alerts",
+        "messages",
+        "bookings",
+        "reviews",
       ],
       entity_status: ["active", "suspended", "archived"],
       entity_type: [
@@ -3185,10 +3762,19 @@ export const Constants = {
         "dismiss_report",
         "warn_user",
       ],
-      moderation_target: ["post", "comment", "product", "service", "job", "event"],
+      moderation_target: ["post", "comment", "product", "service", "job", "event", "review"],
       order_status: ["pending", "confirmed", "ready", "completed", "cancelled", "declined"],
       pay_period: ["hour", "day", "week", "month", "year", "fixed"],
-      post_kind: ["general", "question", "recommendation", "lost_and_found", "announcement"],
+      post_kind: [
+        "general",
+        "question",
+        "recommendation",
+        "lost_and_found",
+        "announcement",
+        "poll",
+        "help_request",
+        "help_offer",
+      ],
       product_status: ["draft", "active", "out_of_stock", "archived", "removed"],
       report_reason: [
         "spam",
@@ -3221,6 +3807,16 @@ export const Constants = {
         "other",
       ],
       service_status: ["draft", "active", "archived", "removed"],
+      ticket_category: [
+        "account",
+        "verification",
+        "marketplace",
+        "safety",
+        "bug",
+        "feedback",
+        "other",
+      ],
+      ticket_status: ["open", "pending", "resolved", "closed"],
       verification_document_type: [
         "business_registration",
         "tax_certificate",

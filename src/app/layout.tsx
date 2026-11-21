@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { cookies } from "next/headers";
 
+import { parseTheme, THEME_COOKIE } from "@/components/theme/theme";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { ServiceWorker } from "@/components/pwa/service-worker";
 import { Toaster } from "@/components/ui/sonner";
@@ -48,15 +50,19 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1d4ed8",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#1d4ed8" },
+    { media: "(prefers-color-scheme: dark)", color: "#131a2b" },
+  ],
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const theme = parseTheme((await cookies()).get(THEME_COOKIE)?.value);
   return (
-    <html lang="en-GH" className={`${inter.variable} h-full`}>
+    <html lang="en-GH" className={`${inter.variable} h-full${theme === "system" ? "" : ` ${theme}`}`} suppressHydrationWarning>
       <body className="min-h-full font-sans">
         <a
           href="#main"

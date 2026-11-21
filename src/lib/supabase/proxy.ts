@@ -15,6 +15,12 @@ const PROTECTED_PREFIXES = [
   "/profile/edit",
   "/community/new",
   "/jobs/applications",
+  "/messages",
+  "/bookings",
+  "/following",
+  "/support",
+  "/settings",
+  "/account",
 ];
 
 export function isProtectedPath(pathname: string): boolean {

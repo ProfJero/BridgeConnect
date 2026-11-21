@@ -281,6 +281,8 @@ export function entitySchema(entity: {
   logo_url?: string | null;
   cover_url?: string | null;
   opening_hours?: Partial<Record<string, { open: string; close: string } | null>> | null;
+  rating_avg?: number | null;
+  rating_count?: number | null;
   communities: PlaceJoin;
 }): JsonLdData {
   const hours = Object.entries(entity.opening_hours ?? {})
@@ -301,5 +303,16 @@ export function entitySchema(entity: {
     ...(entity.website ? { sameAs: [entity.website] } : {}),
     address: postalAddress(entity.communities, entity.address),
     ...(hours.length ? { openingHoursSpecification: hours } : {}),
+    ...(entity.rating_avg && entity.rating_count
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: Number(entity.rating_avg).toFixed(1),
+            reviewCount: entity.rating_count,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
   };
 }

@@ -17,6 +17,7 @@ const COLUMN = {
   job: "job_id",
   event: "event_id",
   profile: "profile_id",
+  review: "review_id",
 } as const;
 
 export async function submitReportAction(input: unknown): Promise<ActionResult> {

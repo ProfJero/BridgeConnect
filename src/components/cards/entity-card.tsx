@@ -6,12 +6,18 @@ import { VerifiedBadge } from "@/components/shared/verified-badge";
 import { Badge } from "@/components/ui/badge";
 import { ENTITY_TYPE_LABEL } from "@/features/directory/constants";
 import type { EntityCardData } from "@/features/directory/queries";
+import { RatingStars } from "@/features/reviews/components/rating-stars";
 
-export function EntityCard({ entity }: { entity: EntityCardData }) {
+type CardEntity = Omit<EntityCardData, "rating_avg" | "rating_count"> & {
+  rating_avg?: number | null;
+  rating_count?: number;
+};
+
+export function EntityCard({ entity }: { entity: CardEntity }) {
   return (
     <Link
       href={`/directory/${entity.slug}`}
-      className="group flex min-w-0 gap-3 rounded-xl border bg-card p-4 shadow-xs transition-shadow hover:shadow-md focus-visible:ring-[3px] focus-visible:ring-ring/40 focus-visible:outline-none"
+      className="group pressable flex min-w-0 gap-3 rounded-xl border bg-card p-4 shadow-xs transition-shadow hover:shadow-md focus-visible:ring-[3px] focus-visible:ring-ring/40 focus-visible:outline-none"
     >
       <EntityAvatar name={entity.name} path={entity.logo_path} className="size-12" />
       <div className="min-w-0 flex-1 space-y-1">
@@ -19,6 +25,7 @@ export function EntityCard({ entity }: { entity: EntityCardData }) {
           <h3 className="truncate font-semibold group-hover:text-primary">{entity.name}</h3>
           <VerifiedBadge compact />
         </div>
+        {entity.rating_count ? <RatingStars value={entity.rating_avg ?? null} count={entity.rating_count} /> : null}
         {entity.tagline ? <p className="line-clamp-2 text-sm text-muted-foreground">{entity.tagline}</p> : null}
         <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-muted-foreground">
           <Badge variant="soft">{ENTITY_TYPE_LABEL[entity.entity_type]}</Badge>

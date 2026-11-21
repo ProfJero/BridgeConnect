@@ -8,7 +8,7 @@ import { Pagination, parsePage } from "@/components/shared/pagination";
 import { CommunityFilter } from "@/components/widgets/community-filter";
 import { Button } from "@/components/ui/button";
 import { PostCard } from "@/features/community/components/post-card";
-import { getMyReactions, listFeed } from "@/features/community/queries";
+import { getMyReactions, getPolls, listFeed } from "@/features/community/queries";
 import { getCommunityOptions } from "@/features/locations/queries";
 import { getViewer } from "@/lib/auth/session";
 import { uuidParam } from "@/lib/search-params";
@@ -28,7 +28,10 @@ export default async function CommunityPage({ searchParams }: PageProps<"/commun
   const communityId = explicit ?? (sp.community === undefined ? viewer?.profile.home_community_id ?? undefined : undefined);
   const page = parsePage(sp.page);
   const [feed, communities] = await Promise.all([listFeed({ communityId, page }), getCommunityOptions()]);
-  const reactions = await getMyReactions(feed.items.map((p) => p.id), viewer?.id);
+  const [reactions, polls] = await Promise.all([
+    getMyReactions(feed.items.map((p) => p.id), viewer?.id),
+    getPolls(feed.items, viewer?.id),
+  ]);
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
@@ -43,7 +46,7 @@ export default async function CommunityPage({ searchParams }: PageProps<"/commun
       ) : (
         <div className="space-y-3">
           {feed.items.map((post) => (
-            <PostCard key={post.id} post={post} reacted={reactions.has(post.id)} viewerId={viewer?.id} />
+            <PostCard key={post.id} post={post} reacted={reactions.has(post.id)} viewerId={viewer?.id} poll={polls.get(post.id)} />
           ))}
         </div>
       )}

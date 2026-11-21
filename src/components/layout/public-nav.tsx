@@ -31,7 +31,7 @@ export function DesktopNav() {
   );
 }
 
-export function MobileTabBar() {
+export function MobileTabBar({ unreadMessages = 0 }: { unreadMessages?: number }) {
   const pathname = usePathname();
   // Avoid highlighting "Community" while on the create-post screen.
   const activeHref =
@@ -52,19 +52,25 @@ export function MobileTabBar() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium text-muted-foreground",
+                  "pressable flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium text-muted-foreground",
                   active && "text-primary",
                 )}
               >
                 <span
                   className={cn(
-                    "flex size-7 items-center justify-center rounded-full",
+                    "relative flex size-7 items-center justify-center rounded-full",
                     isCreate && "size-9 -mt-1 bg-primary text-primary-foreground shadow-md",
                   )}
                 >
                   <Icon aria-hidden className={cn("size-5", isCreate && "size-5")} strokeWidth={active ? 2.4 : 2} />
+                  {item.href === "/messages" && unreadMessages > 0 ? (
+                    <span className="absolute top-0.5 ml-5 flex min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] leading-4 font-bold text-destructive-foreground">
+                      {unreadMessages > 9 ? "9+" : unreadMessages}
+                    </span>
+                  ) : null}
                 </span>
                 {item.label}
+                {item.href === "/messages" && unreadMessages > 0 ? <span className="sr-only">, {unreadMessages} unread</span> : null}
               </Link>
             </li>
           );

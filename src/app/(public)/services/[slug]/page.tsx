@@ -12,7 +12,10 @@ import { ReportDialog } from "@/components/widgets/report-dialog";
 import { ShareButton } from "@/components/widgets/share-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { BookingDialog } from "@/features/bookings/components/booking-form";
 import { isFavourite } from "@/features/favourites/queries";
+import { ContactDialog } from "@/features/messages/components/contact-dialog";
+import { createClient } from "@/lib/supabase/server";
 import { getServiceBySlug } from "@/features/marketplace/queries";
 import { getViewer } from "@/lib/auth/session";
 import { telLink, whatsappLink } from "@/lib/contact";
@@ -37,8 +40,15 @@ export default async function ServicePage({ params }: PageProps<"/services/[slug
   const { slug } = await params;
   const [service, viewer] = await Promise.all([getServiceBySlug(slug), getViewer()]);
   if (!service) notFound();
-  const saved = await isFavourite("service", service.id, viewer?.id);
+  const supabase = await createClient();
+  const [saved, { data: caps }] = await Promise.all([
+    isFavourite("service", service.id, viewer?.id),
+    supabase.rpc("entity_public_features", { p_entity: service.entity_id }).maybeSingle(),
+  ]);
   const provider = service.entities;
+
+  const isMember = viewer?.workspaces.some((w) => w.entityId === service.entity_id) ?? false;
+  const bookable = service.status === "active" && service.accepts_bookings && Boolean(caps?.bookings) && !isMember;
   const whatsapp = whatsappLink(
     provider.whatsapp,
     `Hello ${provider.name}, I found "${service.name}" on BridgeConnect: ${absoluteUrl(`/services/${service.slug}`)}`,
@@ -62,6 +72,15 @@ export default async function ServicePage({ params }: PageProps<"/services/[slug
         ) : null}
       </div>
       {service.description ? <p className="leading-relaxed whitespace-pre-line">{service.description}</p> : null}
+      {bookable ? (
+        <div className="flex flex-col gap-2 rounded-2xl border border-primary/30 bg-primary-soft/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-semibold">Book online</p>
+            <p className="text-sm text-muted-foreground">Request a date and time — {provider.name} confirms it in the app.</p>
+          </div>
+          <BookingDialog serviceId={service.id} serviceName={service.name} providerName={provider.name} signedIn={Boolean(viewer)} />
+        </div>
+      ) : null}
       <div className="rounded-xl border bg-card p-4">
         <Link href={`/directory/${provider.slug}`} className="flex items-center gap-3 hover:underline">
           <EntityAvatar name={provider.name} path={provider.logo_path} className="size-11" />
@@ -71,6 +90,9 @@ export default async function ServicePage({ params }: PageProps<"/services/[slug
           </div>
         </Link>
         <div className="mt-4 flex flex-wrap gap-2">
+          {Boolean(caps?.messages) && !isMember ? (
+            <ContactDialog entityId={service.entity_id} entityName={provider.name} signedIn={Boolean(viewer)} defaultSubject={service.name} variant="default" />
+          ) : null}
           {call ? (
             <Button asChild><a href={call}><Phone aria-hidden /> Call</a></Button>
           ) : null}

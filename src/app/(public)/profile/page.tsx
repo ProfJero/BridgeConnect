@@ -1,4 +1,18 @@
-import { Bookmark, Building2, ClipboardList, FileCheck2, MapPin, Package, Pencil, Shield } from "lucide-react";
+import {
+  BellRing,
+  Bookmark,
+  Building2,
+  CalendarCheck,
+  ClipboardList,
+  FileCheck2,
+  LifeBuoy,
+  MapPin,
+  MessageSquareText,
+  Package,
+  Pencil,
+  Settings,
+  Shield,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -8,7 +22,7 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PostCard } from "@/features/community/components/post-card";
-import { getMyReactions, listFeed } from "@/features/community/queries";
+import { getMyReactions, getPolls, listFeed } from "@/features/community/queries";
 import { ENTITY_TYPE_LABEL } from "@/features/directory/constants";
 import { getCommunityName } from "@/features/locations/queries";
 import { requireViewer } from "@/lib/auth/session";
@@ -23,13 +37,21 @@ export default async function ProfilePage() {
     getCommunityName(viewer.profile.home_community_id),
     listFeed({ authorId: viewer.id, pageSize: 10 }),
   ]);
-  const reactions = await getMyReactions(posts.items.map((p) => p.id), viewer.id);
+  const [reactions, polls] = await Promise.all([
+    getMyReactions(posts.items.map((p) => p.id), viewer.id),
+    getPolls(posts.items, viewer.id),
+  ]);
   const roles = [...new Set(viewer.grants.map((g) => g.scope))];
   const links = [
-    { href: "/favourites", label: "Favourites", icon: Bookmark },
+    { href: "/messages", label: "Messages", icon: MessageSquareText },
     { href: "/orders", label: "My orders", icon: Package },
+    { href: "/bookings", label: "Bookings", icon: CalendarCheck },
+    { href: "/favourites", label: "Favourites", icon: Bookmark },
+    { href: "/following", label: "Following", icon: BellRing },
     { href: "/jobs/applications", label: "Job applications", icon: ClipboardList },
     { href: "/apply", label: "Register an organisation", icon: FileCheck2 },
+    { href: "/support", label: "Help & support", icon: LifeBuoy },
+    { href: "/settings", label: "Settings", icon: Settings },
   ];
 
   return (
@@ -52,10 +74,13 @@ export default async function ProfilePage() {
         <Button asChild variant="outline" size="sm"><Link href="/profile/edit"><Pencil aria-hidden /> Edit profile</Link></Button>
       </section>
 
-      <nav aria-label="Account" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <nav aria-label="Account" className="grid grid-cols-3 gap-2">
         {links.map(({ href, label, icon: Icon }) => (
-          <Link key={href} href={href} className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4 text-center text-sm font-medium hover:shadow-md">
-            <Icon aria-hidden className="size-5 text-primary" /> {label}
+          <Link key={href} href={href} className="pressable flex flex-col items-center gap-2 rounded-2xl border bg-card p-3 text-center text-xs font-medium hover:shadow-md sm:p-4 sm:text-sm">
+            <span className="flex size-10 items-center justify-center rounded-full bg-primary-soft text-primary-soft-foreground">
+              <Icon aria-hidden className="size-5" />
+            </span>
+            {label}
           </Link>
         ))}
       </nav>
@@ -89,7 +114,7 @@ export default async function ProfilePage() {
           <p className="text-sm text-muted-foreground">You haven&apos;t posted yet.</p>
         ) : (
           <div className="space-y-3">
-            {posts.items.map((p) => <PostCard key={p.id} post={p} reacted={reactions.has(p.id)} viewerId={viewer.id} />)}
+            {posts.items.map((p) => <PostCard key={p.id} post={p} reacted={reactions.has(p.id)} viewerId={viewer.id} poll={polls.get(p.id)} />)}
           </div>
         )}
       </Section>

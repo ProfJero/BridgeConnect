@@ -28,6 +28,7 @@ export default async function EditServicePage({ params }: PageProps<"/workspace/
             priceNote: service.price_note ?? "",
             serviceArea: service.service_area ?? "",
             status: service.status as "draft" | "active" | "archived",
+            acceptsBookings: service.accepts_bookings,
           }}
         />
       </div>

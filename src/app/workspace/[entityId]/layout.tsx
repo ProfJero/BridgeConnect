@@ -6,6 +6,8 @@ import { Logo } from "@/components/brand/logo";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { countPendingBookings } from "@/features/bookings/queries";
+import { getEntityUnreadMessageCount } from "@/features/messages/queries";
 import { WorkspaceNav } from "@/features/workspace/components/workspace-nav";
 import { WorkspaceSwitcher } from "@/features/workspace/components/workspace-switcher";
 import { WORKSPACE_MODULES } from "@/features/workspace/modules";
@@ -23,14 +25,18 @@ export default async function WorkspaceLayout({ children, params }: LayoutProps<
     m.capability ? ctx.can(m.capability) : hasMembershipRole(ctx.role, m.minRole ?? "member"),
   ).map((m) => m.segment);
   const ws = ctx.viewer.workspaces.map((w) => ({ entityId: w.entityId, name: w.name, logoPath: w.logoPath }));
+  const [unread, pendingBookings] = await Promise.all([
+    ctx.can("messages") ? getEntityUnreadMessageCount(entityId) : 0,
+    ctx.can("bookings") ? countPendingBookings(entityId) : 0,
+  ]);
 
   return (
     <div className="min-h-dvh bg-background lg:grid lg:grid-cols-[260px_1fr]">
       <aside className="border-b bg-sidebar lg:sticky lg:top-0 lg:h-dvh lg:border-r lg:border-b-0">
         <div className="flex h-full flex-col gap-3 p-3">
-          <Link href="/" className="hidden px-2 pt-1 lg:block" aria-label="BridgeConnect home"><Logo /></Link>
+          <Link href="/" className="px-2 pt-1" aria-label="BridgeConnect home"><Logo /></Link>
           <WorkspaceSwitcher current={{ entityId, name: ctx.entity.name, logoPath: ctx.entity.logo_path }} workspaces={ws} />
-          <WorkspaceNav entityId={entityId} segments={segments} />
+          <WorkspaceNav entityId={entityId} segments={segments} badges={{ inbox: unread, bookings: pendingBookings }} />
           <div className="mt-auto hidden space-y-2 px-2 text-xs text-muted-foreground lg:block">
             <p>Your role: <strong className="text-foreground">{humanize(ctx.role)}</strong></p>
             {ctx.entity.status === "active" ? (

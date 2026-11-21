@@ -1,7 +1,11 @@
 import {
   BarChart3,
   Briefcase,
+  CalendarCheck,
   CalendarDays,
+  Inbox,
+  LifeBuoy,
+  Star,
   Image as ImageIcon,
   LayoutDashboard,
   Megaphone,
@@ -31,11 +35,14 @@ export type WorkspaceModule = {
 /** Every module a workspace MAY have. Visibility is computed per entity. */
 export const WORKSPACE_MODULES: WorkspaceModule[] = [
   { segment: "", label: "Dashboard", icon: LayoutDashboard, capability: null },
+  { segment: "inbox", label: "Inbox", icon: Inbox, capability: "messages" },
   { segment: "profile", label: "Profile", icon: Store, capability: null, minRole: "manager" },
   { segment: "posts", label: "Posts", icon: MessagesSquare, capability: "posts" },
   { segment: "products", label: "Products", icon: ShoppingBag, capability: "products" },
   { segment: "orders", label: "Orders", icon: Package, capability: "orders" },
   { segment: "services", label: "Services", icon: Wrench, capability: "services" },
+  { segment: "bookings", label: "Bookings", icon: CalendarCheck, capability: "bookings" },
+  { segment: "reviews", label: "Reviews", icon: Star, capability: "reviews" },
   { segment: "jobs", label: "Jobs", icon: Briefcase, capability: "jobs" },
   { segment: "events", label: "Events", icon: CalendarDays, capability: "events" },
   { segment: "media", label: "Media", icon: ImageIcon, capability: "media" },
@@ -44,4 +51,5 @@ export const WORKSPACE_MODULES: WorkspaceModule[] = [
   { segment: "members", label: "Members", icon: Users, capability: "members" },
   { segment: "analytics", label: "Analytics", icon: BarChart3, capability: "analytics" },
   { segment: "settings", label: "Settings", icon: Settings, capability: null },
+  { segment: "support", label: "Help & support", icon: LifeBuoy, capability: null },
 ];

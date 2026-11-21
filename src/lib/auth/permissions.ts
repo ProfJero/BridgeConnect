@@ -33,6 +33,7 @@ export const PERMISSIONS = [
   "notifications.broadcast",
   "audit.read",
   "settings.manage",
+  "support.manage",
   "platform.owner",
 ] as const;
 
@@ -144,6 +145,9 @@ export const CAPABILITY_MIN_ROLE: Record<EntityCapability, MembershipRole> = {
   analytics: "manager",
   advertising: "manager",
   emergency_alerts: "manager",
+  messages: "editor",
+  bookings: "editor",
+  reviews: "manager",
 };
 
 export function canUseCapability(

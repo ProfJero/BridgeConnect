@@ -1,4 +1,4 @@
-import { Globe, Mail, MapPin, MessageCircle, Phone, Settings } from "lucide-react";
+import { Globe, Mail, MapPin, MessageCircle, Phone, Settings, Star } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,6 +21,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ENTITY_TYPE_LABEL, SECTOR_LABEL } from "@/features/directory/constants";
 import { getEntityBySlug, getEntityListings } from "@/features/directory/queries";
 import { isFavourite } from "@/features/favourites/queries";
+import { FollowButton } from "@/features/follows/components/follow-button";
+import { isFollowing } from "@/features/follows/queries";
+import { ContactDialog } from "@/features/messages/components/contact-dialog";
+import { RatingStars } from "@/features/reviews/components/rating-stars";
+import { ReviewDialog } from "@/features/reviews/components/review-form";
+import { RatingSummary, ReviewItem } from "@/features/reviews/components/review-list";
+import { getMyReview, getRatingDistribution, listEntityReviews } from "@/features/reviews/queries";
+import { createClient } from "@/lib/supabase/server";
 import { getViewer } from "@/lib/auth/session";
 import { telLink, whatsappLink } from "@/lib/contact";
 import { formatDate, formatMoney, formatRelative } from "@/lib/format";
@@ -55,10 +63,18 @@ export default async function EntityProfilePage({ params }: PageProps<"/director
   const [entity, viewer] = await Promise.all([getEntityBySlug(slug), getViewer()]);
   if (!entity) notFound();
 
-  const [listings, saved] = await Promise.all([
+  const supabase = await createClient();
+  const [listings, saved, following, reviews, distribution, myReview, { data: caps }] = await Promise.all([
     getEntityListings(entity.id),
     isFavourite("entity", entity.id, viewer?.id),
+    isFollowing(entity.id, viewer?.id),
+    listEntityReviews(entity.id, { pageSize: 10 }),
+    getRatingDistribution(entity.id),
+    getMyReview(entity.id, viewer?.id),
+    supabase.rpc("entity_public_features", { p_entity: entity.id }).maybeSingle(),
   ]);
+  const acceptsReviews = Boolean(caps?.reviews);
+  const acceptsMessages = Boolean(caps?.messages);
   const isMember = viewer?.workspaces.some((w) => w.entityId === entity.id) ?? false;
   const cover = publicMediaUrl(entity.cover_path);
   const hours = (entity.opening_hours ?? null) as Hours | null;
@@ -106,6 +122,9 @@ export default async function EntityProfilePage({ params }: PageProps<"/director
                   </Link>
                 </Button>
               ) : null}
+              {entity.status === "active" ? (
+                <FollowButton entityId={entity.id} following={following} followers={entity.follower_count} signedIn={Boolean(viewer)} />
+              ) : null}
               <FavouriteButton kind="entity" id={entity.id} initial={saved} signedIn={Boolean(viewer)} />
               <ShareButton path={`/directory/${entity.slug}`} title={entity.name} text={entity.tagline ?? undefined} />
               {!isMember ? <ReportDialog targetKind="entity" targetId={entity.id} signedIn={Boolean(viewer)} variant="outline" /> : null}
@@ -117,6 +136,11 @@ export default async function EntityProfilePage({ params }: PageProps<"/director
               <VerifiedBadge />
             </div>
             {entity.tagline ? <p className="text-muted-foreground">{entity.tagline}</p> : null}
+            {acceptsReviews && entity.rating_count > 0 ? (
+              <a href="#reviews" className="inline-flex hover:underline">
+                <RatingStars value={entity.rating_avg} count={entity.rating_count} size="md" />
+              </a>
+            ) : null}
             <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
               <Badge variant="soft">{ENTITY_TYPE_LABEL[entity.entity_type]}</Badge>
               <Badge variant="secondary">{SECTOR_LABEL[entity.sector]}</Badge>
@@ -130,6 +154,9 @@ export default async function EntityProfilePage({ params }: PageProps<"/director
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
+            {acceptsMessages && !isMember && entity.status === "active" ? (
+              <ContactDialog entityId={entity.id} entityName={entity.name} signedIn={Boolean(viewer)} variant="default" />
+            ) : null}
             {call ? (
               <Button asChild>
                 <a href={call}>
@@ -221,6 +248,28 @@ export default async function EntityProfilePage({ params }: PageProps<"/director
                   <EventCard key={e.id} event={{ ...e, entities: { name: entity.name } }} />
                 ))}
               </div>
+            </Section>
+          ) : null}
+
+          {acceptsReviews ? (
+            <Section
+              title={<span id="reviews" className="scroll-mt-20">Reviews</span>}
+              action={!isMember && entity.status === "active" ? (
+                <ReviewDialog entityId={entity.id} entityName={entity.name} signedIn={Boolean(viewer)} existing={myReview} />
+              ) : null}
+            >
+              {reviews.total > 0 ? (
+                <div className="space-y-3">
+                  <RatingSummary average={entity.rating_avg} count={entity.rating_count} distribution={distribution} />
+                  {reviews.items.map((r) => (
+                    <ReviewItem key={r.id} review={r} entityName={entity.name} viewerId={viewer?.id} />
+                  ))}
+                </div>
+              ) : (
+                <p className="flex items-center gap-2 rounded-xl border border-dashed bg-card p-4 text-sm text-muted-foreground">
+                  <Star aria-hidden className="size-4" /> No reviews yet. Be the first to share your experience.
+                </p>
+              )}
             </Section>
           ) : null}
 

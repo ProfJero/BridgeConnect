@@ -133,9 +133,12 @@ describe("storage access control", () => {
       cv_path: path,
     });
     expect(applyError === null || applyError.code === "23505").toBe(true);
+    // On a re-run the application already exists with the CV from the first run.
+    const { data: application } = await capeCoast.from("job_applications").select("cv_path").eq("job_id", job!.id).single();
+    const cv = application!.cv_path!;
 
     // Hiring NGO owner can open the CV; an unrelated business owner cannot.
-    expect((await ngo.storage.from("job-applications").createSignedUrl(path, 60)).error).toBeNull();
-    expect((await business.storage.from("job-applications").createSignedUrl(path, 60)).error).not.toBeNull();
+    expect((await ngo.storage.from("job-applications").createSignedUrl(cv, 60)).error).toBeNull();
+    expect((await business.storage.from("job-applications").createSignedUrl(cv, 60)).error).not.toBeNull();
   });
 });

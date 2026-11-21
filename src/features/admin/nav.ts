@@ -10,6 +10,7 @@ import {
   HandHeart,
   KeyRound,
   LayoutDashboard,
+  LifeBuoy,
   MapPinned,
   Megaphone,
   Package,
@@ -49,6 +50,7 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       { href: "/admin/organisations", label: "Organisations", icon: HandHeart, permission: "entities.read_all" },
       { href: "/admin/reports", label: "Reports", icon: Flag, permission: "reports.read" },
       { href: "/admin/moderation", label: "Moderation", icon: ShieldAlert, permission: "content.moderate" },
+      { href: "/admin/support", label: "Support desk", icon: LifeBuoy, permission: "support.manage" },
     ],
   },
   {

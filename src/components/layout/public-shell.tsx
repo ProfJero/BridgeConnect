@@ -1,9 +1,10 @@
-import { Search, Siren } from "lucide-react";
+import { MessageSquareText, Search, Siren } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
+import { getMyUnreadMessageCount } from "@/features/messages/queries";
 import { getUnreadNotificationCount } from "@/features/notifications/queries";
 import { getViewer } from "@/lib/auth/session";
 
@@ -15,7 +16,9 @@ import { SiteFooter } from "./site-footer";
 
 export async function PublicShell({ children }: { children: React.ReactNode }) {
   const viewer = await getViewer();
-  const unread = viewer ? await getUnreadNotificationCount() : 0;
+  const [unread, unreadMessages] = viewer
+    ? await Promise.all([getUnreadNotificationCount(), getMyUnreadMessageCount()])
+    : [0, 0];
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -44,6 +47,14 @@ export async function PublicShell({ children }: { children: React.ReactNode }) {
             </Button>
             {viewer ? (
               <>
+                <Button asChild variant="ghost" size="icon" className="relative hidden lg:inline-flex">
+                  <Link href="/messages" aria-label={unreadMessages ? `Messages, ${unreadMessages} unread` : "Messages"}>
+                    <MessageSquareText aria-hidden className="size-5" />
+                    {unreadMessages ? (
+                      <span className="absolute top-1.5 right-1.5 size-2.5 rounded-full bg-destructive" aria-hidden />
+                    ) : null}
+                  </Link>
+                </Button>
                 <NotificationBell userId={viewer.id} initialUnread={unread} />
                 <AccountMenu
                   displayName={viewer.profile.display_name}
@@ -69,7 +80,7 @@ export async function PublicShell({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       <SiteFooter />
-      <MobileTabBar />
+      <MobileTabBar unreadMessages={unreadMessages} />
     </div>
   );
 }

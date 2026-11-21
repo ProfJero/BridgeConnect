@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { EntityType, Sector } from "./constants";
 
 export const ENTITY_CARD_FIELDS =
-  "id, name, slug, tagline, entity_type, sector, logo_path, community_id, communities(name)" as const;
+  "id, name, slug, tagline, entity_type, sector, logo_path, community_id, rating_avg, rating_count, communities(name)" as const;
 
 export type EntityFilters = {
   types?: EntityType[];

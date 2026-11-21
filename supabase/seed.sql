@@ -185,3 +185,20 @@ insert into public.emergency_alerts (title, body, instructions, severity, catego
    'The district assembly advises residents to prepare for heavy rainfall and possible flooding in low-lying areas.',
    'Clear gutters, avoid crossing flooded roads and keep emergency numbers at hand.',
    'advisory', 'weather', '20000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000002');
+
+-- Engagement release demo data: reviews, follows and a community poll.
+insert into public.entity_reviews (entity_id, author_id, rating, title, body) values
+  ('e0000000-0000-4000-8000-000000000004', 'a0000000-0000-4000-8000-000000000007', 5, 'Caring teachers',
+   'My children love the reading club and the teachers keep parents informed.'),
+  ('e0000000-0000-4000-8000-000000000003', 'a0000000-0000-4000-8000-000000000008', 4, 'Quick service',
+   'Short queue on immunisation day and the nurses were very patient with my son.');
+insert into public.entity_follows (entity_id, user_id) values
+  ('e0000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000007'),
+  ('e0000000-0000-4000-8000-000000000003', 'a0000000-0000-4000-8000-000000000007');
+insert into public.posts (id, author_id, community_id, kind, title, body, poll_closes_at) values
+  ('c0000000-0000-4000-8000-0000000000a1', 'a0000000-0000-4000-8000-000000000008',
+   '30000000-0000-4000-8000-000000000004', 'poll', 'Clean-up day',
+   'Which Saturday works best for the community clean-up?', now() + interval '7 days');
+insert into public.poll_options (post_id, label, position) values
+  ('c0000000-0000-4000-8000-0000000000a1', 'First Saturday of the month', 0),
+  ('c0000000-0000-4000-8000-0000000000a1', 'Last Saturday of the month', 1);

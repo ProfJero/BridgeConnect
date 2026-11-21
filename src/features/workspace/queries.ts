@@ -18,7 +18,39 @@ export async function getWorkspaceSummary(entityId: string) {
     count("orders", ["pending"]),
     supabase.from("orders").select("id, order_number, status, subtotal, currency, created_at").eq("entity_id", entityId).order("created_at", { ascending: false }).limit(5).then((r) => r.data ?? []),
   ]);
-  return { products, services, openJobs, upcomingEvents, pendingOrders, recentOrders };
+  const [{ data: entity }, upcomingBookings, recentConversations] = await Promise.all([
+    supabase.from("entities").select("rating_avg, rating_count, follower_count").eq("id", entityId).single(),
+    supabase
+      .from("service_bookings")
+      .select("id, booking_number, requested_date, requested_time, status, services(name), profiles!service_bookings_customer_id_fkey(display_name)")
+      .eq("entity_id", entityId)
+      .in("status", ["requested", "confirmed"])
+      .gte("requested_date", new Date().toISOString().slice(0, 10))
+      .order("requested_date")
+      .limit(5)
+      .then((r) => r.data ?? []),
+    supabase
+      .from("conversations")
+      .select("id, subject, last_message_at, last_message_preview, last_sender_side, entity_last_read_at, profiles!conversations_user_id_fkey(display_name)")
+      .eq("entity_id", entityId)
+      .eq("status", "open")
+      .order("last_message_at", { ascending: false })
+      .limit(5)
+      .then((r) => r.data ?? []),
+  ]);
+  return {
+    products,
+    services,
+    openJobs,
+    upcomingEvents,
+    pendingOrders,
+    recentOrders,
+    ratingAvg: entity?.rating_avg ?? null,
+    ratingCount: entity?.rating_count ?? 0,
+    followers: entity?.follower_count ?? 0,
+    upcomingBookings,
+    recentConversations,
+  };
 }
 
 export async function getEntityForEdit(entityId: string) {

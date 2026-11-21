@@ -1,12 +1,17 @@
 "use client";
 
 import {
+  BellRing,
   Bookmark,
   Building2,
+  CalendarCheck,
   ClipboardList,
   FileCheck2,
+  LifeBuoy,
   LogOut,
+  MessageSquareText,
   Package,
+  Settings,
   Shield,
   User,
 } from "lucide-react";
@@ -45,10 +50,19 @@ export function AccountMenu({ displayName, avatarPath, isAdmin, workspaces }: Ac
           <Link href="/profile"><User aria-hidden /> My profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/favourites"><Bookmark aria-hidden /> Favourites</Link>
+          <Link href="/messages"><MessageSquareText aria-hidden /> Messages</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/orders"><Package aria-hidden /> My orders</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/bookings"><CalendarCheck aria-hidden /> My bookings</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/favourites"><Bookmark aria-hidden /> Favourites</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/following"><BellRing aria-hidden /> Following</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/jobs/applications"><ClipboardList aria-hidden /> Job applications</Link>
@@ -78,6 +92,12 @@ export function AccountMenu({ displayName, avatarPath, isAdmin, workspaces }: Ac
           </>
         ) : null}
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/support"><LifeBuoy aria-hidden /> Help & support</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/settings"><Settings aria-hidden /> Settings</Link>
+        </DropdownMenuItem>
         <form action={signOutAction}>
           <DropdownMenuItem asChild>
             <button type="submit" className="w-full">

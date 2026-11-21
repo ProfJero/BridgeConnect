@@ -87,11 +87,11 @@ export function ServiceForm({
 }: {
   entityId: string;
   categories: Category[];
-  initial?: Partial<{ serviceId: string; name: string; categoryId: string; description: string; priceFrom: number | ""; priceNote: string; serviceArea: string; status: "draft" | "active" | "archived" }>;
+  initial?: Partial<{ serviceId: string; name: string; categoryId: string; description: string; priceFrom: number | ""; priceNote: string; serviceArea: string; status: "draft" | "active" | "archived"; acceptsBookings: boolean }>;
 }) {
   const router = useRouter();
   const { form, onSubmit, pending, formError, errorFor } = useActionForm(serviceSchema, saveServiceAction, {
-    defaultValues: { entityId, name: "", categoryId: "", description: "", priceFrom: "", priceNote: "", serviceArea: "", status: "active", ...initial },
+    defaultValues: { entityId, name: "", categoryId: "", description: "", priceFrom: "", priceNote: "", serviceArea: "", status: "active", acceptsBookings: true, ...initial },
     onSuccess: () => router.push(`/workspace/${entityId}/services`),
   });
   const reg = (name: Parameters<typeof form.register>[0], hint = false) => ({ ...controlProps(name, errorFor(name), hint), ...form.register(name) });
@@ -113,6 +113,13 @@ export function ServiceForm({
       </div>
       <Field id="serviceArea" label="Area served" error={errorFor("serviceArea")}><Input maxLength={200} {...reg("serviceArea")} /></Field>
       <Field id="description" label="Description" error={errorFor("description")}><Textarea rows={4} maxLength={5000} {...reg("description")} /></Field>
+      <Label className="font-normal">
+        <Checkbox
+          defaultChecked={initial?.acceptsBookings ?? true}
+          onCheckedChange={(v) => form.setValue("acceptsBookings", v === true)}
+        />
+        Accept online booking requests for this service
+      </Label>
       <Button type="submit" disabled={pending} className="sm:w-fit">{pending ? "Saving…" : initial?.serviceId ? "Save changes" : "Create service"}</Button>
     </form>
   );

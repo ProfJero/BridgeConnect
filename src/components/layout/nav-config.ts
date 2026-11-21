@@ -6,6 +6,7 @@ import {
   HandHeart,
   HeartPulse,
   Home,
+  Inbox,
   Landmark,
   MessagesSquare,
   PlusCircle,
@@ -31,10 +32,10 @@ export const PRIMARY_NAV: NavItem[] = [
 
 export const MOBILE_TABS: NavItem[] = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/explore", label: "Explore", icon: Compass },
-  { href: "/community/new", label: "Post", icon: PlusCircle },
   { href: "/community", label: "Community", icon: MessagesSquare },
-  { href: "/profile", label: "Profile", icon: User },
+  { href: "/community/new", label: "Post", icon: PlusCircle },
+  { href: "/messages", label: "Inbox", icon: Inbox },
+  { href: "/profile", label: "Me", icon: User },
 ];
 
 export const DIRECTORY_NAV: (NavItem & { description: string })[] = [

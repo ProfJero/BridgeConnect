@@ -31,6 +31,7 @@ export const serviceSchema = z.object({
   priceNote: optionalText(120),
   serviceArea: optionalText(200),
   status: z.enum(["draft", "active", "archived"]),
+  acceptsBookings: z.boolean().optional(),
 });
 
 export const jobSchema = z

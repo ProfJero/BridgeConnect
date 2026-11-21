@@ -21,7 +21,7 @@ export function ModerationButtons({
   status?: string;
 }) {
   const visible = !status || ["published", "active", "open", "out_of_stock", "pending_review"].includes(status);
-  const isPost = targetType === "post" || targetType === "comment";
+  const isPost = targetType === "post" || targetType === "comment" || targetType === "review";
   return (
     <div className="flex flex-wrap gap-2">
       {status === "pending_review" ? (

@@ -153,6 +153,7 @@ export async function saveServiceAction(input: unknown): Promise<ActionResult<{ 
     price_note: nullIfEmpty(v.priceNote),
     service_area: nullIfEmpty(v.serviceArea),
     status: v.status,
+    accepts_bookings: v.acceptsBookings ?? true,
   };
   const { data, error } = v.serviceId
     ? await supabase.from("services").update(row).eq("id", v.serviceId).eq("entity_id", v.entityId).select("id").single()

@@ -12,7 +12,7 @@ import { SeverityBadge } from "@/components/shared/status-badge";
 import { SearchForm } from "@/components/widgets/search-form";
 import { Button } from "@/components/ui/button";
 import { PostCard } from "@/features/community/components/post-card";
-import { getMyReactions, listFeed } from "@/features/community/queries";
+import { getMyReactions, getPolls, listFeed } from "@/features/community/queries";
 import { getActiveAlerts, getAlertsForCommunity } from "@/features/emergency/queries";
 import { listEvents } from "@/features/events/queries";
 import { listJobs } from "@/features/jobs/queries";
@@ -47,7 +47,10 @@ export default async function HomePage() {
     listJobs({ pageSize: 3 }),
     communityId ? getAlertsForCommunity(communityId) : getActiveAlerts(3),
   ]);
-  const reactions = await getMyReactions(feed.items.map((p) => p.id), viewer?.id);
+  const [reactions, polls] = await Promise.all([
+    getMyReactions(feed.items.map((p) => p.id), viewer?.id),
+    getPolls(feed.items, viewer?.id),
+  ]);
   const firstName = viewer?.profile.display_name.split(" ")[0];
 
   return (
@@ -166,7 +169,7 @@ export default async function HomePage() {
           ) : (
             <div className="space-y-3">
               {feed.items.map((post) => (
-                <PostCard key={post.id} post={post} reacted={reactions.has(post.id)} viewerId={viewer?.id} />
+                <PostCard key={post.id} post={post} reacted={reactions.has(post.id)} viewerId={viewer?.id} poll={polls.get(post.id)} />
               ))}
               <Button asChild variant="outline" className="w-full">
                 <Link href="/community">

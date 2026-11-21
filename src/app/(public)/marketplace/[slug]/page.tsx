@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { isFavourite } from "@/features/favourites/queries";
 import { OrderForm } from "@/features/marketplace/components/order-form";
+import { ContactDialog } from "@/features/messages/components/contact-dialog";
 import { getProductBySlug } from "@/features/marketplace/queries";
 import { getViewer } from "@/lib/auth/session";
 import { telLink, whatsappLink } from "@/lib/contact";
@@ -126,8 +127,13 @@ export default async function ProductPage({ params }: PageProps<"/marketplace/[s
                 ) : null}
               </div>
             </Link>
+            {!isOwnEntity ? (
+              <div className="mt-4">
+                <ContactDialog entityId={seller.id} entityName={seller.name} signedIn={Boolean(viewer)} defaultSubject={product.name} label="Message seller" variant="default" />
+              </div>
+            ) : null}
             {!isOwnEntity && (whatsapp || call) ? (
-              <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="mt-2 grid grid-cols-2 gap-2">
                 {whatsapp ? (
                   <Button asChild variant="green">
                     <a href={whatsapp} target="_blank" rel="noopener noreferrer">
