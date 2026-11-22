@@ -13,7 +13,7 @@ const LIMIT = 5000;
 export async function listSitemapRows(): Promise<SitemapRow[]> {
   const supabase = await createClient();
   const now = new Date().toISOString();
-  const [entities, products, services, jobs, events] = await Promise.all([
+  const [entities, products, services, jobs, events, rentals] = await Promise.all([
     supabase.from("entities").select("slug, updated_at").eq("status", "active").limit(LIMIT),
     supabase
       .from("products")
@@ -40,6 +40,7 @@ export async function listSitemapRows(): Promise<SitemapRow[]> {
       .gte("starts_at", now)
       .eq("entities.status", "active")
       .limit(LIMIT),
+    supabase.from("rental_listings").select("slug, updated_at").eq("status", "available").limit(LIMIT),
   ]);
   const rows = (prefix: string, data: { slug: string; updated_at: string }[] | null) =>
     (data ?? []).map((r) => ({ path: `${prefix}/${r.slug}`, lastModified: r.updated_at }));
@@ -49,5 +50,6 @@ export async function listSitemapRows(): Promise<SitemapRow[]> {
     ...rows("/services", services.data),
     ...rows("/jobs", jobs.data),
     ...rows("/events", events.data),
+    ...rows("/rentals", rentals.data),
   ];
 }

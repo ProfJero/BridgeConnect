@@ -16,7 +16,7 @@ export default function manifest(): MetadataRoute.Manifest {
     display_override: ["standalone", "minimal-ui"],
     orientation: "portrait-primary",
     background_color: "#ffffff",
-    theme_color: "#1d4ed8",
+    theme_color: "#0b55b8",
     categories: ["social", "business", "shopping", "news", "lifestyle"],
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
@@ -27,7 +27,8 @@ export default function manifest(): MetadataRoute.Manifest {
     shortcuts: [
       { name: "Marketplace", url: "/marketplace?source=pwa", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
       { name: "Jobs", url: "/jobs?source=pwa", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
-      { name: "Emergency", url: "/emergency?source=pwa", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
+      { name: "Rides & delivery", url: "/rides?source=pwa", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
+      { name: "Rentals", url: "/rentals?source=pwa", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
       { name: "Community", url: "/community?source=pwa", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
     ],
   };

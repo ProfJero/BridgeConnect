@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  Bike,
   Bell,
   BadgeCheck,
   Briefcase,
@@ -61,6 +62,7 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       { href: "/admin/jobs", label: "Jobs", icon: Briefcase, permission: "jobs.manage" },
       { href: "/admin/events", label: "Events", icon: CalendarDays, permission: "events.manage" },
       { href: "/admin/advertisements", label: "Advertisements", icon: Megaphone, permission: "ads.review" },
+      { href: "/admin/riders", label: "Riders & drivers", icon: Bike, permission: "mobility.manage" },
     ],
   },
   {

@@ -1,36 +1,42 @@
+import Image from "next/image";
+
 import { cn } from "@/lib/utils";
 
-/** BridgeConnect mark: a bridge arc (blue) over a community path (green). */
-export function LogoMark({ className }: { className?: string }) {
+/** The official BridgeConnect emblem (bridge, home, tree, circuit and community). */
+export function LogoMark({ className, priority }: { className?: string; priority?: boolean }) {
   return (
-    <svg viewBox="0 0 32 32" aria-hidden className={cn("size-8", className)}>
-      <rect width="32" height="32" rx="9" className="fill-primary" />
-      <path d="M6 20c3.5-7.5 16.5-7.5 20 0" fill="none" stroke="white" strokeWidth="2.6" strokeLinecap="round" />
-      <path d="M10.5 15.6v6.4M16 13.4v8.6M21.5 15.6v6.4" stroke="white" strokeWidth="2" strokeLinecap="round" />
-      <path d="M5 24h22" className="stroke-brand-green" stroke="#22c55e" strokeWidth="2.6" strokeLinecap="round" />
-    </svg>
+    <Image
+      src="/brand/emblem.webp"
+      alt=""
+      width={160}
+      height={160}
+      priority={priority}
+      className={cn("size-9 shrink-0", className)}
+    />
   );
 }
 
 export function Logo({
   className,
   wordmarkClassName,
+  markClassName,
   showTagline = false,
 }: {
   className?: string;
   /** e.g. hide the wordmark on very narrow screens where the header is crowded. */
   wordmarkClassName?: string;
+  markClassName?: string;
   showTagline?: boolean;
 }) {
   return (
-    <span className={cn("inline-flex items-center gap-2.5", className)}>
-      <LogoMark />
+    <span className={cn("inline-flex items-center gap-2", className)}>
+      <LogoMark className={markClassName} priority />
       <span className={cn("flex flex-col leading-none", wordmarkClassName)}>
-        <span className="text-lg font-bold tracking-tight">
+        <span className="text-lg font-extrabold tracking-tight text-brand-navy">
           Bridge<span className="text-brand-green">Connect</span>
         </span>
         {showTagline ? (
-          <span className="mt-1 text-[11px] font-medium text-muted-foreground">
+          <span className="mt-1 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
             Connecting Communities. Empowering Lives.
           </span>
         ) : null}

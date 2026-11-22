@@ -16,12 +16,18 @@ export function FavouriteButton({
   initial,
   signedIn,
   compact = false,
+  floating = false,
+  label,
 }: {
   kind: FavouriteKind;
   id: string;
   initial: boolean;
   signedIn: boolean;
   compact?: boolean;
+  /** Round heart that sits on top of a card image. */
+  floating?: boolean;
+  /** Accessible name of the item, e.g. the product name. */
+  label?: string;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -38,6 +44,21 @@ export function FavouriteButton({
       if (!result.ok) toast.error(result.error);
       router.refresh();
     });
+  }
+
+  if (floating) {
+    return (
+      <button
+        type="button"
+        onClick={toggle}
+        disabled={pending}
+        aria-pressed={saved}
+        aria-label={`${saved ? "Remove" : "Save"} ${label ?? "item"} ${saved ? "from" : "to"} favourites`}
+        className="relative z-10 flex size-9 items-center justify-center rounded-full bg-card/90 shadow-sm backdrop-blur transition active:scale-90"
+      >
+        <Heart aria-hidden className={cn("size-[18px]", saved ? "animate-pop fill-destructive text-destructive" : "text-foreground/70")} />
+      </button>
+    );
   }
 
   return (

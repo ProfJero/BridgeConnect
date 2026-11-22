@@ -1,11 +1,20 @@
 import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/types/database";
+
+type PostData_Kind = Database["public"]["Enums"]["post_kind"];
 
 export const POST_FIELDS =
   "id, title, body, kind, status, created_at, edited_at, resolved_at, poll_closes_at, comment_count, reaction_count, community_id, author_id, entity_id, moderation_reason, profiles!posts_author_id_fkey(display_name, avatar_path, username), entities(name, slug, logo_path), communities(name), post_media(position, media_assets(storage_path, alt_text))" as const;
 
-export async function listFeed(filters: { communityId?: string; page?: number; pageSize?: number; authorId?: string }) {
+export async function listFeed(filters: {
+  communityId?: string;
+  page?: number;
+  pageSize?: number;
+  authorId?: string;
+  kinds?: PostData_Kind[];
+}) {
   const supabase = await createClient();
   const pageSize = filters.pageSize ?? 15;
   const page = filters.page ?? 1;
@@ -16,6 +25,7 @@ export async function listFeed(filters: { communityId?: string; page?: number; p
     query = query.eq("status", "published");
   }
   if (filters.communityId) query = query.eq("community_id", filters.communityId);
+  if (filters.kinds?.length) query = query.in("kind", filters.kinds);
   const from = (page - 1) * pageSize;
   const { data, count, error } = await query
     .order("created_at", { ascending: false })

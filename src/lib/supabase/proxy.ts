@@ -21,6 +21,10 @@ const PROTECTED_PREFIXES = [
   "/support",
   "/settings",
   "/account",
+  "/rider",
+  "/rides/history",
+  "/rentals/new",
+  "/rentals/mine",
 ];
 
 export function isProtectedPath(pathname: string): boolean {

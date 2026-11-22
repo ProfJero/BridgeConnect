@@ -1,3 +1,4 @@
+import { Bike } from "lucide-react";
 import Link from "next/link";
 
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -93,6 +94,18 @@ export function OrderDetail({ order, transitions, perspective }: { order: Order;
             {order.status_reason ? <p><span className="text-muted-foreground">Reason:</span> {order.status_reason}</p> : null}
           </CardContent>
         </Card>
+        {perspective !== "admin" && order.fulfilment === "delivery" && (order.status === "confirmed" || order.status === "ready") ? (
+          <Link
+            href={`/rides?order=${order.id}`}
+            className="pressable flex items-center gap-3 rounded-2xl border-2 border-brand-green/40 bg-brand-green-soft/50 p-4"
+          >
+            <Bike aria-hidden className="size-6 text-brand-green" />
+            <span className="flex-1">
+              <span className="block font-semibold">Book a dispatch rider</span>
+              <span className="block text-xs text-muted-foreground">A verified rider picks it up and delivers it. Track it live.</span>
+            </span>
+          </Link>
+        ) : null}
         {perspective !== "admin" ? <OrderStatusActions orderId={order.id} transitions={transitions} /> : null}
       </div>
     </div>

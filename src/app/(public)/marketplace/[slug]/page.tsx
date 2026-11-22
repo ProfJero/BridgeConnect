@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { isFavourite } from "@/features/favourites/queries";
+import { AddToCartButton, BuyNowButton } from "@/features/cart/components/add-to-cart";
 import { OrderForm } from "@/features/marketplace/components/order-form";
 import { ContactDialog } from "@/features/messages/components/contact-dialog";
 import { getProductBySlug } from "@/features/marketplace/queries";
@@ -55,6 +56,17 @@ export default async function ProductPage({ params }: PageProps<"/marketplace/[s
   const enquiry = `Hello ${seller.name}, I saw "${product.name}" on BridgeConnect and I'm interested: ${absoluteUrl(`/marketplace/${product.slug}`)}`;
   const whatsapp = whatsappLink(seller.whatsapp ?? seller.phone, enquiry);
   const call = telLink(seller.phone);
+  const cartItem = {
+    productId: product.id,
+    entityId: seller.id,
+    entityName: seller.name,
+    name: product.name,
+    slug: product.slug,
+    price: Number(product.price),
+    currency: product.currency,
+    image: media[0] ? publicMediaUrl(media[0].path, 240) : null,
+  };
+  const canBuy = orderable && !isOwnEntity && (!viewer || viewer.isActive);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
@@ -95,12 +107,18 @@ export default async function ProductPage({ params }: PageProps<"/marketplace/[s
             {product.status !== "active" ? <StatusBadge status={product.status} /> : null}
           </div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{product.name}</h1>
-          <p className="text-2xl font-bold text-primary">
+          <p className="text-2xl font-extrabold text-brand-green">
             {formatMoney(product.price, product.currency)}
             {product.unit ? <span className="text-base font-normal text-muted-foreground"> {product.unit}</span> : null}
           </p>
           {product.description ? <p className="leading-relaxed whitespace-pre-line text-muted-foreground">{product.description}</p> : null}
         </div>
+        {canBuy ? (
+          <div className="hidden gap-2 sm:flex">
+            <AddToCartButton item={cartItem} className="flex-1 rounded-full" />
+            <BuyNowButton item={cartItem} className="flex-1 rounded-full" />
+          </div>
+        ) : null}
         <div className="flex flex-wrap gap-2">
           <FavouriteButton kind="product" id={product.id} initial={saved} signedIn={Boolean(viewer)} />
           <ShareButton path={`/marketplace/${product.slug}`} title={product.name} text={formatMoney(product.price, product.currency)} />
@@ -188,6 +206,12 @@ export default async function ProductPage({ params }: PageProps<"/marketplace/[s
         </Card>
         {!isOwnEntity ? <SafetyTips kind="product" /> : null}
       </div>
+      {canBuy ? (
+        <div className="fixed inset-x-0 bottom-[calc(3.75rem+env(safe-area-inset-bottom))] z-30 flex gap-2 border-t bg-card/95 p-3 backdrop-blur sm:hidden">
+          <AddToCartButton item={cartItem} className="flex-1 rounded-full" />
+          <BuyNowButton item={cartItem} className="flex-1 rounded-full" />
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -9,7 +9,7 @@
  * Components consume semantic tokens only (bg-primary, text-muted-foreground…).
  */
 :root {
-  --radius: 0.75rem;
+  --radius: 0.875rem;
 
   --background: oklch(0.985 0.004 247);
   --foreground: oklch(0.21 0.03 262);
@@ -18,14 +18,18 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.21 0.03 262);
 
-  /* Bridge Blue ≈ #1d4ed8 family */
-  --primary: oklch(0.47 0.19 263);
+  /* Bridge Blue — sampled from the official logo (#0050ac) */
+  --primary: #0b55b8;
   --primary-foreground: oklch(0.99 0 0);
   --primary-soft: oklch(0.95 0.03 260);
   --primary-soft-foreground: oklch(0.4 0.17 264);
 
-  /* Growth Green ≈ #15803d family */
-  --brand-green: oklch(0.53 0.14 152);
+  /* Growth Green — the logo's green, darkened slightly so white text passes AA (#0b8a3a) */
+  --brand-green: #0b8a3a;
+  /* Wordmark navy */
+  --brand-navy: #0a2a78;
+  /* Warm accent for property / promos (AA with white text) */
+  --brand-amber: #b45309;
   --brand-green-foreground: oklch(0.99 0 0);
   --brand-green-soft: oklch(0.95 0.04 155);
   --brand-green-soft-foreground: oklch(0.4 0.11 153);
@@ -96,6 +100,7 @@
   --ring: oklch(0.66 0.16 263);
   --chart-1: #6b93ef;
   --chart-2: #3fb877;
+  --brand-navy: #c9d6ff;
   --sidebar: oklch(0.185 0.022 262);
   --sidebar-foreground: oklch(0.92 0.008 250);
   --sidebar-border: oklch(0.28 0.02 260);
@@ -137,6 +142,7 @@
   --ring: oklch(0.66 0.16 263);
   --chart-1: #6b93ef;
   --chart-2: #3fb877;
+  --brand-navy: #c9d6ff;
   --sidebar: oklch(0.185 0.022 262);
   --sidebar-foreground: oklch(0.92 0.008 250);
   --sidebar-border: oklch(0.28 0.02 260);
@@ -160,6 +166,8 @@
   --color-primary-soft: var(--primary-soft);
   --color-primary-soft-foreground: var(--primary-soft-foreground);
   --color-brand-green: var(--brand-green);
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-amber: var(--brand-amber);
   --color-brand-green-foreground: var(--brand-green-foreground);
   --color-brand-green-soft: var(--brand-green-soft);
   --color-brand-green-soft-foreground: var(--brand-green-soft-foreground);
@@ -243,4 +251,63 @@
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Motion: short, purposeful transitions. All are disabled by the global      */
+/* prefers-reduced-motion rule above.                                         */
+/* -------------------------------------------------------------------------- */
+@keyframes bc-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes bc-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+@keyframes bc-pulse-ring {
+  0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--brand-green) 55%, transparent); }
+  100% { box-shadow: 0 0 0 14px transparent; }
+}
+@keyframes bc-shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+
+/* Page content fades up on navigation. */
+@utility animate-page {
+  animation: bc-rise 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+/* Staggered entrance for lists and grids: put on the parent. */
+@utility stagger {
+  & > * {
+    animation: bc-rise 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  & > *:nth-child(2) { animation-delay: 40ms; }
+  & > *:nth-child(3) { animation-delay: 80ms; }
+  & > *:nth-child(4) { animation-delay: 120ms; }
+  & > *:nth-child(5) { animation-delay: 160ms; }
+  & > *:nth-child(6) { animation-delay: 200ms; }
+  & > *:nth-child(n + 7) { animation-delay: 240ms; }
+}
+@utility animate-pop {
+  animation: bc-pop 280ms ease-out;
+}
+@utility animate-online {
+  animation: bc-pulse-ring 1.6s ease-out infinite;
+}
+@utility shimmer {
+  background: linear-gradient(90deg, var(--muted) 25%, color-mix(in oklab, var(--muted) 60%, var(--card)) 50%, var(--muted) 75%);
+  background-size: 200% 100%;
+  animation: bc-shimmer 1.4s linear infinite;
+}
+
+/* Cross-document view transitions (supported browsers fade between pages). */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
 }

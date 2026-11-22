@@ -100,3 +100,20 @@ export async function getEntityListings(entityId: string) {
     posts: posts.data ?? [],
   };
 }
+
+/** Most-trusted active entities (ratings, then followers) for home rails. */
+export async function listPopularEntities(opts: { types?: EntityType[]; communityId?: string; limit?: number } = {}) {
+  const supabase = await createClient();
+  let query = supabase
+    .from("entities")
+    .select("id, name, slug, entity_type, logo_path, cover_path, rating_avg, rating_count, follower_count, opening_hours, communities(name)")
+    .eq("status", "active");
+  if (opts.types?.length) query = query.in("entity_type", opts.types);
+  const { data, error } = await query
+    .order("rating_count", { ascending: false })
+    .order("follower_count", { ascending: false })
+    .order("verified_at", { ascending: false })
+    .limit(opts.limit ?? 10);
+  if (error) throw error;
+  return data ?? [];
+}

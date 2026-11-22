@@ -48,7 +48,7 @@ test("resident books a service and the provider confirms it", async ({ page }) =
 });
 
 test("resident reviews a verified organisation and it updates the rating", async ({ page }) => {
-  await signIn(page, "capecoast@demo.bridgeconnect.test", "/directory/bridge-youth-foundation");
+  await signIn(page, "capecoast@demo.bridgeconnect.test", "/directory/bridge-youth-foundation?tab=reviews");
   await page.getByRole("button", { name: /Write a review|Edit your review/ }).click();
   await page.getByRole("radio", { name: /4 stars/ }).click();
   await page.getByLabel("Your experience").fill(unique("Helpful mentors and a great digital skills class"));
@@ -57,7 +57,8 @@ test("resident reviews a verified organisation and it updates the rating", async
 });
 
 test("owners cannot review their own organisation (no review button)", async ({ page }) => {
-  await signIn(page, "business@demo.bridgeconnect.test", "/directory/kwamankese-fresh-farms");
+  await signIn(page, "business@demo.bridgeconnect.test", "/directory/kwamankese-fresh-farms?tab=reviews");
+  await expect(page.getByRole("heading", { name: "Reviews" }).first()).toBeVisible();
   await expect(page.getByRole("button", { name: /Write a review/ })).toHaveCount(0);
 });
 

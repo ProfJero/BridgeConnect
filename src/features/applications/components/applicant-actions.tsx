@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useServerAction } from "@/hooks/use-server-action";
 
-import { resubmitApplicationAction, withdrawApplicationAction } from "../actions";
+import { fastTrackApplicationAction, resubmitApplicationAction, withdrawApplicationAction } from "../actions";
 
 export function ApplicantActions({ applicationId, canResubmit, canWithdraw }: { applicationId: string; canResubmit: boolean; canWithdraw: boolean }) {
   const { pending, run } = useServerAction();
@@ -25,5 +26,22 @@ export function ApplicantActions({ applicationId, canResubmit, canWithdraw }: { 
         <Button variant="outline" disabled={pending} onClick={() => run(() => withdrawApplicationAction(applicationId))}>Withdraw application</Button>
       ) : null}
     </div>
+  );
+}
+
+/** Shown only to platform owners on their own pending application. */
+export function OwnerFastTrackButton({ applicationId }: { applicationId: string }) {
+  const { pending, run } = useServerAction();
+  const router = useRouter();
+  return (
+    <Button
+      size="lg"
+      variant="green"
+      className="w-full rounded-full"
+      disabled={pending}
+      onClick={() => run(() => fastTrackApplicationAction(applicationId), { onSuccess: (d) => d && router.push(`/workspace/${d.entityId}`) })}
+    >
+      Approve and set up now (platform owner)
+    </Button>
   );
 }

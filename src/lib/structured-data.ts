@@ -25,7 +25,7 @@ export function organizationSchema(): JsonLdData {
     "@id": absoluteUrl("/#organization"),
     name: SITE_NAME,
     url: absoluteUrl("/"),
-    logo: absoluteUrl("/icons/icon-512.png"),
+    logo: absoluteUrl("/brand/emblem-512.png"),
     description: SITE_DESCRIPTION,
     parentOrganization: { "@type": "Organization", name: "Digital Bridge Initiative" },
   };
@@ -314,5 +314,62 @@ export function entitySchema(entity: {
           },
         }
       : {}),
+  };
+}
+
+const RENTAL_ITEM: Record<string, string> = {
+  room: "Room",
+  self_contain: "Apartment",
+  apartment: "Apartment",
+  house: "House",
+  shop: "Place",
+  office: "Place",
+  warehouse: "Place",
+  land: "Landform",
+  event_space: "EventVenue",
+};
+
+/** schema.org RealEstateListing for a rental (rich results for property search). */
+export function rentalSchema(rental: {
+  slug: string;
+  title: string;
+  description: string;
+  rental_type: string;
+  price: number;
+  currency: string;
+  period: string;
+  bedrooms: number | null;
+  location_note: string | null;
+  created_at: string;
+  images: string[];
+  communities: PlaceJoin;
+}): JsonLdData {
+  const unit: Record<string, string> = { day: "DAY", week: "WEE", month: "MON", year: "ANN" };
+  return {
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    name: rental.title,
+    description: rental.description.slice(0, 500),
+    url: absoluteUrl(`/rentals/${rental.slug}`),
+    datePosted: rental.created_at,
+    ...(rental.images.length ? { image: rental.images } : {}),
+    about: {
+      "@type": RENTAL_ITEM[rental.rental_type] ?? "Place",
+      ...(rental.bedrooms != null ? { numberOfRooms: rental.bedrooms } : {}),
+      address: postalAddress(rental.communities, rental.location_note),
+    },
+    offers: {
+      "@type": "Offer",
+      price: Number(rental.price).toFixed(2),
+      priceCurrency: rental.currency,
+      businessFunction: "http://purl.org/goodrelations/v1#LeaseOut",
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: Number(rental.price).toFixed(2),
+        priceCurrency: rental.currency,
+        unitCode: unit[rental.period] ?? "MON",
+      },
+      availability: "https://schema.org/InStock",
+    },
   };
 }

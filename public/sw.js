@@ -5,11 +5,11 @@
  * icons and public Supabase media are cached. Non-GET requests, auth, API and back-office routes are never
  * touched.
  */
-const VERSION = "v2";
+const VERSION = "v3";
 const STATIC_CACHE = `bc-static-${VERSION}`;
 const MEDIA_CACHE = `bc-media-${VERSION}`;
 const OFFLINE_URL = "/offline";
-const PRECACHE = [OFFLINE_URL, "/icon.svg", "/icons/icon-192.png", "/icons/icon-512.png"];
+const PRECACHE = [OFFLINE_URL, "/icon.png", "/brand/emblem.webp", "/icons/icon-192.png", "/icons/icon-512.png"];
 const MEDIA_LIMIT = 60;
 
 self.addEventListener("install", (event) => {

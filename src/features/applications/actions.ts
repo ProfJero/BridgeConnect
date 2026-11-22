@@ -5,13 +5,16 @@ import { z } from "zod";
 
 import { failure, success, validationFailure, type ActionResult } from "@/lib/action-result";
 import { guardActiveViewer } from "@/lib/auth/action-guard";
+import { can } from "@/lib/auth/permissions";
 import { dbFailure } from "@/lib/errors";
 import { VERIFICATION_BUCKET } from "@/lib/storage";
 import { createClient } from "@/lib/supabase/server";
 
 import { applicationSchema, attachDocumentSchema, updateApplicationSchema } from "./schemas";
 
-export async function submitApplicationAction(input: unknown): Promise<ActionResult<{ id: string }>> {
+export async function submitApplicationAction(
+  input: unknown,
+): Promise<ActionResult<{ id: string; entityId?: string }>> {
   const parsed = applicationSchema.safeParse(input);
   if (!parsed.success) return validationFailure(parsed.error);
   const auth = await guardActiveViewer();
@@ -36,7 +39,29 @@ export async function submitApplicationAction(input: unknown): Promise<ActionRes
     .single();
   if (error) return dbFailure(error, "applications.submit");
   revalidatePath("/apply");
+
+  // Platform owners can't be reviewed by anyone above them: set the organisation
+  // up immediately (the database re-checks platform.owner and audits it).
+  if (can(auth.viewer.grants, "platform.owner")) {
+    const { data: entityId, error: ftError } = await supabase.rpc("fast_track_entity_application", { p_application: data.id });
+    if (ftError) return dbFailure(ftError, "applications.fastTrack");
+    revalidatePath("/profile");
+    return success(`${v.proposedName} is live. Your workspace is ready.`, { id: data.id, entityId });
+  }
   return success("Application submitted. Add your supporting documents next.", { id: data.id });
+}
+
+/** Owner fast-track for an application submitted earlier (e.g. before the owner role was granted). */
+export async function fastTrackApplicationAction(applicationId: string): Promise<ActionResult<{ entityId: string }>> {
+  if (!z.uuid().safeParse(applicationId).success) return failure("Invalid application.");
+  const auth = await guardActiveViewer();
+  if (!auth.ok) return auth.result;
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("fast_track_entity_application", { p_application: applicationId });
+  if (error) return dbFailure(error, "applications.fastTrack");
+  revalidatePath("/apply");
+  revalidatePath(`/apply/${applicationId}`);
+  return success("Approved. Your workspace is ready.", { entityId: data });
 }
 
 export async function updateApplicationAction(input: unknown): Promise<ActionResult> {

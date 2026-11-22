@@ -17,8 +17,16 @@ export function SearchForm({
   return (
     <form action={action} role="search" className="relative flex-1">
       {Object.entries(hidden ?? {}).map(([k, v]) => (v ? <input key={k} type="hidden" name={k} value={v} /> : null))}
-      <Search aria-hidden className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-      <Input type="search" name="q" defaultValue={defaultValue} placeholder={placeholder} aria-label={placeholder} className="pl-9" maxLength={100} />
+      <Search aria-hidden className="pointer-events-none absolute top-1/2 left-4 size-[18px] -translate-y-1/2 text-muted-foreground" />
+      <Input
+        type="search"
+        name="q"
+        defaultValue={defaultValue}
+        placeholder={placeholder}
+        aria-label={placeholder}
+        className="h-11 rounded-2xl bg-card pl-11 shadow-xs"
+        maxLength={100}
+      />
     </form>
   );
 }

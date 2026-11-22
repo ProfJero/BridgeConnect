@@ -8,6 +8,9 @@ const STATIC_ROUTES: [path: string, priority: number, changeFrequency: "daily" |
   ["/", 1, "daily"],
   ["/explore", 0.9, "daily"],
   ["/marketplace", 0.9, "daily"],
+  ["/marketplace/categories", 0.6, "weekly"],
+  ["/rentals", 0.9, "daily"],
+  ["/rides", 0.8, "weekly"],
   ["/services", 0.8, "daily"],
   ["/jobs", 0.9, "daily"],
   ["/events", 0.8, "daily"],
@@ -20,6 +23,7 @@ const STATIC_ROUTES: [path: string, priority: number, changeFrequency: "daily" |
   ["/agriculture", 0.6, "weekly"],
   ["/ngos", 0.6, "weekly"],
   ["/apply", 0.5, "weekly"],
+  ["/about", 0.4, "weekly"],
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

@@ -21,6 +21,28 @@ export const placeOrderSchema = z
     path: ["deliveryAddress"],
   });
 
+/** Cart checkout: one order per seller, several products. Prices never come from the client. */
+export const checkoutSchema = z
+  .object({
+    entityId: z.uuid(),
+    items: z
+      .array(z.object({ productId: z.uuid(), quantity: z.coerce.number().int().min(1).max(1000) }))
+      .min(1, "Your cart is empty.")
+      .max(30, "At most 30 different items per order."),
+    fulfilment: z.enum(["pickup", "delivery"]),
+    deliveryAddress: z.string().trim().max(300).optional(),
+    contactPhone: phoneSchema,
+    note: z.string().trim().max(500).optional(),
+  })
+  .refine((v) => v.fulfilment === "pickup" || (v.deliveryAddress?.length ?? 0) >= 5, {
+    message: "Enter a delivery address.",
+    path: ["deliveryAddress"],
+  })
+  .refine((v) => new Set(v.items.map((i) => i.productId)).size === v.items.length, {
+    message: "Duplicate items.",
+    path: ["items"],
+  });
+
 export const ORDER_STATUSES = ["pending", "confirmed", "ready", "completed", "cancelled", "declined"] as const;
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 

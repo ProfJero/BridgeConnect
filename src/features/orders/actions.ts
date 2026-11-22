@@ -7,7 +7,7 @@ import { guardActiveViewer } from "@/lib/auth/action-guard";
 import { dbFailure } from "@/lib/errors";
 import { createClient } from "@/lib/supabase/server";
 
-import { placeOrderSchema, updateOrderStatusSchema } from "./schemas";
+import { checkoutSchema, placeOrderSchema, updateOrderStatusSchema } from "./schemas";
 
 export async function placeOrderAction(input: unknown): Promise<ActionResult<{ orderId: string }>> {
   const parsed = placeOrderSchema.safeParse(input);
@@ -25,6 +25,25 @@ export async function placeOrderAction(input: unknown): Promise<ActionResult<{ o
     p_note: parsed.data.note || undefined,
   });
   if (error) return dbFailure(error, "orders.place");
+  revalidatePath("/orders");
+  return success("Order placed. The seller has been notified.", { orderId: data });
+}
+
+export async function checkoutAction(input: unknown): Promise<ActionResult<{ orderId: string }>> {
+  const parsed = checkoutSchema.safeParse(input);
+  if (!parsed.success) return validationFailure(parsed.error);
+  const auth = await guardActiveViewer();
+  if (!auth.ok) return auth.result;
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("place_order", {
+    p_entity: parsed.data.entityId,
+    p_items: parsed.data.items.map((i) => ({ product_id: i.productId, quantity: i.quantity })),
+    p_fulfilment: parsed.data.fulfilment,
+    p_contact_phone: parsed.data.contactPhone,
+    p_delivery_address: parsed.data.deliveryAddress || undefined,
+    p_note: parsed.data.note || undefined,
+  });
+  if (error) return dbFailure(error, "orders.checkout");
   revalidatePath("/orders");
   return success("Order placed. The seller has been notified.", { orderId: data });
 }

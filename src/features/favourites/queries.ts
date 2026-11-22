@@ -15,6 +15,15 @@ export async function isFavourite(kind: FavouriteKind, id: string, userId: strin
   return (count ?? 0) > 0;
 }
 
+/** Which of these ids has the viewer saved? One query for a whole grid. */
+export async function getSavedIds(kind: FavouriteKind, ids: string[], userId: string | undefined) {
+  if (!userId || ids.length === 0) return new Set<string>();
+  const supabase = await createClient();
+  const column = FAVOURITE_COLUMN[kind];
+  const { data } = await supabase.from("favourites").select(column).eq("user_id", userId).in(column, ids);
+  return new Set((data ?? []).map((row) => (row as Record<string, string | null>)[column]).filter(Boolean) as string[]);
+}
+
 export async function listMyFavourites() {
   const supabase = await createClient();
   const { data, error } = await supabase

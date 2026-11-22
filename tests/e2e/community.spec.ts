@@ -37,7 +37,7 @@ test("@mobile the public app has a bottom tab bar", async ({ page, isMobile }) =
   test.skip(!isMobile, "mobile only");
   await page.goto("/");
   const tabs = page.getByRole("navigation", { name: "Primary" }).last();
-  await expect(tabs.getByRole("link", { name: "Inbox" })).toBeVisible();
-  await expect(tabs.getByRole("link", { name: "Me", exact: true })).toBeVisible();
-  await expect(tabs.getByRole("link", { name: "Post" })).toBeVisible();
+  for (const name of ["Home", "Explore", "Marketplace", "Community", "Profile"]) {
+    await expect(tabs.getByRole("link", { name, exact: true })).toBeVisible();
+  }
 });

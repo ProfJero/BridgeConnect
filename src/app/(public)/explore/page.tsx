@@ -30,16 +30,16 @@ export default async function ExplorePage() {
     <div className="space-y-8">
       <PageHeader title="Explore" description="Everything your community offers, in one place." />
       <SearchForm action="/search" placeholder="Search everything on BridgeConnect" />
-      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="stagger grid grid-cols-2 gap-3 lg:grid-cols-3">
         {DIRECTORY_NAV.map(({ href, label, description, icon: Icon }) => (
           <li key={href}>
-            <Link href={href} className="flex items-center gap-3 rounded-xl border bg-card p-4 shadow-xs transition-shadow hover:shadow-md">
-              <span className={href === "/emergency" ? "flex size-11 items-center justify-center rounded-xl bg-destructive-soft text-destructive" : "flex size-11 items-center justify-center rounded-xl bg-primary-soft text-primary-soft-foreground"}>
+            <Link href={href} className="pressable flex h-full flex-col gap-2 rounded-2xl border bg-card p-4 shadow-xs transition-shadow hover:shadow-md sm:flex-row sm:items-center sm:gap-3">
+              <span className={href === "/emergency" ? "flex size-11 shrink-0 items-center justify-center rounded-2xl bg-destructive-soft text-destructive" : "flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary-soft-foreground"}>
                 <Icon aria-hidden className="size-5" />
               </span>
               <span>
                 <span className="block font-semibold">{label}</span>
-                <span className="block text-sm text-muted-foreground">{description}</span>
+                <span className="block text-xs text-muted-foreground sm:text-sm">{description}</span>
               </span>
             </Link>
           </li>

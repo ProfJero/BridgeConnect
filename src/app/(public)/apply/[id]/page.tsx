@@ -8,7 +8,8 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ApplicantActions } from "@/features/applications/components/applicant-actions";
+import { ApplicantActions, OwnerFastTrackButton } from "@/features/applications/components/applicant-actions";
+import { can } from "@/lib/auth/permissions";
 import { ApplicationTimeline } from "@/features/applications/components/application-timeline";
 import { DocumentUploader } from "@/features/applications/components/document-uploader";
 import { getApplication, signDocumentUrls } from "@/features/applications/queries";
@@ -78,6 +79,9 @@ export default async function ApplicationPage({ params }: PageProps<"/apply/[id]
         <CardHeader><CardTitle>History</CardTitle></CardHeader>
         <CardContent><ApplicationTimeline events={app.application_events} /></CardContent>
       </Card>
+      {viewer.isActive && can(viewer.grants, "platform.owner") && ["submitted", "under_review", "info_requested"].includes(app.status) ? (
+        <OwnerFastTrackButton applicationId={app.id} />
+      ) : null}
       <ApplicantActions
         applicationId={app.id}
         canResubmit={viewer.isActive && app.status === "info_requested"}

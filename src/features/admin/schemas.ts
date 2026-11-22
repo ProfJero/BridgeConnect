@@ -30,7 +30,7 @@ export const entityCapabilitySchema = z.object({
   enabled: z.boolean(),
 });
 
-export const MODERATION_TARGETS = ["post", "comment", "review", "product", "service", "job", "event"] as const;
+export const MODERATION_TARGETS = ["post", "comment", "review", "rental", "product", "service", "job", "event"] as const;
 export const moderateSchema = z.object({
   targetType: z.enum(MODERATION_TARGETS),
   targetId: z.uuid(),

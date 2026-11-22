@@ -11,7 +11,7 @@ import { SearchForm } from "@/components/widgets/search-form";
 import { listEvents } from "@/features/events/queries";
 import { getCommunityOptions } from "@/features/locations/queries";
 import { getCategories } from "@/features/marketplace/queries";
-import { stringParam, uuidParam } from "@/lib/search-params";
+import { enumParam, stringParam, uuidParam } from "@/lib/search-params";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -28,7 +28,8 @@ export default async function EventsPage({ searchParams }: PageProps<"/events">)
   const page = parsePage(sp.page);
   const [categories, communities] = await Promise.all([getCategories("event"), getCommunityOptions()]);
   const category = categories.find((c) => c.slug === stringParam(sp.category, 60));
-  const result = await listEvents({ q, communityId, categoryId: category?.id, page });
+  const when = enumParam(sp.when, ["week", "month"] as const);
+  const result = await listEvents({ q, communityId, categoryId: category?.id, withinDays: when ? (when === "week" ? 7 : 31) : undefined, page });
   return (
     <div className="space-y-5">
       <PageHeader title="Events" description="What's happening in your community." />
@@ -36,13 +37,22 @@ export default async function EventsPage({ searchParams }: PageProps<"/events">)
         <SearchForm action="/events" defaultValue={q} placeholder="Search events" hidden={{ community: communityId, category: category?.slug }} />
         <CommunityFilter options={communities} value={communityId} />
       </div>
-      <CategoryChips basePath="/events" categories={categories} active={category?.slug} preserve={{ q, community: communityId }} />
+      <CategoryChips
+        basePath="/events"
+        param="when"
+        label="When"
+        allLabel="Upcoming"
+        categories={[{ slug: "week", name: "This week" }, { slug: "month", name: "This month" }]}
+        active={when}
+        preserve={{ q, community: communityId, category: category?.slug }}
+      />
+      <CategoryChips basePath="/events" categories={categories} active={category?.slug} preserve={{ q, community: communityId, when }} />
       {result.items.length === 0 ? (
         <EmptyState icon={CalendarDays} title="No upcoming events" description="Verified organisations publish events here." />
       ) : (
-        <div className="grid gap-3 lg:grid-cols-2">{result.items.map((e) => <EventCard key={e.id} event={e} />)}</div>
+        <div className="stagger grid gap-3 lg:grid-cols-2">{result.items.map((e) => <EventCard key={e.id} event={e} />)}</div>
       )}
-      <Pagination page={page} pageSize={result.pageSize} total={result.total} basePath="/events" searchParams={{ q, community: communityId, category: category?.slug }} />
+      <Pagination page={page} pageSize={result.pageSize} total={result.total} basePath="/events" searchParams={{ q, community: communityId, category: category?.slug, when }} />
     </div>
   );
 }

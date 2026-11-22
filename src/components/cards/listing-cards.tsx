@@ -1,5 +1,6 @@
-import { Briefcase, CalendarDays, Clock, MapPin, Users, Wrench } from "lucide-react";
+import { CalendarDays, Clock, MapPin, Users, Wrench } from "lucide-react";
 import Link from "next/link";
+import type * as React from "react";
 
 import { EntityAvatar } from "@/components/shared/avatars";
 import { Badge } from "@/components/ui/badge";
@@ -43,7 +44,8 @@ export type ServiceCardProps = {
 import { formatDate, formatDateTime, formatMoney, humanize } from "@/lib/format";
 
 const cardClass =
-  "group flex gap-3 rounded-xl border bg-card p-4 shadow-xs transition-shadow hover:shadow-md focus-visible:ring-[3px] focus-visible:ring-ring/40 focus-visible:outline-none";
+  "group pressable relative flex gap-3 rounded-2xl border bg-card p-4 shadow-xs transition-shadow focus-within:ring-[3px] focus-within:ring-ring/40 hover:shadow-md";
+const stretched = "after:absolute after:inset-0 focus-visible:outline-none";
 
 export function salaryText(job: Pick<JobCardProps, "salary_min" | "salary_max" | "salary_period" | "currency">) {
   if (job.salary_min == null && job.salary_max == null) return null;
@@ -51,73 +53,85 @@ export function salaryText(job: Pick<JobCardProps, "salary_min" | "salary_max" |
     job.salary_min != null && job.salary_max != null
       ? `${formatMoney(job.salary_min, job.currency)} – ${formatMoney(job.salary_max, job.currency)}`
       : formatMoney(job.salary_min ?? job.salary_max, job.currency);
-  return job.salary_period ? `${range} / ${job.salary_period}` : range;
+  const short: Record<string, string> = { hour: "/hr", day: "/day", week: "/wk", month: "/mo", year: "/yr", fixed: " fixed" };
+  return job.salary_period ? `${range}${short[job.salary_period] ?? ` / ${job.salary_period}`}` : range;
 }
 
-export function JobCard({ job }: { job: JobCardProps }) {
+/** Job row from the approved design: logo, title, employer, type, green pay, Apply. */
+export function JobCard({ job, action }: { job: JobCardProps; action?: React.ReactNode }) {
   const salary = salaryText(job);
   return (
-    <Link href={`/jobs/${job.slug}`} className={cardClass}>
-      <EntityAvatar name={job.entities.name} path={job.entities.logo_path} className="size-11" />
-      <div className="min-w-0 flex-1 space-y-1">
-        <h3 className="font-semibold group-hover:text-primary">{job.title}</h3>
-        <p className="text-sm text-muted-foreground">{job.entities.name}</p>
-        <div className="flex flex-wrap gap-x-3 gap-y-1 pt-1 text-xs text-muted-foreground">
-          <Badge variant="soft">
-            <Briefcase aria-hidden /> {humanize(job.employment_type)}
-          </Badge>
+    <article className={cardClass}>
+      <EntityAvatar name={job.entities.name} path={job.entities.logo_path} className="size-12 rounded-xl" />
+      <div className="min-w-0 flex-1 space-y-0.5">
+        <h3 className="font-semibold">
+          <Link href={`/jobs/${job.slug}`} className={stretched}>{job.title}</Link>
+        </h3>
+        <p className="truncate text-sm text-muted-foreground">{job.entities.name}</p>
+        <p className="text-xs text-muted-foreground">
+          {humanize(job.employment_type)}
           {job.communities?.name ? (
-            <span className="inline-flex items-center gap-1">
-              <MapPin aria-hidden className="size-3" /> {job.communities.name}
-            </span>
+            <span className="inline-flex items-center gap-0.5"> · <MapPin aria-hidden className="size-3" /> {job.communities.name}</span>
           ) : null}
-          {salary ? <span className="font-medium text-foreground">{salary}</span> : null}
-          {job.application_deadline ? (
-            <span className="inline-flex items-center gap-1">
-              <Clock aria-hidden className="size-3" /> Apply by {formatDate(job.application_deadline)}
-            </span>
-          ) : null}
-        </div>
+        </p>
+        {salary ? <p className="pt-0.5 text-sm font-bold text-brand-green">{salary}</p> : null}
+        {job.application_deadline ? (
+          <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+            <Clock aria-hidden className="size-3" /> Apply by {formatDate(job.application_deadline)}
+          </p>
+        ) : null}
       </div>
-    </Link>
+      <div className="relative z-10 flex shrink-0 flex-col items-end justify-between gap-2">
+        {action}
+        <Link
+          href={`/jobs/${job.slug}#apply`}
+          className="rounded-lg bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground shadow-xs transition hover:bg-primary/90 active:scale-95"
+          aria-label={`Apply for ${job.title}`}
+        >
+          Apply
+        </Link>
+      </div>
+    </article>
   );
 }
 
-export function EventCard({ event }: { event: EventCardProps }) {
+/** Event row with a bold date tile. */
+export function EventCard({ event, interested }: { event: EventCardProps; interested?: boolean }) {
   const start = new Date(event.starts_at);
   return (
-    <Link href={`/events/${event.slug}`} className={cardClass}>
-      <div className="flex size-14 shrink-0 flex-col items-center justify-center rounded-xl bg-primary-soft text-primary-soft-foreground">
-        <span className="text-[11px] font-semibold uppercase">
-          {start.toLocaleString("en-GH", { month: "short" })}
+    <article className={cardClass}>
+      <div className="flex size-16 shrink-0 flex-col items-center justify-center rounded-xl bg-gradient-to-br from-brand-navy to-primary text-white shadow-sm">
+        <span className="text-[11px] font-semibold tracking-wide uppercase opacity-90">
+          {start.toLocaleString("en-GH", { month: "short", timeZone: "Africa/Accra" })}
         </span>
-        <span className="text-xl leading-none font-bold">{start.getDate()}</span>
+        <span className="text-2xl leading-none font-extrabold">{start.toLocaleString("en-GH", { day: "numeric", timeZone: "Africa/Accra" })}</span>
       </div>
-      <div className="min-w-0 flex-1 space-y-1">
-        <h3 className="font-semibold group-hover:text-primary">{event.title}</h3>
-        <p className="text-sm text-muted-foreground">{event.entities.name}</p>
-        <div className="flex flex-wrap gap-x-3 gap-y-1 pt-1 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1">
-            <CalendarDays aria-hidden className="size-3" /> {formatDateTime(event.starts_at)}
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <MapPin aria-hidden className="size-3" /> {event.is_online ? "Online" : event.venue}
-          </span>
+      <div className="min-w-0 flex-1 space-y-0.5">
+        <h3 className="font-semibold">
+          <Link href={`/events/${event.slug}`} className={stretched}>{event.title}</Link>
+        </h3>
+        <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+          <CalendarDays aria-hidden className="size-3" /> {formatDateTime(event.starts_at)}
+        </p>
+        <p className="flex items-center gap-1 truncate text-xs text-muted-foreground">
+          <MapPin aria-hidden className="size-3 shrink-0" /> {event.is_online ? "Online" : event.venue}
+        </p>
+        <div className="flex flex-wrap items-center gap-2 pt-0.5 text-xs">
+          <span className="text-muted-foreground">{event.entities.name}</span>
           {event.going_count ? (
-            <span className="inline-flex items-center gap-1">
-              <Users aria-hidden className="size-3" /> {event.going_count} going
-            </span>
+            <span className="inline-flex items-center gap-1 text-muted-foreground"><Users aria-hidden className="size-3" /> {event.going_count} going</span>
           ) : null}
+          {interested ? <span className="font-semibold text-brand-green">Interested</span> : null}
           {event.status === "cancelled" ? <Badge variant="destructive">Cancelled</Badge> : null}
         </div>
       </div>
-    </Link>
+    </article>
   );
 }
 
 export function ServiceCard({ service }: { service: ServiceCardProps }) {
   return (
-    <Link href={`/services/${service.slug}`} className={cardClass}>
+    <Link href={`/services/${service.slug}`} className={cardClass.replace("relative ", "")}>
       <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-green-soft text-brand-green-soft-foreground">
         <Wrench aria-hidden className="size-5" />
       </div>

@@ -18,7 +18,7 @@ export function ApplicationForm({ communities }: { communities: CommunityChoice[
   const router = useRouter();
   const { form, onSubmit, pending, formError, errorFor } = useActionForm(applicationSchema, submitApplicationAction, {
     defaultValues: { proposedName: "", description: "", contactPhone: "", contactEmail: "", address: "", registrationNumber: "", applicantPosition: "", communityId: "" },
-    onSuccess: ({ data }) => data && router.push(`/apply/${data.id}`),
+    onSuccess: ({ data }) => data && router.push(data.entityId ? `/workspace/${data.entityId}` : `/apply/${data.id}`),
   });
   const reg = (name: Parameters<typeof form.register>[0], hint = false) => ({
     ...controlProps(name, errorFor(name), hint),

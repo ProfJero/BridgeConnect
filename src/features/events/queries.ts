@@ -12,6 +12,8 @@ export async function listEvents(filters: {
   communityId?: string;
   categoryId?: string;
   sector?: string;
+  /** Only events starting within this many days ("this week" / "this month"). */
+  withinDays?: number;
   page?: number;
   pageSize?: number;
 }) {
@@ -23,6 +25,7 @@ export async function listEvents(filters: {
     .select(EVENT_CARD_FIELDS, { count: "exact" })
     .eq("status", "published")
     .gte("starts_at", new Date(Date.now() - 6 * 3600_000).toISOString());
+  if (filters.withinDays) query = query.lt("starts_at", new Date(Date.now() + filters.withinDays * 86_400_000).toISOString());
   if (filters.communityId) query = query.eq("community_id", filters.communityId);
   if (filters.categoryId) query = query.eq("category_id", filters.categoryId);
   if (filters.sector) query = query.eq("entities.sector", filters.sector as never);

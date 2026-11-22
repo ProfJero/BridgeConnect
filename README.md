@@ -18,7 +18,13 @@ It has three experiences on one identity and authorization system:
 
 - **Directory & trust:** verified businesses, NGOs, schools, clinics and agencies; ratings & reviews with public
   replies; follow organisations for their updates and events.
-- **Marketplace & services:** products with server-priced orders; services with online **booking requests**.
+- **Marketplace & services:** products with a multi-seller **cart** and server-priced orders; services with online
+  **booking requests**.
+- **Rides & delivery (Bolt-style):** request an okada, tricycle, taxi or van, or send a package; verified riders go
+  online, accept the first-come job, update status live and get rated. Marketplace orders can be sent with a
+  dispatch rider. Riders and drivers have their own app at `/rider`; staff verify them at `/admin/riders`.
+- **Rentals:** residents list rooms, self-contains, houses, shops, offices and land; others search by type and
+  budget and request viewings.
 - **Inbox:** private messaging between residents and verified organisations (live updates).
 - **Community:** posts, questions, recommendations, lost & found, **help needed / offering help**, **polls**,
   comments, reactions, reports and moderation.
@@ -26,8 +32,15 @@ It has three experiences on one identity and authorization system:
 - **Workspaces:** each organisation gets its own dashboard — inbox, bookings, orders, reviews, listings, team,
   ads, analytics and a support line to DBI.
 - **Administration:** scoped roles, verification queue, moderation, reports, **support desk**, analytics, audit.
-- **App experience:** installable PWA, bottom tab bar, dark mode, offline page; privacy self-service (data export,
-  account deletion).
+- **App experience:** official BridgeConnect logo, installable PWA, five-tab bottom bar on phones and a side rail on
+  desktop (no website footer), bottom-sheet dialogs, swipeable banners, staggered/press animations, dark mode,
+  offline page; privacy self-service (data export, account deletion).
+- **SEO:** per-page metadata and canonical URLs, branded Open Graph/Twitter images (site-wide and per section),
+  XML sitemap including rentals, JSON-LD (Organization, WebSite search, LocalBusiness with ratings, Product,
+  JobPosting, Event, RealEstateListing, BreadcrumbList).
+
+**Platform owners** set up their own organisations instantly (`fast_track_entity_application`): nobody outranks
+them, so independent review cannot apply. Everyone else is reviewed by a district verification officer.
 
 ## Trust model in one paragraph
 

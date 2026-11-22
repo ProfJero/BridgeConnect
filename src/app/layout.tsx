@@ -29,6 +29,13 @@ export const metadata: Metadata = {
     "jobs in Ghana",
     "community events",
     "emergency alerts Ghana",
+    "houses for rent Ghana",
+    "rooms for rent Cape Coast",
+    "okada and taxi booking Ghana",
+    "dispatch rider delivery Ghana",
+    "buy and sell Ghana",
+    "Kwamankese",
+    "BridgeConnect",
     "Digital Bridge Initiative",
   ],
   authors: [{ name: "Digital Bridge Initiative" }],
@@ -51,7 +58,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#1d4ed8" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#131a2b" },
   ],
   width: "device-width",

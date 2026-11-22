@@ -202,3 +202,16 @@ insert into public.posts (id, author_id, community_id, kind, title, body, poll_c
 insert into public.poll_options (post_id, label, position) values
   ('c0000000-0000-4000-8000-0000000000a1', 'First Saturday of the month', 0),
   ('c0000000-0000-4000-8000-0000000000a1', 'Last Saturday of the month', 1);
+
+-- Rentals (demo landlord: the business owner persona).
+insert into public.rental_listings (owner_id, community_id, rental_type, title, description, price, period,
+  advance_months, bedrooms, bathrooms, furnished, amenities, location_note, contact_phone) values
+  ('a0000000-0000-4000-8000-000000000005', '30000000-0000-4000-8000-000000000001', 'apartment',
+   'Two-bedroom apartment off Main Road',
+   'Spacious two-bedroom apartment with a fitted kitchen, tiled floors, poly tank and a secure compound.',
+   900, 'month', 12, 2, 1, false, '{"Water","Prepaid meter","Parking","Security"}', 'Behind the Methodist church',
+   '+233 24 000 0005'),
+  ('a0000000-0000-4000-8000-000000000005', '30000000-0000-4000-8000-000000000002', 'shop',
+   'Roadside shop at Abakrampa junction',
+   'Lockable roadside shop with good foot traffic, ideal for provisions, mobile money or a pharmacy.',
+   350, 'month', 6, null, null, false, '{"Electricity","Roadside"}', 'Abakrampa junction', '+233 24 000 0005');

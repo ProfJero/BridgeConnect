@@ -2472,6 +2472,193 @@ export type Database = {
         };
         Relationships: [];
       };
+      rental_inquiries: {
+        Row: {
+          contact_phone: string;
+          created_at: string;
+          id: string;
+          message: string;
+          preferred_date: string | null;
+          rental_id: string;
+          sender_id: string;
+          status: Database["public"]["Enums"]["inquiry_status"];
+          updated_at: string;
+        };
+        Insert: {
+          contact_phone: string;
+          created_at?: string;
+          id?: string;
+          message: string;
+          preferred_date?: string | null;
+          rental_id: string;
+          sender_id?: string;
+          status?: Database["public"]["Enums"]["inquiry_status"];
+          updated_at?: string;
+        };
+        Update: {
+          contact_phone?: string;
+          created_at?: string;
+          id?: string;
+          message?: string;
+          preferred_date?: string | null;
+          rental_id?: string;
+          sender_id?: string;
+          status?: Database["public"]["Enums"]["inquiry_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "rental_inquiries_rental_id_fkey";
+            columns: ["rental_id"];
+            isOneToOne: false;
+            referencedRelation: "rental_listings";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "rental_inquiries_sender_id_fkey";
+            columns: ["sender_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      rental_listings: {
+        Row: {
+          advance_months: number | null;
+          amenities: string[];
+          available_from: string | null;
+          bathrooms: number | null;
+          bedrooms: number | null;
+          community_id: string;
+          contact_phone: string;
+          created_at: string;
+          currency: string;
+          description: string;
+          furnished: boolean;
+          id: string;
+          location_note: string | null;
+          moderation_reason: string | null;
+          owner_id: string;
+          period: Database["public"]["Enums"]["rental_period"];
+          price: number;
+          rental_type: Database["public"]["Enums"]["rental_type"];
+          search: unknown;
+          slug: string;
+          status: Database["public"]["Enums"]["rental_status"];
+          title: string;
+          updated_at: string;
+          whatsapp: string | null;
+        };
+        Insert: {
+          advance_months?: number | null;
+          amenities?: string[];
+          available_from?: string | null;
+          bathrooms?: number | null;
+          bedrooms?: number | null;
+          community_id: string;
+          contact_phone: string;
+          created_at?: string;
+          currency?: string;
+          description: string;
+          furnished?: boolean;
+          id?: string;
+          location_note?: string | null;
+          moderation_reason?: string | null;
+          owner_id?: string;
+          period?: Database["public"]["Enums"]["rental_period"];
+          price: number;
+          rental_type: Database["public"]["Enums"]["rental_type"];
+          search?: never;
+          slug?: string;
+          status?: Database["public"]["Enums"]["rental_status"];
+          title: string;
+          updated_at?: string;
+          whatsapp?: string | null;
+        };
+        Update: {
+          advance_months?: number | null;
+          amenities?: string[];
+          available_from?: string | null;
+          bathrooms?: number | null;
+          bedrooms?: number | null;
+          community_id?: string;
+          contact_phone?: string;
+          created_at?: string;
+          currency?: string;
+          description?: string;
+          furnished?: boolean;
+          id?: string;
+          location_note?: string | null;
+          moderation_reason?: string | null;
+          owner_id?: string;
+          period?: Database["public"]["Enums"]["rental_period"];
+          price?: number;
+          rental_type?: Database["public"]["Enums"]["rental_type"];
+          search?: never;
+          slug?: string;
+          status?: Database["public"]["Enums"]["rental_status"];
+          title?: string;
+          updated_at?: string;
+          whatsapp?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "rental_listings_community_id_fkey";
+            columns: ["community_id"];
+            isOneToOne: false;
+            referencedRelation: "communities";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "rental_listings_community_id_fkey";
+            columns: ["community_id"];
+            isOneToOne: false;
+            referencedRelation: "location_directory";
+            referencedColumns: ["community_id"];
+          },
+          {
+            foreignKeyName: "rental_listings_owner_id_fkey";
+            columns: ["owner_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      rental_media: {
+        Row: {
+          media_id: string;
+          position: number;
+          rental_id: string;
+        };
+        Insert: {
+          media_id: string;
+          position?: number;
+          rental_id: string;
+        };
+        Update: {
+          media_id?: string;
+          position?: number;
+          rental_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "rental_media_media_id_fkey";
+            columns: ["media_id"];
+            isOneToOne: false;
+            referencedRelation: "media_assets";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "rental_media_rental_id_fkey";
+            columns: ["rental_id"];
+            isOneToOne: false;
+            referencedRelation: "rental_listings";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       reports: {
         Row: {
           comment_id: string | null;
@@ -2487,6 +2674,7 @@ export type Database = {
           product_id: string | null;
           profile_id: string | null;
           reason: Database["public"]["Enums"]["report_reason"];
+          rental_id: string | null;
           reporter_id: string;
           resolution_note: string | null;
           resolved_at: string | null;
@@ -2509,6 +2697,7 @@ export type Database = {
           product_id?: string | null;
           profile_id?: string | null;
           reason: Database["public"]["Enums"]["report_reason"];
+          rental_id?: string | null;
           reporter_id?: string;
           resolution_note?: string | null;
           resolved_at?: string | null;
@@ -2531,6 +2720,7 @@ export type Database = {
           product_id?: string | null;
           profile_id?: string | null;
           reason?: Database["public"]["Enums"]["report_reason"];
+          rental_id?: string | null;
           reporter_id?: string;
           resolution_note?: string | null;
           resolved_at?: string | null;
@@ -2611,6 +2801,13 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
+            foreignKeyName: "reports_rental_id_fkey";
+            columns: ["rental_id"];
+            isOneToOne: false;
+            referencedRelation: "rental_listings";
+            referencedColumns: ["id"];
+          },
+          {
             foreignKeyName: "reports_reporter_id_fkey";
             columns: ["reporter_id"];
             isOneToOne: false;
@@ -2629,6 +2826,113 @@ export type Database = {
             columns: ["service_id"];
             isOneToOne: false;
             referencedRelation: "services";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      rider_profiles: {
+        Row: {
+          bio: string | null;
+          community_id: string;
+          completed_trips: number;
+          created_at: string;
+          is_online: boolean;
+          last_lat: number | null;
+          last_lng: number | null;
+          last_online_at: string | null;
+          offers_delivery: boolean;
+          offers_rides: boolean;
+          phone: string;
+          plate_number: string | null;
+          rating_avg: number | null;
+          rating_count: number;
+          reviewed_by: string | null;
+          service_area: string | null;
+          status: Database["public"]["Enums"]["rider_status"];
+          status_reason: string | null;
+          updated_at: string;
+          user_id: string;
+          vehicle_description: string;
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"];
+          whatsapp: string | null;
+        };
+        Insert: {
+          bio?: string | null;
+          community_id: string;
+          completed_trips?: number;
+          created_at?: string;
+          is_online?: boolean;
+          last_lat?: number | null;
+          last_lng?: number | null;
+          last_online_at?: string | null;
+          offers_delivery?: boolean;
+          offers_rides?: boolean;
+          phone: string;
+          plate_number?: string | null;
+          rating_avg?: number | null;
+          rating_count?: number;
+          reviewed_by?: string | null;
+          service_area?: string | null;
+          status?: Database["public"]["Enums"]["rider_status"];
+          status_reason?: string | null;
+          updated_at?: string;
+          user_id: string;
+          vehicle_description: string;
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"];
+          whatsapp?: string | null;
+        };
+        Update: {
+          bio?: string | null;
+          community_id?: string;
+          completed_trips?: number;
+          created_at?: string;
+          is_online?: boolean;
+          last_lat?: number | null;
+          last_lng?: number | null;
+          last_online_at?: string | null;
+          offers_delivery?: boolean;
+          offers_rides?: boolean;
+          phone?: string;
+          plate_number?: string | null;
+          rating_avg?: number | null;
+          rating_count?: number;
+          reviewed_by?: string | null;
+          service_area?: string | null;
+          status?: Database["public"]["Enums"]["rider_status"];
+          status_reason?: string | null;
+          updated_at?: string;
+          user_id?: string;
+          vehicle_description?: string;
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"];
+          whatsapp?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "rider_profiles_community_id_fkey";
+            columns: ["community_id"];
+            isOneToOne: false;
+            referencedRelation: "communities";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "rider_profiles_community_id_fkey";
+            columns: ["community_id"];
+            isOneToOne: false;
+            referencedRelation: "location_directory";
+            referencedColumns: ["community_id"];
+          },
+          {
+            foreignKeyName: "rider_profiles_reviewed_by_fkey";
+            columns: ["reviewed_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "rider_profiles_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
         ];
@@ -2960,6 +3264,172 @@ export type Database = {
           },
         ];
       };
+      trips: {
+        Row: {
+          accepted_at: string | null;
+          arrived_at: string | null;
+          cancel_reason: string | null;
+          cancelled_at: string | null;
+          cancelled_by: string | null;
+          community_id: string;
+          completed_at: string | null;
+          created_at: string;
+          currency: string;
+          customer_comment: string | null;
+          customer_id: string;
+          customer_phone: string;
+          customer_rating: number | null;
+          distance_km: number | null;
+          dropoff_address: string;
+          dropoff_lat: number | null;
+          dropoff_lng: number | null;
+          final_fare: number | null;
+          id: string;
+          kind: Database["public"]["Enums"]["trip_kind"];
+          note: string | null;
+          offered_fare: number;
+          order_id: string | null;
+          package_description: string | null;
+          payment_method: Database["public"]["Enums"]["payment_method"];
+          pickup_address: string;
+          pickup_lat: number | null;
+          pickup_lng: number | null;
+          preferred_rider_id: string | null;
+          rated_at: string | null;
+          recipient_name: string | null;
+          recipient_phone: string | null;
+          rider_id: string | null;
+          started_at: string | null;
+          status: Database["public"]["Enums"]["trip_status"];
+          trip_number: number;
+          updated_at: string;
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null;
+        };
+        Insert: {
+          accepted_at?: string | null;
+          arrived_at?: string | null;
+          cancel_reason?: string | null;
+          cancelled_at?: string | null;
+          cancelled_by?: string | null;
+          community_id: string;
+          completed_at?: string | null;
+          created_at?: string;
+          currency?: string;
+          customer_comment?: string | null;
+          customer_id: string;
+          customer_phone: string;
+          customer_rating?: number | null;
+          distance_km?: number | null;
+          dropoff_address: string;
+          dropoff_lat?: number | null;
+          dropoff_lng?: number | null;
+          final_fare?: number | null;
+          id?: string;
+          kind: Database["public"]["Enums"]["trip_kind"];
+          note?: string | null;
+          offered_fare: number;
+          order_id?: string | null;
+          package_description?: string | null;
+          payment_method?: Database["public"]["Enums"]["payment_method"];
+          pickup_address: string;
+          pickup_lat?: number | null;
+          pickup_lng?: number | null;
+          preferred_rider_id?: string | null;
+          rated_at?: string | null;
+          recipient_name?: string | null;
+          recipient_phone?: string | null;
+          rider_id?: string | null;
+          started_at?: string | null;
+          status?: Database["public"]["Enums"]["trip_status"];
+          trip_number?: never;
+          updated_at?: string;
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null;
+        };
+        Update: {
+          accepted_at?: string | null;
+          arrived_at?: string | null;
+          cancel_reason?: string | null;
+          cancelled_at?: string | null;
+          cancelled_by?: string | null;
+          community_id?: string;
+          completed_at?: string | null;
+          created_at?: string;
+          currency?: string;
+          customer_comment?: string | null;
+          customer_id?: string;
+          customer_phone?: string;
+          customer_rating?: number | null;
+          distance_km?: number | null;
+          dropoff_address?: string;
+          dropoff_lat?: number | null;
+          dropoff_lng?: number | null;
+          final_fare?: number | null;
+          id?: string;
+          kind?: Database["public"]["Enums"]["trip_kind"];
+          note?: string | null;
+          offered_fare?: number;
+          order_id?: string | null;
+          package_description?: string | null;
+          payment_method?: Database["public"]["Enums"]["payment_method"];
+          pickup_address?: string;
+          pickup_lat?: number | null;
+          pickup_lng?: number | null;
+          preferred_rider_id?: string | null;
+          rated_at?: string | null;
+          recipient_name?: string | null;
+          recipient_phone?: string | null;
+          rider_id?: string | null;
+          started_at?: string | null;
+          status?: Database["public"]["Enums"]["trip_status"];
+          trip_number?: never;
+          updated_at?: string;
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "trips_community_id_fkey";
+            columns: ["community_id"];
+            isOneToOne: false;
+            referencedRelation: "communities";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "trips_community_id_fkey";
+            columns: ["community_id"];
+            isOneToOne: false;
+            referencedRelation: "location_directory";
+            referencedColumns: ["community_id"];
+          },
+          {
+            foreignKeyName: "trips_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "trips_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "trips_preferred_rider_id_fkey";
+            columns: ["preferred_rider_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "trips_rider_id_fkey";
+            columns: ["rider_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       user_role_assignments: {
         Row: {
           community_id: string | null;
@@ -3078,6 +3548,7 @@ export type Database = {
       };
     };
     Functions: {
+      accept_trip: { Args: { p_trip: string }; Returns: undefined };
       active_advertisements: {
         Args: {
           p_community?: string;
@@ -3161,6 +3632,14 @@ export type Database = {
         Args: { p_community?: string; p_district?: string; p_region?: string };
         Returns: Json;
       };
+      admin_review_rider: {
+        Args: {
+          p_reason?: string;
+          p_rider: string;
+          p_status: Database["public"]["Enums"]["rider_status"];
+        };
+        Returns: undefined;
+      };
       admin_revoke_role: { Args: { p_assignment: string }; Returns: undefined };
       admin_set_account_status: {
         Args: {
@@ -3214,6 +3693,30 @@ export type Database = {
           isSetofReturn: true;
         };
       };
+      available_riders: {
+        Args: {
+          p_community: string;
+          p_kind?: Database["public"]["Enums"]["trip_kind"];
+          p_vehicle?: Database["public"]["Enums"]["vehicle_type"];
+        };
+        Returns: {
+          avatar_path: string;
+          community_name: string;
+          completed_trips: number;
+          display_name: string;
+          is_online: boolean;
+          offers_delivery: boolean;
+          offers_rides: boolean;
+          phone: string;
+          plate_number: string;
+          rating_avg: number;
+          rating_count: number;
+          user_id: string;
+          vehicle_description: string;
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"];
+          whatsapp: string;
+        }[];
+      };
       create_support_ticket: {
         Args: {
           p_body: string;
@@ -3251,6 +3754,7 @@ export type Database = {
         Args: { p_membership: string; p_role: Database["public"]["Enums"]["membership_role"] };
         Returns: undefined;
       };
+      fast_track_entity_application: { Args: { p_application: string }; Returns: string };
       issue_emergency_alert: {
         Args: {
           p_body: string;
@@ -3301,6 +3805,25 @@ export type Database = {
           status: Database["public"]["Enums"]["entity_status"];
         }[];
       };
+      open_trip_requests: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          created_at: string;
+          distance_km: number;
+          dropoff_address: string;
+          for_me: boolean;
+          id: string;
+          kind: Database["public"]["Enums"]["trip_kind"];
+          note: string;
+          offered_fare: number;
+          package_description: string;
+          payment_method: Database["public"]["Enums"]["payment_method"];
+          pickup_address: string;
+          pickup_km: number;
+          trip_number: number;
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"];
+        }[];
+      };
       place_order: {
         Args: {
           p_contact_phone: string;
@@ -3312,6 +3835,10 @@ export type Database = {
         };
         Returns: string;
       };
+      rate_trip: {
+        Args: { p_comment?: string; p_rating: number; p_trip: string };
+        Returns: undefined;
+      };
       record_ad_click: { Args: { p_ad: string }; Returns: undefined };
       reply_support_ticket: { Args: { p_body: string; p_ticket: string }; Returns: string };
       request_booking: {
@@ -3321,6 +3848,29 @@ export type Database = {
           p_phone?: string;
           p_service: string;
           p_time?: string;
+        };
+        Returns: string;
+      };
+      request_trip: {
+        Args: {
+          p_community: string;
+          p_customer_phone: string;
+          p_dropoff_address: string;
+          p_dropoff_lat?: number;
+          p_dropoff_lng?: number;
+          p_kind: Database["public"]["Enums"]["trip_kind"];
+          p_note?: string;
+          p_offered_fare: number;
+          p_order?: string;
+          p_package_description?: string;
+          p_payment_method?: Database["public"]["Enums"]["payment_method"];
+          p_pickup_address: string;
+          p_pickup_lat?: number;
+          p_pickup_lng?: number;
+          p_preferred_rider?: string;
+          p_recipient_name?: string;
+          p_recipient_phone?: string;
+          p_vehicle_type?: Database["public"]["Enums"]["vehicle_type"];
         };
         Returns: string;
       };
@@ -3369,6 +3919,10 @@ export type Database = {
         };
         Returns: undefined;
       };
+      set_rider_online: {
+        Args: { p_lat?: number; p_lng?: number; p_online: boolean };
+        Returns: undefined;
+      };
       start_conversation: {
         Args: { p_body: string; p_entity: string; p_subject: string };
         Returns: string;
@@ -3408,6 +3962,15 @@ export type Database = {
           p_status?: Database["public"]["Enums"]["ticket_status"];
           p_ticket: string;
           p_unassign?: boolean;
+        };
+        Returns: undefined;
+      };
+      update_trip_status: {
+        Args: {
+          p_final_fare?: number;
+          p_reason?: string;
+          p_status: Database["public"]["Enums"]["trip_status"];
+          p_trip: string;
         };
         Returns: undefined;
       };
@@ -3487,6 +4050,7 @@ export type Database = {
         | "community_group";
       event_status: "draft" | "published" | "cancelled" | "removed";
       fulfilment_method: "pickup" | "delivery";
+      inquiry_status: "new" | "contacted" | "closed";
       job_application_status:
         "submitted" | "reviewing" | "shortlisted" | "rejected" | "hired" | "withdrawn";
       job_status: "draft" | "open" | "closed" | "archived" | "removed";
@@ -3494,9 +4058,11 @@ export type Database = {
       membership_role: "owner" | "manager" | "editor" | "member";
       moderation_action_type:
         "approve" | "hide" | "remove" | "restore" | "dismiss_report" | "warn_user";
-      moderation_target: "post" | "comment" | "product" | "service" | "job" | "event" | "review";
+      moderation_target:
+        "post" | "comment" | "product" | "service" | "job" | "event" | "review" | "rental";
       order_status: "pending" | "confirmed" | "ready" | "completed" | "cancelled" | "declined";
       pay_period: "hour" | "day" | "week" | "month" | "year" | "fixed";
+      payment_method: "cash" | "mobile_money";
       post_kind:
         | "general"
         | "question"
@@ -3507,6 +4073,18 @@ export type Database = {
         | "help_request"
         | "help_offer";
       product_status: "draft" | "active" | "out_of_stock" | "archived" | "removed";
+      rental_period: "day" | "week" | "month" | "year";
+      rental_status: "draft" | "available" | "rented" | "archived" | "removed";
+      rental_type:
+        | "room"
+        | "self_contain"
+        | "apartment"
+        | "house"
+        | "shop"
+        | "office"
+        | "warehouse"
+        | "land"
+        | "event_space";
       report_reason:
         | "spam"
         | "scam_or_fraud"
@@ -3519,6 +4097,7 @@ export type Database = {
         | "prohibited_item"
         | "other";
       report_status: "open" | "reviewing" | "resolved" | "dismissed";
+      rider_status: "pending" | "approved" | "suspended" | "rejected";
       rsvp_status: "going" | "interested";
       scope_level: "platform" | "region" | "district" | "community";
       sector:
@@ -3539,6 +4118,9 @@ export type Database = {
       ticket_category:
         "account" | "verification" | "marketplace" | "safety" | "bug" | "feedback" | "other";
       ticket_status: "open" | "pending" | "resolved" | "closed";
+      trip_kind: "ride" | "delivery";
+      trip_status: "requested" | "accepted" | "arrived" | "in_progress" | "completed" | "cancelled";
+      vehicle_type: "motorbike" | "tricycle" | "car" | "van" | "bicycle";
       verification_document_type:
         | "business_registration"
         | "tax_certificate"
@@ -3743,6 +4325,7 @@ export const Constants = {
       ],
       event_status: ["draft", "published", "cancelled", "removed"],
       fulfilment_method: ["pickup", "delivery"],
+      inquiry_status: ["new", "contacted", "closed"],
       job_application_status: [
         "submitted",
         "reviewing",
@@ -3762,9 +4345,19 @@ export const Constants = {
         "dismiss_report",
         "warn_user",
       ],
-      moderation_target: ["post", "comment", "product", "service", "job", "event", "review"],
+      moderation_target: [
+        "post",
+        "comment",
+        "product",
+        "service",
+        "job",
+        "event",
+        "review",
+        "rental",
+      ],
       order_status: ["pending", "confirmed", "ready", "completed", "cancelled", "declined"],
       pay_period: ["hour", "day", "week", "month", "year", "fixed"],
+      payment_method: ["cash", "mobile_money"],
       post_kind: [
         "general",
         "question",
@@ -3776,6 +4369,19 @@ export const Constants = {
         "help_offer",
       ],
       product_status: ["draft", "active", "out_of_stock", "archived", "removed"],
+      rental_period: ["day", "week", "month", "year"],
+      rental_status: ["draft", "available", "rented", "archived", "removed"],
+      rental_type: [
+        "room",
+        "self_contain",
+        "apartment",
+        "house",
+        "shop",
+        "office",
+        "warehouse",
+        "land",
+        "event_space",
+      ],
       report_reason: [
         "spam",
         "scam_or_fraud",
@@ -3789,6 +4395,7 @@ export const Constants = {
         "other",
       ],
       report_status: ["open", "reviewing", "resolved", "dismissed"],
+      rider_status: ["pending", "approved", "suspended", "rejected"],
       rsvp_status: ["going", "interested"],
       scope_level: ["platform", "region", "district", "community"],
       sector: [
@@ -3817,6 +4424,9 @@ export const Constants = {
         "other",
       ],
       ticket_status: ["open", "pending", "resolved", "closed"],
+      trip_kind: ["ride", "delivery"],
+      trip_status: ["requested", "accepted", "arrived", "in_progress", "completed", "cancelled"],
+      vehicle_type: ["motorbike", "tricycle", "car", "van", "bicycle"],
       verification_document_type: [
         "business_registration",
         "tax_certificate",

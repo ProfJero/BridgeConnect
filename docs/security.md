@@ -106,9 +106,22 @@ and a sufficient membership role. Suspending an entity instantly removes it and 
 - **Owner bootstrap:** granted only to an address in `private.owner_bootstrap` (not readable by API roles) after the
   email is confirmed; consumed on use.
 
+## Mobility & rentals (Nov 2026, round 2)
+
+- **Riders** register themselves but always start `pending` (trigger), can't write `status`, and can only go online
+  when approved. Staff with `mobility.manage` covering the rider's community decide; nobody reviews themselves.
+  Approximate coordinates are stored for sorting jobs but **no API role can SELECT them** (column grants).
+- **Trips** have no client write grants. `request_trip` validates the community, delivery details, an optional
+  order (buyer or seller with `orders` only), rate limits and active-trip caps. Riders see open jobs through
+  `open_trip_requests`, which hides the customer's phone until a rider has accepted. `accept_trip` is atomic
+  (first accept wins); each status change is checked against who may make it.
+- **Rentals** are owned by residents; owners can't set `removed` (moderators only), enquiries are visible only to
+  the sender and the landlord, photos must be the owner's own uploads, listings are reportable and moderated.
+- **Owner fast-track** requires `platform.owner` and the caller's own application, and is audited.
+
 ## Verifying it
 
-- `npm run test:db` — 130 pgTAP assertions: anonymous access, cross-user, cross-entity, cross-community, role
+- `npm run test:db` — 177 pgTAP assertions: anonymous access, cross-user, cross-entity, cross-community, role
   escalation, manipulated inserts, suspended users.
 - `npm run test:integration` — the same attacks through the public Supabase API, plus Storage access control.
 - `npm run test:e2e` — direct-URL access, 403/404 behaviour, XSS rendering, open-redirect, full workflows.

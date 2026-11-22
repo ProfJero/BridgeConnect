@@ -18,6 +18,7 @@ const COLUMN = {
   event: "event_id",
   profile: "profile_id",
   review: "review_id",
+  rental: "rental_id",
 } as const;
 
 export async function submitReportAction(input: unknown): Promise<ActionResult> {

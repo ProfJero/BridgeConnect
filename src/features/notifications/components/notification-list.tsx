@@ -1,6 +1,24 @@
 "use client";
 
-import { Bell, Check, Trash2 } from "lucide-react";
+import {
+  BadgeCheck,
+  Bell,
+  Bike,
+  Briefcase,
+  CalendarCheck,
+  CalendarDays,
+  Check,
+  House,
+  LifeBuoy,
+  Megaphone,
+  MessageSquareText,
+  Package,
+  ShieldAlert,
+  Siren,
+  Star,
+  Trash2,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -9,6 +27,26 @@ import { formatRelative } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 import { deleteNotificationAction, markAllNotificationsReadAction, markNotificationReadAction } from "../actions";
+
+const ICON: { prefix: string; icon: LucideIcon; tone: string }[] = [
+  { prefix: "emergency", icon: Siren, tone: "bg-destructive-soft text-destructive" },
+  { prefix: "moderation", icon: ShieldAlert, tone: "bg-destructive-soft text-destructive" },
+  { prefix: "order", icon: Package, tone: "bg-primary-soft text-primary-soft-foreground" },
+  { prefix: "trip", icon: Bike, tone: "bg-brand-green-soft text-brand-green-soft-foreground" },
+  { prefix: "rider", icon: Bike, tone: "bg-brand-green-soft text-brand-green-soft-foreground" },
+  { prefix: "booking", icon: CalendarCheck, tone: "bg-brand-green-soft text-brand-green-soft-foreground" },
+  { prefix: "job", icon: Briefcase, tone: "bg-primary-soft text-primary-soft-foreground" },
+  { prefix: "event", icon: CalendarDays, tone: "bg-destructive-soft text-destructive-soft-foreground" },
+  { prefix: "follow", icon: Megaphone, tone: "bg-warning-soft text-warning-soft-foreground" },
+  { prefix: "message", icon: MessageSquareText, tone: "bg-primary-soft text-primary-soft-foreground" },
+  { prefix: "review", icon: Star, tone: "bg-warning-soft text-warning-soft-foreground" },
+  { prefix: "rental", icon: House, tone: "bg-warning-soft text-warning-soft-foreground" },
+  { prefix: "verification", icon: BadgeCheck, tone: "bg-brand-green-soft text-brand-green-soft-foreground" },
+  { prefix: "support", icon: LifeBuoy, tone: "bg-primary-soft text-primary-soft-foreground" },
+];
+function iconFor(type: string) {
+  return ICON.find((i) => type.startsWith(i.prefix)) ?? { icon: Bell, tone: "bg-primary-soft text-primary-soft-foreground" };
+}
 
 type Item = { id: string; type: string; title: string; body: string | null; link: string | null; read_at: string | null; created_at: string };
 
@@ -23,12 +61,13 @@ export function NotificationList({ items, unread }: { items: Item[]; unread: num
           </Button>
         </div>
       ) : null}
-      <ul className="divide-y rounded-xl border bg-card">
+      <ul className="stagger divide-y overflow-hidden rounded-2xl border bg-card">
         {items.map((n) => {
+          const { icon: Icon, tone } = iconFor(n.type);
           const content = (
             <>
-              <span className={cn("mt-1 flex size-8 shrink-0 items-center justify-center rounded-full", n.type.startsWith("emergency") ? "bg-destructive-soft text-destructive" : "bg-primary-soft text-primary-soft-foreground")}>
-                <Bell aria-hidden className="size-4" />
+              <span className={cn("flex size-11 shrink-0 items-center justify-center rounded-2xl", tone)}>
+                <Icon aria-hidden className="size-5" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className={cn("block text-sm", !n.read_at && "font-semibold")}>{n.title}</span>

@@ -34,6 +34,7 @@ export const PERMISSIONS = [
   "audit.read",
   "settings.manage",
   "support.manage",
+  "mobility.manage",
   "platform.owner",
 ] as const;
 
