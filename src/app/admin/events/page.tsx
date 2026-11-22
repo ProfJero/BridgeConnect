@@ -22,7 +22,7 @@ export default async function AdminEventsPage({ searchParams }: PageProps<"/admi
           <TableBody>
             {items.map((i) => (
               <TableRow key={i.id}>
-                <TableCell>{i.status === "published" ? <Link className="font-medium text-primary hover:underline" href={`/events/${i.slug}`}>{i.title}</Link> : i.title}</TableCell>
+                <TableCell>{i.status === "published" ? <Link className="font-medium text-link hover:underline" href={`/events/${i.slug}`}>{i.title}</Link> : i.title}</TableCell>
                 <TableCell>{i.entities?.name}</TableCell>
                 <TableCell>{i.communities?.name}</TableCell>
                 <TableCell>{formatDate(i.starts_at)}</TableCell>

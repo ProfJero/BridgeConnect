@@ -17,12 +17,12 @@ export function EntityCard({ entity }: { entity: CardEntity }) {
   return (
     <Link
       href={`/directory/${entity.slug}`}
-      className="group pressable flex min-w-0 gap-3 rounded-xl border bg-card p-4 shadow-xs transition-shadow hover:shadow-md focus-visible:ring-[3px] focus-visible:ring-ring/40 focus-visible:outline-none"
+      className="group pressable flex min-w-0 gap-3 rounded-xl border bg-gradient-to-br from-card to-tint p-4 shadow-xs transition-shadow hover:shadow-md focus-visible:ring-[3px] focus-visible:ring-ring/40 focus-visible:outline-none"
     >
       <EntityAvatar name={entity.name} path={entity.logo_path} className="size-12" />
       <div className="min-w-0 flex-1 space-y-1">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="truncate font-semibold group-hover:text-primary">{entity.name}</h3>
+          <h3 className="truncate font-semibold group-hover:text-link">{entity.name}</h3>
           <VerifiedBadge compact />
         </div>
         {entity.rating_count ? <RatingStars value={entity.rating_avg ?? null} count={entity.rating_count} /> : null}

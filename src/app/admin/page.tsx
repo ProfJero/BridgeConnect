@@ -23,7 +23,7 @@ export default async function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow="DBI Administration" title={`Welcome, ${viewer.profile.display_name.split(" ")[0]}`} description="What needs your attention across BridgeConnect." />
+      <PageHeader eyebrow="Administration" title={`Welcome, ${viewer.profile.display_name.split(" ")[0]}`} description="What needs your attention across BridgeConnect." />
       {!stats ? (
         <Alert variant="info"><AlertDescription>Your role doesn&apos;t include analytics. Use the menu to reach the queues you manage.</AlertDescription></Alert>
       ) : (
@@ -54,7 +54,7 @@ export default async function AdminDashboard() {
               valueLabel="Entities"
             />
           </div>
-          {can("analytics.read") ? <Link href="/admin/analytics" className="text-sm font-medium text-primary hover:underline">Open full analytics →</Link> : null}
+          {can("analytics.read") ? <Link href="/admin/analytics" className="text-sm font-medium text-link hover:underline">Open full analytics →</Link> : null}
         </>
       )}
     </div>

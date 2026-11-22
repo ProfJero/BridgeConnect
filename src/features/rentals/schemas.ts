@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { coordinatesSchema } from "@/lib/contact-schemas";
+
 import { phoneSchema } from "@/features/orders/schemas";
 
 export const RENTAL_TYPES = ["room", "self_contain", "apartment", "house", "shop", "office", "warehouse", "land", "event_space"] as const;
@@ -43,6 +45,7 @@ export const rentalSchema = z.object({
   furnished: z.boolean().optional(),
   amenities: z.array(z.string().trim().min(1).max(40)).max(20).optional(),
   locationNote: z.string().trim().max(300).optional(),
+  location: coordinatesSchema,
   contactPhone: phoneSchema,
   whatsapp: z.union([z.literal(""), phoneSchema]).optional(),
   availableFrom: z.union([z.literal(""), z.string().regex(/^\d{4}-\d{2}-\d{2}$/)]).optional(),

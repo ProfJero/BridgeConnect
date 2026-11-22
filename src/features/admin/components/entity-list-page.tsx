@@ -30,7 +30,7 @@ export async function EntityListPage({ basePath, title, types, q, status, page }
               <TableRow><TableCell colSpan={5} className="py-10 text-center text-muted-foreground">Nothing found.</TableCell></TableRow>
             ) : items.map((e) => (
               <TableRow key={e.id}>
-                <TableCell><Link href={`/admin/entities/${e.id}`} className="font-semibold text-primary hover:underline">{e.name}</Link></TableCell>
+                <TableCell><Link href={`/admin/entities/${e.id}`} className="font-semibold text-link hover:underline">{e.name}</Link></TableCell>
                 <TableCell>{ENTITY_TYPE_LABEL[e.entity_type]}</TableCell>
                 <TableCell>{e.communities?.name}{e.communities?.districts ? `, ${e.communities.districts.name}` : ""}</TableCell>
                 <TableCell>{formatDate(e.verified_at)}</TableCell>

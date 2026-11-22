@@ -11,3 +11,14 @@
 /icons/*
   Cache-Control: public, max-age=604800
   X-Content-Type-Options: nosniff
+
+/brand/*
+  Cache-Control: public, max-age=2592000
+  X-Content-Type-Options: nosniff
+
+/og/*
+  Cache-Control: public, max-age=86400
+  X-Content-Type-Options: nosniff
+
+/favicon.ico
+  Cache-Control: public, max-age=2592000

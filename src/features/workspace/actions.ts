@@ -72,6 +72,8 @@ export async function updateEntityProfileAction(input: unknown): Promise<ActionR
       email: nullIfEmpty(v.email),
       website: nullIfEmpty(v.website),
       opening_hours: v.openingHours ?? null,
+      ...(v.socialLinks !== undefined ? { social_links: v.socialLinks ?? {} } : {}),
+      ...(v.location !== undefined ? { latitude: v.location?.lat ?? null, longitude: v.location?.lng ?? null } : {}),
       ...(v.logoPath !== undefined ? { logo_path: v.logoPath } : {}),
       ...(v.coverPath !== undefined ? { cover_path: v.coverPath } : {}),
     })

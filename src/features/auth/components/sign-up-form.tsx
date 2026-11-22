@@ -34,7 +34,7 @@ export function SignUpForm({ communities }: { communities: CommunityChoice[] }) 
   if (confirmEmail) {
     return (
       <div role="status" className="space-y-3 text-center">
-        <MailCheck aria-hidden className="mx-auto size-10 text-brand-green" />
+        <MailCheck aria-hidden className="mx-auto size-10 text-price" />
         <h2 className="text-lg font-semibold">Check your email</h2>
         <p className="text-sm text-muted-foreground">
           We sent a confirmation link to <strong>{form.getValues("email")}</strong>. Open it to activate your account.

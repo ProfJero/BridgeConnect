@@ -35,7 +35,7 @@ export async function SectorHub({ hub, communityId }: { hub: SectorHubKey; commu
         </Section>
       ) : null}
       {services.items.length ? (
-        <Section title="Services" action={<Link href="/services" className="text-sm font-medium text-primary hover:underline">All services</Link>}>
+        <Section title="Services" action={<Link href="/services" className="text-sm font-medium text-link hover:underline">All services</Link>}>
           <div className="grid gap-3 sm:grid-cols-2">
             {services.items.map((s) => <ServiceCard key={s.id} service={s} />)}
           </div>

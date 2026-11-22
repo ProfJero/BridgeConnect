@@ -47,12 +47,12 @@ export default async function ExplorePage() {
       </ul>
       <AdSlot placement="explore" communityId={communityId} />
       {entities.items.length ? (
-        <Section title={communityId ? "Verified near you" : "Verified organisations"} action={<Link href="/businesses" className="text-sm font-medium text-primary hover:underline">Directory</Link>}>
+        <Section title={communityId ? "Verified near you" : "Verified organisations"} action={<Link href="/businesses" className="text-sm font-medium text-link hover:underline">Directory</Link>}>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{entities.items.map((e) => <EntityCard key={e.id} entity={e} />)}</div>
         </Section>
       ) : null}
       {services.items.length ? (
-        <Section title="Popular services" action={<Link href="/services" className="text-sm font-medium text-primary hover:underline">All services</Link>}>
+        <Section title="Popular services" action={<Link href="/services" className="text-sm font-medium text-link hover:underline">All services</Link>}>
           <div className="grid gap-3 sm:grid-cols-2">{services.items.map((s) => <ServiceCard key={s.id} service={s} />)}</div>
         </Section>
       ) : null}

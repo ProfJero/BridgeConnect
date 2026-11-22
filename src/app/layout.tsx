@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 
-import { parseTheme, THEME_COOKIE } from "@/components/theme/theme";
+import { ACCENT_COOKIE, parseAccent, parseTheme, THEME_COOKIE } from "@/components/theme/theme";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { ServiceWorker } from "@/components/pwa/service-worker";
 import { Toaster } from "@/components/ui/sonner";
@@ -67,9 +67,11 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const theme = parseTheme((await cookies()).get(THEME_COOKIE)?.value);
+  const jar = await cookies();
+  const theme = parseTheme(jar.get(THEME_COOKIE)?.value);
+  const accent = parseAccent(jar.get(ACCENT_COOKIE)?.value);
   return (
-    <html lang="en-GH" className={`${inter.variable} h-full${theme === "system" ? "" : ` ${theme}`}`} suppressHydrationWarning>
+    <html lang="en-GH" className={`${inter.variable} h-full${theme === "system" ? "" : ` ${theme}`}`} data-accent={accent} suppressHydrationWarning>
       <body className="min-h-full font-sans">
         <a
           href="#main"

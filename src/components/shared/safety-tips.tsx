@@ -20,7 +20,7 @@ export function SafetyTips({ kind }: { kind: "product" | "service" }) {
   return (
     <aside aria-labelledby="safety-tips" className="rounded-xl border bg-card p-4 text-sm">
       <h2 id="safety-tips" className="mb-2 flex items-center gap-2 font-semibold">
-        <ShieldCheck aria-hidden className="size-4 text-brand-green" /> Stay safe
+        <ShieldCheck aria-hidden className="size-4 text-price" /> Stay safe
       </h2>
       <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
         {[...TIPS[kind], ...COMMON].map((tip) => (

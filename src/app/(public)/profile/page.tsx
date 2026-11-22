@@ -8,6 +8,7 @@ import {
   ClipboardList,
   FileCheck2,
   House,
+  LayoutDashboard,
   LifeBuoy,
   LogOut,
   MapPin,
@@ -111,7 +112,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
-      <section className="-mx-4 -mt-4 overflow-hidden bg-gradient-to-br from-brand-navy to-primary px-5 pt-6 pb-16 text-white sm:mx-0 sm:mt-0 sm:rounded-3xl lg:-mt-0">
+      <section className="-mx-4 -mt-4 overflow-hidden bg-gradient-to-br from-hero-1 to-hero-2 px-5 pt-6 pb-16 text-white sm:mx-0 sm:mt-0 sm:rounded-3xl lg:-mt-0">
         <div className="flex items-center gap-4">
           <UserAvatar name={viewer.profile.display_name} path={viewer.profile.avatar_path} className="size-20 border-4 border-white/30 text-lg" />
           <div className="min-w-0 flex-1">
@@ -147,8 +148,17 @@ export default async function ProfilePage() {
       </div>
 
       {viewer.isAdmin ? (
-        <Button asChild variant="soft" className="w-full rounded-2xl"><Link href="/admin"><Shield aria-hidden /> Open DBI Administration</Link></Button>
+        <Button asChild variant="soft" className="w-full rounded-2xl"><Link href="/admin"><Shield aria-hidden /> Open Administration</Link></Button>
       ) : null}
+
+      <Link href="/dashboards" className="pressable flex items-center gap-3 rounded-2xl bg-gradient-to-r from-hero-1 to-hero-2 p-4 text-white shadow-md">
+        <LayoutDashboard aria-hidden className="size-6" />
+        <span className="flex-1">
+          <span className="block font-bold">My dashboards</span>
+          <span className="block text-xs opacity-85">Businesses, organisations, rider and rentals you manage</span>
+        </span>
+        <ChevronRight aria-hidden className="size-5" />
+      </Link>
 
       {viewer.workspaces.length > 0 ? (
         <Section title="My workspaces">
@@ -156,7 +166,7 @@ export default async function ProfilePage() {
             {viewer.workspaces.map((w) => (
               <li key={w.entityId}>
                 <Link href={`/workspace/${w.entityId}`} className="flex items-center gap-3 px-4 py-3.5 hover:bg-accent">
-                  <Building2 aria-hidden className="size-5 text-primary" />
+                  <Building2 aria-hidden className="size-5 text-link" />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-semibold">{w.name}</span>
                     <span className="block text-xs text-muted-foreground">{ENTITY_TYPE_LABEL[w.entityType]} · {humanize(w.role)}</span>

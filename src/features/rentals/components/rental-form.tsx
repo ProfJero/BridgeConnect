@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { CommunitySelect, type CommunityChoice } from "@/components/forms/community-select";
 import { controlProps, Field, FormError } from "@/components/forms/field";
+import { LocationPicker } from "@/components/forms/location-picker";
 import { ImageUpload, type UploadedImage } from "@/components/widgets/image-upload";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -33,6 +34,7 @@ export type RentalFormInitial = {
   furnished: boolean;
   amenities: string[];
   locationNote: string;
+  location: { lat: number; lng: number } | null;
   contactPhone: string;
   whatsapp: string;
   availableFrom: string;
@@ -54,6 +56,7 @@ export function RentalForm({
   const router = useRouter();
   const [images, setImages] = useState<UploadedImage[]>(initial?.images ?? []);
   const [amenities, setAmenities] = useState<string[]>(initial?.amenities ?? []);
+  const [location, setLocation] = useState(initial?.location ?? null);
   const { form, onSubmit, pending, formError, errorFor } = useActionForm(rentalSchema, saveRentalAction, {
     defaultValues: initial
       ? { ...initial }
@@ -85,6 +88,7 @@ export function RentalForm({
       onSubmit={(e) => {
         form.setValue("mediaIds", images.map((i) => i.id));
         form.setValue("amenities", amenities);
+        form.setValue("location", location);
         void onSubmit(e);
       }}
     >
@@ -157,6 +161,7 @@ export function RentalForm({
       <Field id="locationNote" label="Location / landmark" error={errorFor("locationNote")} hint="A landmark is enough — don't post your exact house number.">
         <Input maxLength={300} {...reg("locationNote", true)} />
       </Field>
+      <LocationPicker value={location} onChange={setLocation} label="Map pin (optional)" />
       <div className="grid gap-4 sm:grid-cols-2">
         <Field id="contactPhone" label="Contact phone" required error={errorFor("contactPhone")} hint="Shown on the listing.">
           <Input type="tel" autoComplete="tel" {...reg("contactPhone", true)} />

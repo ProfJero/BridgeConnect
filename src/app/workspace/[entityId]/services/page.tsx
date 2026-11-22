@@ -24,7 +24,7 @@ export default async function WorkspaceServicesPage({ params }: PageProps<"/work
           {services.map((s) => (
             <li key={s.id} className="flex items-center justify-between gap-3 p-4">
               <span>
-                {s.status === "removed" ? <span className="font-semibold">{s.name}</span> : <Link href={`${base}/${s.id}`} className="font-semibold text-primary hover:underline">{s.name}</Link>}
+                {s.status === "removed" ? <span className="font-semibold">{s.name}</span> : <Link href={`${base}/${s.id}`} className="font-semibold text-link hover:underline">{s.name}</Link>}
                 <span className="block text-sm text-muted-foreground">{s.price_from != null ? `From ${formatMoney(s.price_from, s.currency)}` : s.price_note ?? "No price set"}</span>
                 {s.moderation_reason ? <span className="block text-xs text-destructive">Removed: {s.moderation_reason}</span> : null}
               </span>

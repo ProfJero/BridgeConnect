@@ -8,7 +8,7 @@ export function VerifiedBadge({ className, compact = false }: { className?: stri
       className={cn("inline-flex items-center gap-1 text-xs font-semibold text-brand-green-soft-foreground", className)}
       title="Verified by Digital Bridge Initiative"
     >
-      <BadgeCheck aria-hidden className="size-4 text-brand-green" />
+      <BadgeCheck aria-hidden className="size-4 text-price" />
       {compact ? <span className="sr-only">Verified</span> : "Verified"}
     </span>
   );

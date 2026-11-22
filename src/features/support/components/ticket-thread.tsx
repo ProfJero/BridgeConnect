@@ -49,7 +49,7 @@ export function TicketThread({
             <div className="mb-2 flex items-center gap-2">
               <UserAvatar name={m.profiles?.display_name ?? "User"} path={m.profiles?.avatar_path} className="size-7" />
               <span className="text-sm font-semibold">{m.is_staff ? "DBI Support" : m.profiles?.display_name ?? "User"}</span>
-              {m.is_staff ? <ShieldCheck aria-label="Staff" className="size-4 text-primary" /> : null}
+              {m.is_staff ? <ShieldCheck aria-label="Staff" className="size-4 text-link" /> : null}
               <time dateTime={m.created_at} className="ml-auto text-xs text-muted-foreground">{formatDateTime(m.created_at)}</time>
             </div>
             <p className="text-sm leading-relaxed whitespace-pre-line">{m.body}</p>

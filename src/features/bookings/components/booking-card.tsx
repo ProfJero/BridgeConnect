@@ -61,7 +61,7 @@ export function BookingCard({ booking, side }: { booking: BookingCardData; side:
           <span className="inline-flex items-center gap-1.5"><Clock aria-hidden className="size-4 text-muted-foreground" />{booking.requested_time.slice(0, 5)}</span>
         ) : null}
         {side === "entity" && booking.contact_phone ? (
-          <a href={`tel:${booking.contact_phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-1.5 text-primary hover:underline">
+          <a href={`tel:${booking.contact_phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-1.5 text-link hover:underline">
             <Phone aria-hidden className="size-4" />{booking.contact_phone}
           </a>
         ) : null}

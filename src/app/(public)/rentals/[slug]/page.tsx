@@ -1,4 +1,4 @@
-import { Bath, BedDouble, CalendarDays, Check, MapPin, MessageCircle, Pencil, Phone, ShieldAlert, Sofa, Wallet } from "lucide-react";
+import { Bath, BedDouble, CalendarDays, Check, MapPin, MessageCircle, Navigation, Pencil, Phone, ShieldAlert, Sofa, Wallet } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,7 +16,7 @@ import { InquiryDialog } from "@/features/rentals/components/inquiry-dialog";
 import { getRentalBySlug } from "@/features/rentals/queries";
 import { PERIOD_SHORT, RENTAL_TYPE_LABEL } from "@/features/rentals/schemas";
 import { getViewer } from "@/lib/auth/session";
-import { telLink, whatsappLink } from "@/lib/contact";
+import { directionsUrl, telLink, whatsappLink } from "@/lib/contact";
 import { formatDate, formatMoney, formatRelative } from "@/lib/format";
 import { orderedMedia } from "@/lib/media";
 import { absoluteUrl, excerpt, pageMetadata } from "@/lib/seo";
@@ -42,7 +42,12 @@ export default async function RentalPage({ params }: PageProps<"/rentals/[slug]"
   const media = orderedMedia(rental.rental_media);
   const isOwner = viewer?.id === rental.owner_id;
   const call = telLink(rental.contact_phone);
-  const whatsapp = whatsappLink(rental.whatsapp ?? rental.contact_phone, `Hello, I saw "${rental.title}" on BridgeConnect: ${absoluteUrl(`/rentals/${rental.slug}`)}`);
+  const whatsapp = whatsappLink(rental.whatsapp, `Hello, I saw "${rental.title}" on BridgeConnect: ${absoluteUrl(`/rentals/${rental.slug}`)}`);
+  const directions = directionsUrl({
+    lat: rental.latitude,
+    lng: rental.longitude,
+    query: [rental.location_note, rental.communities?.name, rental.communities?.districts?.name, "Ghana"].filter(Boolean).join(", "),
+  });
   const facts = [
     rental.bedrooms != null ? { icon: BedDouble, label: `${rental.bedrooms} bedroom${rental.bedrooms === 1 ? "" : "s"}` } : null,
     rental.bathrooms != null ? { icon: Bath, label: `${rental.bathrooms} bathroom${rental.bathrooms === 1 ? "" : "s"}` } : null,
@@ -74,20 +79,23 @@ export default async function RentalPage({ params }: PageProps<"/rentals/[slug]"
         )}
       </div>
       <header className="space-y-1.5">
-        <p className="text-xs font-semibold tracking-wide text-primary uppercase">{RENTAL_TYPE_LABEL[rental.rental_type]} for rent</p>
+        <p className="text-xs font-semibold tracking-wide text-link uppercase">{RENTAL_TYPE_LABEL[rental.rental_type]} for rent</p>
         <h1 className="text-2xl font-extrabold tracking-tight">{rental.title}</h1>
-        <p className="text-2xl font-extrabold text-brand-green">
+        <p className="text-2xl font-extrabold text-price">
           {formatMoney(rental.price, rental.currency)}<span className="text-base font-medium text-muted-foreground">{PERIOD_SHORT[rental.period]}</span>
         </p>
         <p className="flex items-center gap-1 text-sm text-muted-foreground">
-          <MapPin aria-hidden className="size-4 text-brand-green" />
+          <MapPin aria-hidden className="size-4 text-price" />
           {[rental.location_note, rental.communities?.name, rental.communities?.districts?.name].filter(Boolean).join(", ")}
         </p>
+        <a href={directions} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-sm font-semibold text-primary-soft-foreground hover:brightness-95">
+          <Navigation aria-hidden className="size-4" /> Get directions
+        </a>
       </header>
       {facts.length ? (
         <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {facts.map(({ icon: Icon, label }) => (
-            <li key={label} className="flex items-center gap-2 rounded-xl border bg-card p-3 text-sm font-medium"><Icon aria-hidden className="size-4 text-primary" /> {label}</li>
+            <li key={label} className="flex items-center gap-2 rounded-xl border bg-card p-3 text-sm font-medium"><Icon aria-hidden className="size-4 text-link" /> {label}</li>
           ))}
         </ul>
       ) : null}

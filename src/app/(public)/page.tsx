@@ -52,7 +52,7 @@ const SLIDES = [
     body: "Okada, tricycle, taxi and dispatch riders near you.",
     cta: "Request now",
     icon: Bike,
-    tone: "from-brand-navy via-primary to-primary",
+    tone: "from-hero-1 via-hero-2 to-hero-2",
   },
   {
     href: "/apply",
@@ -98,11 +98,11 @@ export default async function HomePage() {
         <div className="min-w-0">
           <p className="text-sm text-muted-foreground">{viewer ? `${greeting()},` : "Akwaaba! Welcome to"}</p>
           <h1 className="truncate text-2xl font-extrabold tracking-tight">
-            {viewer ? <>{firstName} <span aria-hidden>👋</span></> : <>Bridge<span className="text-brand-green">Connect</span></>}
+            {viewer ? <>{firstName} <span aria-hidden>👋</span></> : <>Bridge<span className="text-price">Connect</span></>}
           </h1>
           {community ? (
             <p className="mt-0.5 inline-flex items-center gap-1 text-sm text-muted-foreground">
-              <MapPin aria-hidden className="size-4 text-brand-green" /> {community.name}, {community.districtName}
+              <MapPin aria-hidden className="size-4 text-price" /> {community.name}, {community.districtName}
             </p>
           ) : (
             <p className="mt-0.5 text-sm text-muted-foreground">Connecting Communities. Empowering Lives.</p>
@@ -136,7 +136,7 @@ export default async function HomePage() {
               <p className="text-xs font-semibold tracking-wide uppercase opacity-85">{eyebrow}</p>
               <p className="text-xl leading-tight font-extrabold sm:text-2xl">{title}</p>
               <p className="text-sm opacity-90">{body}</p>
-              <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-white px-3.5 py-1.5 text-xs font-bold text-foreground shadow-sm">
+              <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-white px-3.5 py-1.5 text-xs font-bold text-hero-1 shadow-sm">
                 {cta} <ArrowRight aria-hidden className="size-3.5" />
               </span>
             </div>
@@ -165,7 +165,7 @@ export default async function HomePage() {
       ) : null}
 
       {/* Quick services */}
-      <Section title="Quick services" action={<Link href="/explore" className="text-sm font-semibold text-primary">View all</Link>}>
+      <Section title="Quick services" action={<Link href="/explore" className="text-sm font-semibold text-link">View all</Link>}>
         <ul className="stagger grid grid-cols-4 gap-x-2 gap-y-4 sm:grid-cols-6">
           {QUICK_SERVICES.map(({ href, label, icon: Icon, tone }, i) => (
             <li key={href} className={i >= 8 ? "hidden sm:block" : undefined}>
@@ -181,7 +181,7 @@ export default async function HomePage() {
       </Section>
 
       {popular.length ? (
-        <Section title="Popular businesses" action={<Link href="/businesses" className="text-sm font-semibold text-primary">View all</Link>}>
+        <Section title="Popular businesses" action={<Link href="/businesses" className="text-sm font-semibold text-link">View all</Link>}>
           <div className="no-scrollbar -mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0">
             {popular.map((e) => <BusinessTile key={e.id} entity={e} />)}
           </div>
@@ -189,7 +189,7 @@ export default async function HomePage() {
       ) : null}
 
       {jobs.items.length ? (
-        <Section title="Jobs near you" action={<Link href="/jobs" className="text-sm font-semibold text-primary">View all</Link>}>
+        <Section title="Jobs near you" action={<Link href="/jobs" className="text-sm font-semibold text-link">View all</Link>}>
           <div className="stagger grid gap-2.5">
             {jobs.items.map((j) => <JobCard key={j.id} job={j} />)}
           </div>
@@ -197,7 +197,7 @@ export default async function HomePage() {
       ) : null}
 
       {products.items.length ? (
-        <Section title="Community marketplace" action={<Link href="/marketplace" className="text-sm font-semibold text-primary">View all</Link>}>
+        <Section title="Community marketplace" action={<Link href="/marketplace" className="text-sm font-semibold text-link">View all</Link>}>
           <div className="stagger grid grid-cols-2 gap-3 sm:grid-cols-4">
             {products.items.map((p) => <ProductCard key={p.id} product={p} saved={saved.has(p.id)} signedIn={Boolean(viewer)} />)}
           </div>
@@ -206,11 +206,11 @@ export default async function HomePage() {
 
       <AdSlot placement="home_feed" communityId={communityId} />
 
-      <Section title="Recent community updates" action={<Link href="/community" className="text-sm font-semibold text-primary">View all</Link>}>
+      <Section title="Recent community updates" action={<Link href="/community" className="text-sm font-semibold text-link">View all</Link>}>
         {feed.items.length === 0 ? (
           <div className="rounded-2xl border border-dashed bg-card p-6 text-center text-sm text-muted-foreground">
             No posts yet.{" "}
-            <Link href="/community/new" className="font-semibold text-primary">Start the conversation</Link>
+            <Link href="/community/new" className="font-semibold text-link">Start the conversation</Link>
           </div>
         ) : (
           <ul className="divide-y overflow-hidden rounded-2xl border bg-card">
@@ -239,7 +239,7 @@ export default async function HomePage() {
       </Section>
 
       {events.items.length ? (
-        <Section title="Upcoming events" action={<Link href="/events" className="text-sm font-semibold text-primary">View all</Link>}>
+        <Section title="Upcoming events" action={<Link href="/events" className="text-sm font-semibold text-link">View all</Link>}>
           <div className="stagger grid gap-2.5">
             {events.items.map((e) => <EventCard key={e.id} event={e} />)}
           </div>
@@ -247,7 +247,7 @@ export default async function HomePage() {
       ) : null}
 
       {!viewer ? (
-        <section className="rounded-2xl bg-gradient-to-br from-brand-navy to-primary p-6 text-center text-white">
+        <section className="rounded-2xl bg-gradient-to-br from-hero-1 to-hero-2 p-6 text-center text-white">
           <h2 className="text-xl font-bold">Join your community on BridgeConnect</h2>
           <p className="mx-auto mt-1 max-w-md text-sm opacity-90">Post updates, order from local sellers, book services, rent a place and get emergency alerts.</p>
           <div className="mt-4 flex justify-center gap-2">

@@ -31,6 +31,8 @@ export async function saveRentalAction(input: unknown): Promise<ActionResult<{ i
     furnished: v.furnished ?? false,
     amenities: [...new Set(v.amenities ?? [])],
     location_note: v.locationNote || null,
+    latitude: v.location?.lat ?? null,
+    longitude: v.location?.lng ?? null,
     contact_phone: v.contactPhone,
     whatsapp: v.whatsapp || null,
     available_from: blankToNull(v.availableFrom),

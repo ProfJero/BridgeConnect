@@ -64,7 +64,7 @@ export default async function CategoriesPage() {
         <ul className="flex flex-wrap gap-2">
           {POPULAR.map((term) => (
             <li key={term}>
-              <Link href={`/marketplace?q=${encodeURIComponent(term)}`} className="inline-block rounded-full border bg-card px-4 py-1.5 text-sm transition hover:border-primary hover:text-primary active:scale-95">
+              <Link href={`/marketplace?q=${encodeURIComponent(term)}`} className="inline-block rounded-full border bg-card px-4 py-1.5 text-sm transition hover:border-primary hover:text-link active:scale-95">
                 {term}
               </Link>
             </li>

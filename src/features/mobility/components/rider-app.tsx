@@ -165,7 +165,7 @@ export function OpenRequestCard({ request, canAccept }: { request: OpenRequest; 
           </div>
         </div>
         <div className="text-right">
-          <p className="text-xl font-extrabold text-brand-green">{formatMoney(request.offered_fare, "GHS")}</p>
+          <p className="text-xl font-extrabold text-price">{formatMoney(request.offered_fare, "GHS")}</p>
           <p className="text-xs text-muted-foreground">{request.payment_method === "cash" ? "Cash" : "Mobile money"}</p>
         </div>
       </div>

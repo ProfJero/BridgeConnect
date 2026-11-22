@@ -29,12 +29,25 @@ It has three experiences on one identity and authorization system:
 - **Community:** posts, questions, recommendations, lost & found, **help needed / offering help**, **polls**,
   comments, reactions, reports and moderation.
 - **Jobs & events**, **emergency alerts and contacts**, notifications, favourites, search.
-- **Workspaces:** each organisation gets its own dashboard — inbox, bookings, orders, reviews, listings, team,
-  ads, analytics and a support line to DBI.
-- **Administration:** scoped roles, verification queue, moderation, reports, **support desk**, analytics, audit.
-- **App experience:** official BridgeConnect logo, installable PWA, five-tab bottom bar on phones and a side rail on
-  desktop (no website footer), bottom-sheet dialogs, swipeable banners, staggered/press animations, dark mode,
-  offline page; privacy self-service (data export, account deletion).
+- **Dashboards (`/dashboards`):** every business/organisation gets a workspace (inbox, products, orders, services,
+  bookings, posts, jobs, events, reviews, team, ads, analytics, profile, support); riders get `/rider` (go
+  online/offline, jobs, trips & earnings, profile); staff get Administration. All dashboards share one shell: a
+  collapsible coloured sidebar on desktop and a menu-icon side drawer on phones.
+- **Contact & location:** businesses set phone, a *separate* WhatsApp number (no silent fallback to the phone),
+  email, website, social links (Facebook, Instagram, TikTok, X, LinkedIn, YouTube — https only, DB-enforced) and
+  an optional map pin (GPS or pasted Google Maps link). Visitors get one-tap Call, WhatsApp and Directions.
+  Everything can be edited later from *Business profile*. Rentals take a map pin too.
+- **Like, follow, share:** like posts, follow organisations, and share any post, business or listing (native share
+  sheet on phones; WhatsApp/Facebook/X/copy link elsewhere).
+- **Administration** (`/admin`): scoped roles, verification queue, moderation, reports, **support desk**, analytics, audit.
+- **App experience:** official BridgeConnect logo, installable PWA, a floating rounded tab bar with a sliding
+  highlight on phones and a coloured, collapsible sidebar on desktop (no website footer), a back button on every
+  page that is not a top-level tab, bottom-sheet dialogs, swipeable banners, staggered/press animations, offline
+  page; privacy self-service (data export, account deletion).
+- **Themes:** light/dark/system plus six colour themes (Bridge, Forest, Royal, Kente, Ocean, Rose) under
+  *Settings → Appearance*. Colours are semantic roles in `globals.css` — text roles (`heading`, `link`, `price`)
+  lighten in dark mode while deep surfaces (`hero-*`, `nav-*`) stay deep and carry white text, so nothing is
+  dark-on-dark.
 - **SEO:** per-page metadata and canonical URLs, branded Open Graph/Twitter images (site-wide and per section),
   XML sitemap including rentals, JSON-LD (Organization, WebSite search, LocalBusiness with ratings, Product,
   JobPosting, Event, RealEstateListing, BreadcrumbList).

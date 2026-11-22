@@ -2,6 +2,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { EntityProfileForm } from "@/features/workspace/components/entity-profile-form";
 import { getEntityForEdit } from "@/features/workspace/queries";
 import { requireWorkspaceRole } from "@/lib/auth/session";
+import { cleanSocialLinks } from "@/lib/contact";
 
 export default async function WorkspaceProfilePage({ params }: PageProps<"/workspace/[entityId]/profile">) {
   const { entityId } = await params;
@@ -11,7 +12,7 @@ export default async function WorkspaceProfilePage({ params }: PageProps<"/works
   const org = e.organisation_profiles;
   return (
     <div className="max-w-3xl space-y-5">
-      <PageHeader title="Public profile" description="How your organisation appears in the BridgeConnect directory." />
+      <PageHeader title="Business profile" description="Update your contact details, WhatsApp, social media, location, logo, cover and opening hours at any time." />
       <EntityProfileForm
         initial={{
           entityId,
@@ -32,6 +33,8 @@ export default async function WorkspaceProfilePage({ params }: PageProps<"/works
           acceptsMobileMoney: biz?.accepts_mobile_money ?? false,
           mission: org?.mission ?? "",
           beneficiaries: org?.beneficiaries ?? "",
+          socialLinks: cleanSocialLinks(e.social_links),
+          location: e.latitude != null && e.longitude != null ? { lat: Number(e.latitude), lng: Number(e.longitude) } : null,
         }}
       />
     </div>

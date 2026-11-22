@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { phoneSchema } from "@/features/orders/schemas";
+import { coordinatesSchema, optionalHttpsUrl, socialLinksSchema } from "@/lib/contact-schemas";
 
 export const ENTITY_TYPES = [
   "business",
@@ -63,7 +64,12 @@ export const applicationSchema = z.object({
     .max(5000),
   address: z.string().trim().max(300).optional(),
   contactPhone: phoneSchema,
+  /** Only if the organisation actually uses WhatsApp — never copied from the phone. */
+  whatsapp: z.union([phoneSchema, z.literal("")]).optional(),
   contactEmail: optionalEmail,
+  website: optionalHttpsUrl,
+  socialLinks: socialLinksSchema,
+  location: coordinatesSchema,
   registrationNumber: z.string().trim().max(80).optional(),
   applicantPosition: z.string().trim().max(80).optional(),
 });

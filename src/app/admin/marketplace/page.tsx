@@ -27,7 +27,7 @@ export default async function AdminMarketplacePage({ searchParams }: PageProps<"
           <TableBody>
             {items.map((p) => (
               <TableRow key={p.id}>
-                <TableCell>{["active", "out_of_stock"].includes(p.status) ? <Link className="font-medium text-primary hover:underline" href={`/marketplace/${p.slug}`}>{p.name}</Link> : p.name}</TableCell>
+                <TableCell>{["active", "out_of_stock"].includes(p.status) ? <Link className="font-medium text-link hover:underline" href={`/marketplace/${p.slug}`}>{p.name}</Link> : p.name}</TableCell>
                 <TableCell>{p.entities?.name}</TableCell>
                 <TableCell>{formatMoney(p.price, p.currency)}</TableCell>
                 <TableCell>{formatDate(p.created_at)}</TableCell>

@@ -31,7 +31,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps<"/admi
           <TableBody>
             {items.map((o) => (
               <TableRow key={o.id}>
-                <TableCell><Link href={`/admin/orders/${o.id}`} className="font-semibold text-primary hover:underline">#{o.order_number}</Link></TableCell>
+                <TableCell><Link href={`/admin/orders/${o.id}`} className="font-semibold text-link hover:underline">#{o.order_number}</Link></TableCell>
                 <TableCell>{o.entities?.name}</TableCell>
                 <TableCell>{o.profiles?.display_name}</TableCell>
                 <TableCell>{formatMoney(o.subtotal, o.currency)}</TableCell>

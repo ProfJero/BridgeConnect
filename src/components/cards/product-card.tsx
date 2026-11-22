@@ -33,7 +33,7 @@ export function ProductCard({
 }) {
   const image = orderedMedia(product.product_media)[0];
   return (
-    <article className="group pressable relative flex flex-col overflow-hidden rounded-2xl border bg-card shadow-xs transition-shadow focus-within:ring-[3px] focus-within:ring-ring/40 hover:shadow-md">
+    <article className="group pressable relative flex flex-col overflow-hidden rounded-2xl border bg-gradient-to-br from-card to-tint shadow-xs transition-shadow focus-within:ring-[3px] focus-within:ring-ring/40 hover:shadow-md">
       <div className="relative aspect-square bg-muted">
         {image ? (
           <Image
@@ -60,7 +60,7 @@ export function ProductCard({
             {product.name}
           </Link>
         </h3>
-        <p className="text-[15px] font-bold text-brand-green">
+        <p className="text-[15px] font-bold text-price">
           {formatMoney(product.price, product.currency)}
           {product.unit ? <span className="text-xs font-normal text-muted-foreground"> {product.unit}</span> : null}
         </p>

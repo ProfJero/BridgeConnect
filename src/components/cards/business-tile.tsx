@@ -28,8 +28,8 @@ export function BusinessTile({ entity }: { entity: BusinessTileData }) {
   const cover = publicMediaUrl(entity.cover_path, 640);
   const state = openState(entity.opening_hours as OpeningHours | null);
   return (
-    <article className="group pressable relative w-44 shrink-0 snap-start overflow-hidden rounded-2xl border bg-card shadow-xs transition-shadow focus-within:ring-[3px] focus-within:ring-ring/40 hover:shadow-md sm:w-52">
-      <div className="relative h-24 bg-gradient-to-br from-primary to-brand-green">
+    <article className="group pressable relative w-44 shrink-0 snap-start overflow-hidden rounded-2xl border bg-gradient-to-br from-card to-tint shadow-xs transition-shadow focus-within:ring-[3px] focus-within:ring-ring/40 hover:shadow-md sm:w-52">
+      <div className="relative h-24 bg-gradient-to-br from-hero-2 to-hero-3">
         {cover ? <Image src={cover} alt="" fill sizes="208px" className="object-cover" /> : (
           <Store aria-hidden className="absolute right-3 bottom-2 size-10 text-white/25" />
         )}
@@ -48,7 +48,7 @@ export function BusinessTile({ entity }: { entity: BusinessTileData }) {
         <div className="flex items-center justify-between gap-2">
           {entity.rating_count ? <RatingStars value={entity.rating_avg} count={entity.rating_count} /> : <span className="text-xs text-muted-foreground">New</span>}
           {state ? (
-            <span className={state === "open" ? "text-xs font-semibold text-brand-green" : "text-xs font-medium text-muted-foreground"}>
+            <span className={state === "open" ? "text-xs font-semibold text-price" : "text-xs font-medium text-muted-foreground"}>
               {state === "open" ? "Open" : "Closed"}
             </span>
           ) : null}

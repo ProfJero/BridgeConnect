@@ -36,7 +36,16 @@ export function StatCard({
       </span>
     </>
   );
-  const cls = "flex flex-col items-start gap-2 rounded-xl border bg-card p-4 shadow-xs min-[420px]:flex-row min-[420px]:items-center min-[420px]:gap-3";
+  const surface = {
+    primary: "to-primary-soft/70",
+    green: "to-brand-green-soft/70",
+    warning: "to-warning-soft/80",
+    destructive: "to-destructive-soft/70",
+  }[tone];
+  const cls = cn(
+    "flex flex-col items-start gap-2 rounded-2xl border bg-gradient-to-br from-card p-4 shadow-xs transition-shadow hover:shadow-md min-[420px]:flex-row min-[420px]:items-center min-[420px]:gap-3",
+    surface,
+  );
   return href ? (
     <Link href={href} className={cn(cls, "transition-shadow hover:shadow-md")}>{body}</Link>
   ) : (

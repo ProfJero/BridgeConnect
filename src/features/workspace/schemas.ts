@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { coordinatesSchema, socialLinksSchema } from "@/lib/contact-schemas";
+
 import { EMPLOYMENT_TYPES } from "@/features/jobs/schemas";
 import { phoneSchema } from "@/features/orders/schemas";
 
@@ -99,6 +101,8 @@ export const entityProfileSchema = z.object({
   acceptsMobileMoney: z.boolean().optional(),
   mission: optionalText(2000),
   beneficiaries: optionalText(500),
+  socialLinks: socialLinksSchema,
+  location: coordinatesSchema,
 });
 
 export const MEMBER_ROLES = ["owner", "manager", "editor", "member"] as const;

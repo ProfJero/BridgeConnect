@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { controlProps, Field, FormError } from "@/components/forms/field";
+import { LocationPicker } from "@/components/forms/location-picker";
+import { SocialLinksFields } from "@/components/forms/social-links-fields";
 import { EntityAvatar } from "@/components/shared/avatars";
 import { ImageUpload, type UploadedImage } from "@/components/widgets/image-upload";
 import { Button } from "@/components/ui/button";
@@ -13,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useActionForm } from "@/hooks/use-action-form";
+import type { SocialLinks } from "@/lib/contact";
 
 import { updateEntityProfileAction } from "../actions";
 import { DAYS, entityProfileSchema } from "../schemas";
@@ -39,6 +42,8 @@ export type EntityProfileInitial = {
   acceptsMobileMoney: boolean;
   mission: string;
   beneficiaries: string;
+  socialLinks: SocialLinks;
+  location: { lat: number; lng: number } | null;
 };
 
 export function EntityProfileForm({ initial }: { initial: EntityProfileInitial }) {
@@ -47,6 +52,8 @@ export function EntityProfileForm({ initial }: { initial: EntityProfileInitial }
   const [cover, setCover] = useState<UploadedImage[]>([]);
   const [hours, setHours] = useState<Hours>(initial.openingHours ?? {});
   const [useHours, setUseHours] = useState(initial.openingHours !== null);
+  const [socials, setSocials] = useState<SocialLinks>(initial.socialLinks);
+  const [location, setLocation] = useState(initial.location);
   const { form, onSubmit, pending, formError, errorFor } = useActionForm(entityProfileSchema, updateEntityProfileAction, {
     defaultValues: { ...initial, openingHours: initial.openingHours ?? null },
     onSuccess: () => router.refresh(),
@@ -57,6 +64,8 @@ export function EntityProfileForm({ initial }: { initial: EntityProfileInitial }
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     const complete = Object.fromEntries(DAYS.map((d) => [d, hours[d] ?? null]));
     form.setValue("openingHours", useHours ? (complete as never) : null);
+    form.setValue("socialLinks", socials);
+    form.setValue("location", location);
     void onSubmit(e);
   };
 
@@ -103,10 +112,12 @@ export function EntityProfileForm({ initial }: { initial: EntityProfileInitial }
         <CardHeader><CardTitle>Contact</CardTitle></CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <Field id="phone" label="Phone" error={errorFor("phone")}><Input type="tel" {...reg("phone")} /></Field>
-          <Field id="whatsapp" label="WhatsApp" error={errorFor("whatsapp")}><Input type="tel" {...reg("whatsapp")} /></Field>
+          <Field id="whatsapp" label="WhatsApp number" error={errorFor("whatsapp")}><Input type="tel" placeholder="Only if you use WhatsApp" {...reg("whatsapp")} /></Field>
           <Field id="email" label="Email" error={errorFor("email")}><Input type="email" {...reg("email")} /></Field>
           <Field id="website" label="Website" error={errorFor("website")}><Input type="url" placeholder="https://" {...reg("website")} /></Field>
           <Field id="address" label="Address" className="sm:col-span-2" error={errorFor("address")}><Input maxLength={300} {...reg("address")} /></Field>
+          <div className="sm:col-span-2"><LocationPicker value={location} onChange={setLocation} /></div>
+          <div className="sm:col-span-2"><SocialLinksFields value={socials} onChange={setSocials} error={errorFor("socialLinks")} /></div>
         </CardContent>
       </Card>
       <Card>

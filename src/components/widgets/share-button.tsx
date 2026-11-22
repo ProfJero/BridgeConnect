@@ -18,7 +18,19 @@ const noopSubscribe = () => () => {};
  * Share a public page. On phones the native share sheet is used (WhatsApp, SMS, …); elsewhere a menu offers
  * WhatsApp — the dominant channel in Ghana — Facebook, X and copy-link. `path` is a site-relative URL.
  */
-export function ShareButton({ path, title, text }: { path: string; title: string; text?: string }) {
+export function ShareButton({
+  path,
+  title,
+  text,
+  variant = "outline",
+  size = "default",
+}: {
+  path: string;
+  title: string;
+  text?: string;
+  variant?: "outline" | "ghost";
+  size?: "default" | "sm";
+}) {
   function url() {
     return new URL(path, window.location.origin).toString();
   }
@@ -55,7 +67,7 @@ export function ShareButton({ path, title, text }: { path: string; title: string
 
   if (native) {
     return (
-      <Button variant="outline" onClick={() => void nativeShare()}>
+      <Button variant={variant} size={size} onClick={() => void nativeShare()}>
         <Share2 aria-hidden /> Share
       </Button>
     );
@@ -64,7 +76,7 @@ export function ShareButton({ path, title, text }: { path: string; title: string
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">
+        <Button variant={variant} size={size}>
           <Share2 aria-hidden /> Share
         </Button>
       </DropdownMenuTrigger>

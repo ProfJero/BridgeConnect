@@ -33,6 +33,7 @@ export default function robots(): MetadataRoute.Robots {
           "/settings",
           "/account/",
           "/rider",
+          "/dashboards",
           "/rides/history",
           "/rentals/new",
           "/rentals/mine",

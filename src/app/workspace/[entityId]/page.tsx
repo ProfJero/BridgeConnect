@@ -106,7 +106,7 @@ export default async function WorkspaceDashboard({ params }: PageProps<"/workspa
 
       <div className="grid gap-6 xl:grid-cols-2">
         {ctx.can("messages") ? (
-          <Section title="Latest messages" action={<Link className="text-sm font-medium text-primary hover:underline" href={`${base}/inbox`}>Open inbox</Link>}>
+          <Section title="Latest messages" action={<Link className="text-sm font-medium text-link hover:underline" href={`${base}/inbox`}>Open inbox</Link>}>
             {summary.recentConversations.length === 0 ? (
               <EmptyState icon={Inbox} title="No open conversations" description="Residents can message you from your public page." />
             ) : (
@@ -134,7 +134,7 @@ export default async function WorkspaceDashboard({ params }: PageProps<"/workspa
         ) : null}
 
         {ctx.can("bookings") ? (
-          <Section title="Upcoming bookings" action={<Link className="text-sm font-medium text-primary hover:underline" href={`${base}/bookings`}>All bookings</Link>}>
+          <Section title="Upcoming bookings" action={<Link className="text-sm font-medium text-link hover:underline" href={`${base}/bookings`}>All bookings</Link>}>
             {summary.upcomingBookings.length === 0 ? (
               <EmptyState icon={CalendarCheck} title="No upcoming bookings" description="Turn on online booking for your services to receive requests." />
             ) : (
@@ -158,7 +158,7 @@ export default async function WorkspaceDashboard({ params }: PageProps<"/workspa
         ) : null}
 
         {ctx.can("orders") ? (
-          <Section title="Recent orders" action={<Link className="text-sm font-medium text-primary hover:underline" href={`${base}/orders`}>All orders</Link>}>
+          <Section title="Recent orders" action={<Link className="text-sm font-medium text-link hover:underline" href={`${base}/orders`}>All orders</Link>}>
             {summary.recentOrders.length === 0 ? (
               <EmptyState icon={Package} title="No orders yet" description="Orders placed on your products will appear here." />
             ) : (
@@ -183,7 +183,7 @@ export default async function WorkspaceDashboard({ params }: PageProps<"/workspa
       <Section title="Your modules">
         <p className="text-sm text-muted-foreground">
           Enabled for this {ENTITY_TYPE_LABEL[ctx.entity.entity_type].toLowerCase()}: {ctx.capabilities.join(", ").replace(/_/g, " ")}.
-          Need something else? <Link href={`${base}/support`} className="font-medium text-primary hover:underline">Contact Digital Bridge Initiative</Link>.
+          Need something else? <Link href={`${base}/support`} className="font-medium text-link hover:underline">Contact Digital Bridge Initiative</Link>.
         </p>
       </Section>
     </div>

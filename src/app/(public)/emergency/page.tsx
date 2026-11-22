@@ -77,7 +77,7 @@ export default async function EmergencyPage({ searchParams }: PageProps<"/emerge
                   <span className="block font-semibold">{c.name}</span>
                   <span className="block text-sm text-muted-foreground">{humanize(c.service)}{c.notes ? ` · ${c.notes}` : ""}</span>
                 </span>
-                <span className="inline-flex items-center gap-1 font-bold text-primary"><Phone aria-hidden className="size-4" /> {c.phone}</span>
+                <span className="inline-flex items-center gap-1 font-bold text-link"><Phone aria-hidden className="size-4" /> {c.phone}</span>
               </a>
             </li>
           ))}

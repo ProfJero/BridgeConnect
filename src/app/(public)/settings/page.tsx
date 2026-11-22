@@ -4,8 +4,8 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 
 import { PageHeader } from "@/components/shared/page-header";
-import { parseTheme, THEME_COOKIE } from "@/components/theme/theme";
-import { ThemeSwitcher } from "@/components/theme/theme-switcher";
+import { ACCENT_COOKIE, parseAccent, parseTheme, THEME_COOKIE } from "@/components/theme/theme";
+import { AccentPicker, ThemeSwitcher } from "@/components/theme/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DeleteAccount } from "@/features/account/components/delete-account";
@@ -16,16 +16,21 @@ export const metadata: Metadata = { title: "Settings", robots: noIndex };
 
 export default async function SettingsPage() {
   const viewer = await requireViewer("/settings");
-  const theme = parseTheme((await cookies()).get(THEME_COOKIE)?.value);
+  const jar = await cookies();
+  const theme = parseTheme(jar.get(THEME_COOKIE)?.value);
+  const accent = parseAccent(jar.get(ACCENT_COOKIE)?.value);
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       <PageHeader title="Settings" description={`Signed in as ${viewer.email ?? viewer.profile.display_name}`} />
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base"><Palette aria-hidden className="size-4" /> Appearance</CardTitle>
-          <CardDescription>Choose light, dark, or follow your device.</CardDescription>
+          <CardDescription>Choose light or dark mode and a colour theme for the whole app.</CardDescription>
         </CardHeader>
-        <CardContent><ThemeSwitcher initial={theme} /></CardContent>
+        <CardContent className="space-y-4">
+          <ThemeSwitcher initial={theme} />
+          <AccentPicker initial={accent} />
+        </CardContent>
       </Card>
       <Card>
         <CardHeader>

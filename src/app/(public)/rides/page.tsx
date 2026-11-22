@@ -13,6 +13,7 @@ import { getViewer, isUuid } from "@/lib/auth/session";
 import { VEHICLE_LABEL } from "@/lib/fares";
 import { pageMetadata } from "@/lib/seo";
 import { createClient } from "@/lib/supabase/server";
+import { whatsappLink } from "@/lib/contact";
 
 export const metadata: Metadata = pageMetadata({
   title: "Rides & delivery — okada, tricycle, taxi and dispatch",
@@ -55,7 +56,7 @@ export default async function RidesPage({ searchParams }: PageProps<"/rides">) {
             {active.map((t) => (
               <li key={t.id}>
                 <Link href={`/rides/${t.id}`} className="pressable flex items-center gap-3 rounded-2xl border-2 border-primary/40 bg-primary-soft/40 p-4">
-                  <Bike aria-hidden className="size-6 text-primary" />
+                  <Bike aria-hidden className="size-6 text-link" />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-semibold">#{t.trip_number} · {t.dropoff_address}</span>
                     <span className="block text-xs text-muted-foreground">{t.rider?.display_name ? `with ${t.rider.display_name}` : "Looking for a rider…"}</span>
@@ -90,7 +91,7 @@ export default async function RidesPage({ searchParams }: PageProps<"/rides">) {
           <p className="rounded-2xl bg-destructive-soft p-4 text-sm text-destructive-soft-foreground">Your account is suspended.</p>
         )
       ) : (
-        <div className="rounded-3xl bg-gradient-to-br from-brand-navy to-primary p-6 text-center text-white">
+        <div className="rounded-3xl bg-gradient-to-br from-hero-1 to-hero-2 p-6 text-center text-white">
           <Bike aria-hidden className="mx-auto size-12 opacity-90" />
           <h2 className="mt-2 text-xl font-bold">Rides and deliveries, the local way</h2>
           <p className="mx-auto mt-1 max-w-md text-sm opacity-90">Sign in to request a verified rider, follow your trip live and rate your rider.</p>
@@ -102,7 +103,7 @@ export default async function RidesPage({ searchParams }: PageProps<"/rides">) {
         <Section title="Riders & drivers near you">
           <ul className="stagger space-y-2">
             {riders.map((r) => {
-              const wa = (r.whatsapp ?? r.phone).replace(/[^0-9]/g, "").replace(/^0/, "233");
+              const wa = whatsappLink(r.whatsapp);
               return (
                 <li key={r.user_id} className="flex items-center gap-3 rounded-2xl border bg-card p-3">
                   <div className="relative">
@@ -123,7 +124,7 @@ export default async function RidesPage({ searchParams }: PageProps<"/rides">) {
                   </div>
                   <div className="flex shrink-0 gap-1">
                     <Button asChild variant="ghost" size="icon" aria-label={`Call ${r.display_name}`}><a href={`tel:${r.phone.replace(/\s/g, "")}`}><Phone aria-hidden /></a></Button>
-                    <Button asChild variant="ghost" size="icon" aria-label={`WhatsApp ${r.display_name}`}><a href={`https://wa.me/${wa}`} target="_blank" rel="noopener noreferrer"><MessageCircle aria-hidden /></a></Button>
+                    {wa ? <Button asChild variant="ghost" size="icon" aria-label={`WhatsApp ${r.display_name}`}><a href={wa} target="_blank" rel="noopener noreferrer"><MessageCircle aria-hidden /></a></Button> : null}
                     <Button asChild size="sm" className="rounded-full"><Link href={`/rides?rider=${r.user_id}&kind=${r.offers_rides ? "ride" : "delivery"}`}>Request</Link></Button>
                   </div>
                 </li>

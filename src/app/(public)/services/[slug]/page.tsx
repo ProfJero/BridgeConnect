@@ -62,7 +62,7 @@ export default async function ServicePage({ params }: PageProps<"/services/[slug
       <div className="space-y-3">
         {service.listing_categories ? <Badge variant="soft">{service.listing_categories.name}</Badge> : null}
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{service.name}</h1>
-        <p className="text-lg font-semibold text-primary">
+        <p className="text-lg font-semibold text-link">
           {service.price_from != null ? `From ${formatMoney(service.price_from, service.currency)}` : service.price_note ?? "Contact for pricing"}
         </p>
         {service.service_area ? (

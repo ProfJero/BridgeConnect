@@ -32,7 +32,7 @@ export function SignInForm({ next }: { next?: string }) {
         <Input type="password" autoComplete="current-password" {...controlProps("password", errorFor("password"))} {...form.register("password")} />
       </Field>
       <div className="-mt-2 text-right text-sm">
-        <Link href="/forgot-password" className="font-medium text-primary hover:underline">
+        <Link href="/forgot-password" className="font-medium text-link hover:underline">
           Forgot password?
         </Link>
       </div>

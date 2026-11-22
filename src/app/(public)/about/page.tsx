@@ -36,7 +36,7 @@ export default function AboutPage() {
           <li>Phone numbers you enter on an order, booking, trip or enquiry are shared only with the business, rider or landlord handling it.</li>
           <li>Rider locations are used only to sort nearby requests and are never shown to other users.</li>
           <li>Verification documents and CVs are private and viewable only by the people who need them, through short-lived links.</li>
-          <li>You can download all your data or delete your account at any time from <Link href="/settings" className="font-medium text-primary underline">Settings</Link>, in line with Ghana&apos;s Data Protection Act, 2012 (Act 843).</li>
+          <li>You can download all your data or delete your account at any time from <Link href="/settings" className="font-medium text-link underline">Settings</Link>, in line with Ghana&apos;s Data Protection Act, 2012 (Act 843).</li>
         </ul>
       </section>
       <section id="terms" className="scroll-mt-20 space-y-3">
@@ -49,7 +49,7 @@ export default function AboutPage() {
         </ul>
       </section>
       <p className="text-center text-sm text-muted-foreground">
-        Questions? <Link href="/support" className="font-medium text-primary underline">Contact DBI support</Link>.
+        Questions? <Link href="/support" className="font-medium text-link underline">Contact DBI support</Link>.
       </p>
     </article>
   );

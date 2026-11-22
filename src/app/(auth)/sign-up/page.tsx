@@ -23,7 +23,7 @@ export default async function SignUpPage() {
       <SignUpForm communities={communities} />
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/sign-in" className="font-semibold text-primary hover:underline">
+        <Link href="/sign-in" className="font-semibold text-link hover:underline">
           Sign in
         </Link>
       </p>

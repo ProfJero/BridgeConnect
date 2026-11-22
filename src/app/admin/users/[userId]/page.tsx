@@ -123,7 +123,7 @@ export default async function AdminUserPage({ params }: PageProps<"/admin/users/
             {detail.memberships.map((m) => m.entities ? (
               <li key={m.id} className="flex items-center justify-between gap-3 p-4">
                 <span>
-                  <a href={`/admin/entities/${m.entities.id}`} className="font-semibold text-primary hover:underline">{m.entities.name}</a>
+                  <a href={`/admin/entities/${m.entities.id}`} className="font-semibold text-link hover:underline">{m.entities.name}</a>
                   <span className="block text-sm text-muted-foreground">{ENTITY_TYPE_LABEL[m.entities.entity_type]} · {humanize(m.role)}</span>
                 </span>
                 <StatusBadge status={m.entities.status} />

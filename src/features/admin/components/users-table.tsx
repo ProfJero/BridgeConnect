@@ -24,7 +24,7 @@ const columns: DataTableColumn<AdminUserRow>[] = [
     header: "Name",
     cell: ({ row }) => (
       <div>
-        <Link href={`/admin/users/${row.original.id}`} className="font-semibold text-primary hover:underline">{row.original.display_name}</Link>
+        <Link href={`/admin/users/${row.original.id}`} className="font-semibold text-link hover:underline">{row.original.display_name}</Link>
         <span className="block text-xs text-muted-foreground">{row.original.email}</span>
       </div>
     ),

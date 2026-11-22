@@ -1,4 +1,3 @@
-import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -26,9 +25,6 @@ export default async function PostPage({ params }: PageProps<"/community/posts/[
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
-      <Button asChild variant="ghost" size="sm">
-        <Link href="/community"><ArrowLeft aria-hidden /> Community</Link>
-      </Button>
       <PostCard post={post} reacted={reactions.has(id)} viewerId={viewer?.id} linkToDetail={false} poll={polls.get(id)} />
       {viewer?.id === post.author_id ? <DeletePostButton postId={post.id} /> : null}
       <Section title={`Comments (${post.comment_count})`}>

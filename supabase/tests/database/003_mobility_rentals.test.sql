@@ -5,7 +5,7 @@
 -- =============================================================================
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(47);
+select plan(51);
 
 create or replace function pg_temp.login(uid uuid) returns void language plpgsql as $$
 begin
@@ -200,6 +200,28 @@ select ok((select rating_avg = 5 and completed_trips = 1 from public.rider_profi
 select pg_temp.logout();
 select ok(not has_function_privilege('anon', 'public.available_riders(uuid, public.trip_kind, public.vehicle_type)', 'execute'),
   'anon cannot list riders');
+
+-- ---------------------------------------------------------------------------
+-- 5. Contact channels and locations
+-- ---------------------------------------------------------------------------
+select pg_temp.login('a0000000-0000-4000-8000-000000000005');
+select throws_ok($$update public.entities set social_links = '{"facebook":"javascript:alert(1)"}'
+  where id = 'e0000000-0000-4000-8000-000000000001'$$, '23514', null, 'social links must be https URLs');
+select throws_ok($$update public.entities set social_links = '{"myspace":"https://example.com"}'
+  where id = 'e0000000-0000-4000-8000-000000000001'$$, '23514', null, 'only known social networks are accepted');
+select lives_ok($$update public.entities set whatsapp = '+233 55 000 0001', latitude = 5.2, longitude = -1.2,
+  social_links = '{"instagram":"https://instagram.com/freshfarms"}' where id = 'e0000000-0000-4000-8000-000000000001'$$,
+  'managers set WhatsApp, socials and a map pin');
+select pg_temp.superuser();
+insert into public.entity_applications (id, applicant_id, entity_type, proposed_name, sector, community_id, description, contact_phone,
+  whatsapp, latitude, longitude) values ('b0000000-0000-4000-8000-0000000000f3', 'a0000000-0000-4000-8000-000000000001', 'business', 'Owner WhatsApp Shop',
+  'commerce', '30000000-0000-4000-8000-000000000001', 'Checking that approval copies contact fields.', '+233 24 111 0003',
+  '+233 55 111 0003', 5.21, -1.21);
+select pg_temp.login('a0000000-0000-4000-8000-000000000001');
+select public.fast_track_entity_application('b0000000-0000-4000-8000-0000000000f3');
+select pg_temp.superuser();
+select ok((select whatsapp = '+233 55 111 0003' and phone = '+233 24 111 0003' and latitude = 5.21
+           from public.entities where name = 'Owner WhatsApp Shop'), 'approval keeps WhatsApp separate from phone and copies the pin');
 
 select * from finish();
 rollback;

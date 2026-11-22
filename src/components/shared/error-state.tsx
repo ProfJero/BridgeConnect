@@ -20,7 +20,7 @@ export function ErrorState({
       <div className="flex size-14 items-center justify-center rounded-2xl bg-primary-soft text-primary-soft-foreground">
         <Icon aria-hidden className="size-7" />
       </div>
-      {code ? <p className="text-sm font-semibold tracking-wide text-primary">{code}</p> : null}
+      {code ? <p className="text-sm font-semibold tracking-wide text-link">{code}</p> : null}
       <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
       <p className="text-muted-foreground">{description}</p>
       {children ? <div className="flex flex-wrap justify-center gap-2">{children}</div> : null}

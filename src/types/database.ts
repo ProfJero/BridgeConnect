@@ -770,7 +770,9 @@ export type Database = {
           entity_type: Database["public"]["Enums"]["entity_type"];
           follower_count: number;
           id: string;
+          latitude: number | null;
           logo_path: string | null;
+          longitude: number | null;
           name: string;
           opening_hours: Json | null;
           phone: string | null;
@@ -779,6 +781,7 @@ export type Database = {
           search: unknown;
           sector: Database["public"]["Enums"]["sector"];
           slug: string;
+          social_links: NonNullable<Json>;
           status: Database["public"]["Enums"]["entity_status"];
           status_reason: string | null;
           tagline: string | null;
@@ -798,7 +801,9 @@ export type Database = {
           entity_type: Database["public"]["Enums"]["entity_type"];
           follower_count?: number;
           id?: string;
+          latitude?: number | null;
           logo_path?: string | null;
+          longitude?: number | null;
           name: string;
           opening_hours?: Json | null;
           phone?: string | null;
@@ -807,6 +812,7 @@ export type Database = {
           search?: never;
           sector: Database["public"]["Enums"]["sector"];
           slug: string;
+          social_links?: NonNullable<Json>;
           status?: Database["public"]["Enums"]["entity_status"];
           status_reason?: string | null;
           tagline?: string | null;
@@ -826,7 +832,9 @@ export type Database = {
           entity_type?: Database["public"]["Enums"]["entity_type"];
           follower_count?: number;
           id?: string;
+          latitude?: number | null;
           logo_path?: string | null;
+          longitude?: number | null;
           name?: string;
           opening_hours?: Json | null;
           phone?: string | null;
@@ -835,6 +843,7 @@ export type Database = {
           search?: never;
           sector?: Database["public"]["Enums"]["sector"];
           slug?: string;
+          social_links?: NonNullable<Json>;
           status?: Database["public"]["Enums"]["entity_status"];
           status_reason?: string | null;
           tagline?: string | null;
@@ -883,13 +892,18 @@ export type Database = {
           entity_id: string | null;
           entity_type: Database["public"]["Enums"]["entity_type"];
           id: string;
+          latitude: number | null;
+          longitude: number | null;
           proposed_name: string;
           registration_number: string | null;
           reviewer_id: string | null;
           sector: Database["public"]["Enums"]["sector"];
+          social_links: NonNullable<Json>;
           status: Database["public"]["Enums"]["application_status"];
           submitted_at: string;
           updated_at: string;
+          website: string | null;
+          whatsapp: string | null;
         };
         Insert: {
           address?: string | null;
@@ -905,13 +919,18 @@ export type Database = {
           entity_id?: string | null;
           entity_type: Database["public"]["Enums"]["entity_type"];
           id?: string;
+          latitude?: number | null;
+          longitude?: number | null;
           proposed_name: string;
           registration_number?: string | null;
           reviewer_id?: string | null;
           sector: Database["public"]["Enums"]["sector"];
+          social_links?: NonNullable<Json>;
           status?: Database["public"]["Enums"]["application_status"];
           submitted_at?: string;
           updated_at?: string;
+          website?: string | null;
+          whatsapp?: string | null;
         };
         Update: {
           address?: string | null;
@@ -927,13 +946,18 @@ export type Database = {
           entity_id?: string | null;
           entity_type?: Database["public"]["Enums"]["entity_type"];
           id?: string;
+          latitude?: number | null;
+          longitude?: number | null;
           proposed_name?: string;
           registration_number?: string | null;
           reviewer_id?: string | null;
           sector?: Database["public"]["Enums"]["sector"];
+          social_links?: NonNullable<Json>;
           status?: Database["public"]["Enums"]["application_status"];
           submitted_at?: string;
           updated_at?: string;
+          website?: string | null;
+          whatsapp?: string | null;
         };
         Relationships: [
           {
@@ -2537,7 +2561,9 @@ export type Database = {
           description: string;
           furnished: boolean;
           id: string;
+          latitude: number | null;
           location_note: string | null;
+          longitude: number | null;
           moderation_reason: string | null;
           owner_id: string;
           period: Database["public"]["Enums"]["rental_period"];
@@ -2563,7 +2589,9 @@ export type Database = {
           description: string;
           furnished?: boolean;
           id?: string;
+          latitude?: number | null;
           location_note?: string | null;
+          longitude?: number | null;
           moderation_reason?: string | null;
           owner_id?: string;
           period?: Database["public"]["Enums"]["rental_period"];
@@ -2589,7 +2617,9 @@ export type Database = {
           description?: string;
           furnished?: boolean;
           id?: string;
+          latitude?: number | null;
           location_note?: string | null;
+          longitude?: number | null;
           moderation_reason?: string | null;
           owner_id?: string;
           period?: Database["public"]["Enums"]["rental_period"];

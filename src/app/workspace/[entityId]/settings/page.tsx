@@ -29,7 +29,7 @@ export default async function WorkspaceSettingsPage({ params }: PageProps<"/work
             const enabled = ctx.capabilities.includes(m.capability!);
             return (
               <li key={m.segment} className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2 text-sm">
-                {enabled ? <CheckCircle2 aria-hidden className="size-4 text-brand-green" /> : <XCircle aria-hidden className="size-4 text-muted-foreground" />}
+                {enabled ? <CheckCircle2 aria-hidden className="size-4 text-price" /> : <XCircle aria-hidden className="size-4 text-muted-foreground" />}
                 {m.label}
                 <span className="ml-auto text-xs text-muted-foreground">{enabled ? "Enabled" : "Not available"}</span>
               </li>

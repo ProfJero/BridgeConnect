@@ -23,7 +23,7 @@ export default async function SignInPage({ searchParams }: PageProps<"/sign-in">
       <SignInForm next={target} />
       <p className="text-center text-sm text-muted-foreground">
         New to BridgeConnect?{" "}
-        <Link href="/sign-up" className="font-semibold text-primary hover:underline">
+        <Link href="/sign-up" className="font-semibold text-link hover:underline">
           Create an account
         </Link>
       </p>

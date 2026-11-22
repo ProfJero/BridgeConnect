@@ -6,6 +6,7 @@ import { EntityAvatar, UserAvatar } from "@/components/shared/avatars";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { VerifiedBadge } from "@/components/shared/verified-badge";
 import { ReportDialog } from "@/components/widgets/report-dialog";
+import { ShareButton } from "@/components/widgets/share-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatRelative } from "@/lib/format";
@@ -109,6 +110,15 @@ export function PostCard({
               {post.comment_count > 0 ? `${post.comment_count} comments` : "Comment"}
             </Link>
           </Button>
+        ) : null}
+        {post.status === "published" ? (
+          <ShareButton
+            variant="ghost"
+            size="sm"
+            path={`/community/posts/${post.id}`}
+            title={post.title ?? "Community post on BridgeConnect"}
+            text={post.body.slice(0, 120)}
+          />
         ) : null}
         <div className="flex-1" />
         {isAuthor && resolvable && post.status === "published" ? (

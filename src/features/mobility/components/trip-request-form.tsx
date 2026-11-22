@@ -138,10 +138,10 @@ export function TripRequestForm({
                     on ? "border-primary ring-2 ring-primary/30" : "hover:border-primary/50",
                   )}
                 >
-                  <Icon aria-hidden className={cn("size-6", on ? "text-primary" : "text-muted-foreground")} />
+                  <Icon aria-hidden className={cn("size-6", on ? "text-link" : "text-muted-foreground")} />
                   <span className="text-sm font-semibold">{VEHICLE_LABEL[v].local}</span>
                   <span className="text-[11px] leading-tight text-muted-foreground">{VEHICLE_LABEL[v].seats}</span>
-                  <span className="text-xs font-bold text-brand-green">from GH₵{suggestFare(v)}</span>
+                  <span className="text-xs font-bold text-price">from GH₵{suggestFare(v)}</span>
                 </button>
               );
             })}

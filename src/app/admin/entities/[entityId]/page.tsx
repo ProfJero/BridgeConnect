@@ -68,7 +68,7 @@ export default async function AdminEntityPage({ params }: PageProps<"/admin/enti
         <ul className="divide-y rounded-xl border bg-card">
           {members.map((m) => (
             <li key={m.id} className="flex items-center justify-between p-3 text-sm">
-              <Link href={`/admin/users/${m.profiles?.id}`} className="font-medium text-primary hover:underline">{m.profiles?.display_name}</Link>
+              <Link href={`/admin/users/${m.profiles?.id}`} className="font-medium text-link hover:underline">{m.profiles?.display_name}</Link>
               <span>{humanize(m.role)}</span>
             </li>
           ))}

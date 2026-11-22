@@ -81,12 +81,12 @@ export function OrderDetail({ order, transitions, perspective }: { order: Order;
             {perspective !== "buyer" ? (
               <>
                 <p><span className="text-muted-foreground">Buyer:</span> {order.profiles?.display_name}</p>
-                <p><span className="text-muted-foreground">Buyer phone:</span> <a className="text-primary underline" href={`tel:${order.contact_phone.replace(/\s/g, "")}`}>{order.contact_phone}</a></p>
+                <p><span className="text-muted-foreground">Buyer phone:</span> <a className="text-link underline" href={`tel:${order.contact_phone.replace(/\s/g, "")}`}>{order.contact_phone}</a></p>
               </>
             ) : (
               <p>
                 <span className="text-muted-foreground">Seller:</span>{" "}
-                <Link className="text-primary underline" href={`/directory/${order.entities?.slug}`}>{order.entities?.name}</Link>
+                <Link className="text-link underline" href={`/directory/${order.entities?.slug}`}>{order.entities?.name}</Link>
                 {order.entities?.phone ? ` · ${order.entities.phone}` : null}
               </p>
             )}
@@ -99,7 +99,7 @@ export function OrderDetail({ order, transitions, perspective }: { order: Order;
             href={`/rides?order=${order.id}`}
             className="pressable flex items-center gap-3 rounded-2xl border-2 border-brand-green/40 bg-brand-green-soft/50 p-4"
           >
-            <Bike aria-hidden className="size-6 text-brand-green" />
+            <Bike aria-hidden className="size-6 text-price" />
             <span className="flex-1">
               <span className="block font-semibold">Book a dispatch rider</span>
               <span className="block text-xs text-muted-foreground">A verified rider picks it up and delivers it. Track it live.</span>

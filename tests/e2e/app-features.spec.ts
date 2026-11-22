@@ -57,7 +57,7 @@ test("rider registers, is verified, goes online and completes a requested ride",
     await page.getByLabel("Base community").selectOption({ label: "Kwamankese" });
     await page.locator("#phone").fill("+233 24 000 0006");
     await page.getByRole("button", { name: "Apply to ride" }).click();
-    await expect(page.getByText(/Awaiting verification|online|offline/)).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole("main").getByText(/Awaiting verification|online|offline/).first()).toBeVisible({ timeout: 30_000 });
   }
 
   // 2. The district admin verifies them.

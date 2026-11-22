@@ -51,7 +51,7 @@ export function PollCard({ postId, poll, signedIn }: { postId: string; poll: Pol
               <span aria-hidden className="absolute inset-y-0 left-0 bg-primary-soft" style={{ width: `${pct}%` }} />
             ) : null}
             <span className="relative flex items-center gap-2">
-              {mine ? <CheckCircle2 aria-hidden className="size-4 text-primary" /> : null}
+              {mine ? <CheckCircle2 aria-hidden className="size-4 text-link" /> : null}
               {o.label}
               {mine ? <span className="sr-only">(your vote)</span> : null}
             </span>

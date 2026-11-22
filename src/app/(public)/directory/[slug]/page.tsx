@@ -29,7 +29,7 @@ import { ReviewDialog } from "@/features/reviews/components/review-form";
 import { RatingSummary, ReviewItem } from "@/features/reviews/components/review-list";
 import { getMyReview, getRatingDistribution, listEntityReviews } from "@/features/reviews/queries";
 import { getViewer } from "@/lib/auth/session";
-import { telLink, whatsappLink } from "@/lib/contact";
+import { cleanSocialLinks, directionsUrl, SOCIAL_NETWORKS, telLink, whatsappLink } from "@/lib/contact";
 import { formatDate, formatRelative } from "@/lib/format";
 import { DAYS, openState, type OpeningHours } from "@/lib/opening-hours";
 import { excerpt, pageMetadata } from "@/lib/seo";
@@ -87,11 +87,14 @@ export default async function EntityProfilePage({ params, searchParams }: PagePr
   const community = entity.communities;
   const about = entity.organisation_profiles?.mission;
   const biz = entity.business_profiles;
-  const whatsapp = whatsappLink(entity.whatsapp ?? entity.phone, `Hello ${entity.name}, I found you on BridgeConnect.`);
+  const whatsapp = whatsappLink(entity.whatsapp, `Hello ${entity.name}, I found you on BridgeConnect.`);
   const call = telLink(entity.phone);
-  const directions = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    [entity.name, entity.address, community?.name, community?.districts?.name, "Ghana"].filter(Boolean).join(", "),
-  )}`;
+  const directions = directionsUrl({
+    lat: entity.latitude,
+    lng: entity.longitude,
+    query: [entity.name, entity.address, community?.name, community?.districts?.name, "Ghana"].filter(Boolean).join(", "),
+  });
+  const socials = cleanSocialLinks(entity.social_links);
 
   const available: Tab[] = [
     "about",
@@ -119,7 +122,7 @@ export default async function EntityProfilePage({ params, searchParams }: PagePr
       ) : null}
 
       <section className="-mx-4 overflow-hidden bg-card sm:mx-0 sm:rounded-3xl sm:border sm:shadow-xs">
-        <div className="relative h-44 bg-gradient-to-br from-brand-navy via-primary to-brand-green sm:h-56">
+        <div className="relative h-44 bg-gradient-to-br from-hero-1 via-hero-2 to-hero-3 sm:h-56">
           {cover ? <Image src={cover} alt="" fill priority sizes="(min-width: 1024px) 900px, 100vw" className="object-cover" /> : null}
           <div className="absolute top-3 right-3 flex gap-2">
             <FavouriteButton kind="entity" id={entity.id} initial={saved} signedIn={Boolean(viewer)} floating label={entity.name} />
@@ -148,14 +151,14 @@ export default async function EntityProfilePage({ params, searchParams }: PagePr
                 </Link>
               ) : null}
               {state ? (
-                <span className={cn("inline-flex items-center gap-1 font-semibold", state === "open" ? "text-brand-green" : "text-muted-foreground")}>
+                <span className={cn("inline-flex items-center gap-1 font-semibold", state === "open" ? "text-price" : "text-muted-foreground")}>
                   <Clock aria-hidden className="size-4" /> {state === "open" ? "Open now" : "Closed now"}
                 </span>
               ) : null}
             </div>
             {community ? (
               <p className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-                <MapPin aria-hidden className="size-4 text-brand-green" />
+                <MapPin aria-hidden className="size-4 text-price" />
                 {[entity.address, community.name, community.districts?.name].filter(Boolean).join(", ")}
               </p>
             ) : null}
@@ -189,7 +192,7 @@ export default async function EntityProfilePage({ params, searchParams }: PagePr
               aria-current={tab === t ? "page" : undefined}
               className={cn(
                 "relative shrink-0 px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground",
-                tab === t && "font-semibold text-primary after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:rounded-full after:bg-primary",
+                tab === t && "font-semibold text-link after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:rounded-full after:bg-primary",
               )}
             >
               {TAB_LABEL[t]}
@@ -212,7 +215,7 @@ export default async function EntityProfilePage({ params, searchParams }: PagePr
                 </Section>
               ) : null}
               {listings.products.length ? (
-                <Section title="Top products" action={<Link href={tabHref("products")} className="text-sm font-semibold text-primary">View all</Link>}>
+                <Section title="Top products" action={<Link href={tabHref("products")} className="text-sm font-semibold text-link">View all</Link>}>
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                     {listings.products.slice(0, 3).map((p) => (
                       <ProductCard key={p.id} product={{ ...p, entities: null }} saved={savedProducts.has(p.id)} signedIn={Boolean(viewer)} />
@@ -226,7 +229,19 @@ export default async function EntityProfilePage({ params, searchParams }: PagePr
                 <h2 className="font-semibold">Details</h2>
                 {entity.phone ? <p className="flex items-center gap-2"><Phone aria-hidden className="size-4 text-muted-foreground" /> {entity.phone}</p> : null}
                 {entity.email ? <p className="flex items-center gap-2 break-all"><Mail aria-hidden className="size-4 shrink-0 text-muted-foreground" /> <a className="hover:underline" href={`mailto:${entity.email}`}>{entity.email}</a></p> : null}
+                {entity.whatsapp ? <p className="flex items-center gap-2"><MessageCircle aria-hidden className="size-4 text-muted-foreground" /> WhatsApp {entity.whatsapp}</p> : null}
                 {entity.website ? <p className="flex items-center gap-2 break-all"><Globe aria-hidden className="size-4 shrink-0 text-muted-foreground" /> <a className="hover:underline" href={entity.website} target="_blank" rel="noopener noreferrer nofollow">{entity.website.replace(/^https:\/\//, "")}</a></p> : null}
+                {SOCIAL_NETWORKS.some((n) => socials[n.key]) ? (
+                  <ul aria-label="Social media" className="flex flex-wrap gap-1.5 pt-1">
+                    {SOCIAL_NETWORKS.filter((n) => socials[n.key]).map((n) => (
+                      <li key={n.key}>
+                        <a href={socials[n.key]} target="_blank" rel="noopener noreferrer nofollow" className="inline-flex rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary-soft-foreground hover:brightness-95">
+                          {n.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
                 <p className="text-muted-foreground">Verified since {formatDate(entity.verified_at)}</p>
                 {biz?.year_established ?? entity.organisation_profiles?.year_established ? (
                   <p className="text-muted-foreground">Established {biz?.year_established ?? entity.organisation_profiles?.year_established}</p>

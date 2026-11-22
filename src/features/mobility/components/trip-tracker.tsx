@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { getBrowserClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { whatsappLink } from "@/lib/contact";
 
 import { rateTripAction, updateTripStatusAction } from "../actions";
 import type { TripStatus } from "../schemas";
@@ -98,11 +99,11 @@ export function TripTracker({ tripId, status, kind }: { tripId: string; status: 
 }
 
 export function RiderContact({ name, phone, whatsapp }: { name: string; phone: string; whatsapp: string | null }) {
-  const digits = (whatsapp ?? phone).replace(/[^0-9]/g, "").replace(/^0/, "233");
+  const wa = whatsappLink(whatsapp);
   return (
     <div className="flex gap-2">
       <Button asChild variant="green" className="flex-1 rounded-full"><a href={`tel:${phone.replace(/\s/g, "")}`}><Phone aria-hidden /> Call {name.split(" ")[0]}</a></Button>
-      <Button asChild variant="outline" className="flex-1 rounded-full"><a href={`https://wa.me/${digits}`} target="_blank" rel="noopener noreferrer"><MessageCircle aria-hidden /> WhatsApp</a></Button>
+      {wa ? <Button asChild variant="outline" className="flex-1 rounded-full"><a href={wa} target="_blank" rel="noopener noreferrer"><MessageCircle aria-hidden /> WhatsApp</a></Button> : null}
     </div>
   );
 }

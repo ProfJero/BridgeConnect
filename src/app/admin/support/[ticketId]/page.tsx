@@ -41,12 +41,12 @@ export default async function AdminTicketPage({ params }: PageProps<"/admin/supp
             <CardHeader><CardTitle className="text-base">Requester</CardTitle></CardHeader>
             <CardContent className="space-y-1 text-sm">
               <p>
-                <Link href={`/admin/users/${ticket.requester_id}`} className="font-medium text-primary hover:underline">
+                <Link href={`/admin/users/${ticket.requester_id}`} className="font-medium text-link hover:underline">
                   {ticket.requester?.display_name ?? "User"}
                 </Link>
               </p>
               {ticket.entity_id ? (
-                <p>Workspace: <Link href={`/admin/entities/${ticket.entity_id}`} className="text-primary hover:underline">{ticket.entities?.name ?? "Entity"}</Link></p>
+                <p>Workspace: <Link href={`/admin/entities/${ticket.entity_id}`} className="text-link hover:underline">{ticket.entities?.name ?? "Entity"}</Link></p>
               ) : null}
               <p className="text-muted-foreground">Opened {formatDateTime(ticket.created_at)}</p>
               <p className="text-muted-foreground">Assigned to {ticket.assignee?.display_name ?? "nobody"}</p>

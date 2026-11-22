@@ -54,7 +54,7 @@ export default async function ProductPage({ params }: PageProps<"/marketplace/[s
   const isOwnEntity = viewer?.workspaces.some((w) => w.entityId === seller.id) ?? false;
   const orderable = product.status === "active";
   const enquiry = `Hello ${seller.name}, I saw "${product.name}" on BridgeConnect and I'm interested: ${absoluteUrl(`/marketplace/${product.slug}`)}`;
-  const whatsapp = whatsappLink(seller.whatsapp ?? seller.phone, enquiry);
+  const whatsapp = whatsappLink(seller.whatsapp, enquiry);
   const call = telLink(seller.phone);
   const cartItem = {
     productId: product.id,
@@ -107,7 +107,7 @@ export default async function ProductPage({ params }: PageProps<"/marketplace/[s
             {product.status !== "active" ? <StatusBadge status={product.status} /> : null}
           </div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{product.name}</h1>
-          <p className="text-2xl font-extrabold text-brand-green">
+          <p className="text-2xl font-extrabold text-price">
             {formatMoney(product.price, product.currency)}
             {product.unit ? <span className="text-base font-normal text-muted-foreground"> {product.unit}</span> : null}
           </p>

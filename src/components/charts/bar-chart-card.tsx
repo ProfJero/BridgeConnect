@@ -76,7 +76,7 @@ export function BarChartCard({
           </div>
         )}
         <details className="text-sm">
-          <summary className="cursor-pointer font-medium text-primary">View data table</summary>
+          <summary className="cursor-pointer font-medium text-link">View data table</summary>
           <table className="mt-2 w-full text-left">
             <caption className="sr-only">{title}</caption>
             <thead><tr className="text-xs text-muted-foreground"><th className="py-1 font-medium">Label</th><th className="py-1 text-right font-medium">{valueLabel}</th></tr></thead>

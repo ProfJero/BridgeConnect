@@ -1,11 +1,18 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { cn } from "@/lib/utils";
+import { DashboardGroupLabel, DashboardLink } from "@/components/dashboard/dashboard-frame";
 
 import { WORKSPACE_MODULES } from "../modules";
+
+const GROUPS: { label: string; segments: string[] }[] = [
+  { label: "Overview", segments: ["", "inbox"] },
+  { label: "Sell & serve", segments: ["products", "orders", "services", "bookings"] },
+  { label: "Reach", segments: ["posts", "events", "jobs", "ads", "alerts", "media"] },
+  { label: "Reputation", segments: ["reviews", "analytics"] },
+  { label: "Organisation", segments: ["profile", "members", "settings", "support"] },
+];
 
 export function WorkspaceNav({
   entityId,
@@ -18,36 +25,28 @@ export function WorkspaceNav({
 }) {
   const pathname = usePathname();
   const base = `/workspace/${entityId}`;
-  const modules = WORKSPACE_MODULES.filter((m) => segments.includes(m.segment));
   return (
-    <nav aria-label="Workspace">
-      <ul className="no-scrollbar -mx-3 flex gap-1 overflow-x-auto px-3 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0">
-        {modules.map(({ segment, label, icon: Icon }) => {
-          const href = segment ? `${base}/${segment}` : base;
-          const active = segment ? pathname === href || pathname.startsWith(`${href}/`) : pathname === base;
-          return (
-            <li key={segment || "dashboard"} className="shrink-0">
-              <Link
-                href={href}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap text-sidebar-foreground/80 hover:bg-accent hover:text-foreground",
-                  active && "bg-primary-soft text-primary-soft-foreground hover:bg-primary-soft",
-                )}
-              >
-                <Icon aria-hidden className="size-4" />
-                {label}
-                {badges[segment] ? (
-                  <span className="ml-auto rounded-full bg-destructive px-1.5 text-[11px] leading-5 font-bold text-destructive-foreground">
-                    {badges[segment]! > 99 ? "99+" : badges[segment]}
-                    <span className="sr-only"> new</span>
-                  </span>
-                ) : null}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+    <nav aria-label="Workspace" className="space-y-1">
+      {GROUPS.map((g) => {
+        const modules = WORKSPACE_MODULES.filter((m) => g.segments.includes(m.segment) && segments.includes(m.segment));
+        if (!modules.length) return null;
+        return (
+          <div key={g.label}>
+            <DashboardGroupLabel>{g.label}</DashboardGroupLabel>
+            <ul className="space-y-0.5">
+              {modules.map(({ segment, label, icon }) => {
+                const href = segment ? `${base}/${segment}` : base;
+                const active = segment ? pathname === href || pathname.startsWith(`${href}/`) : pathname === base;
+                return (
+                  <li key={segment || "dashboard"}>
+                    <DashboardLink href={href} label={label} icon={icon} active={active} badge={badges[segment]} />
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        );
+      })}
     </nav>
   );
 }

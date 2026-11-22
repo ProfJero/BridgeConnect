@@ -39,7 +39,7 @@ export default async function ApplyPage() {
       <ol className="grid gap-3 sm:grid-cols-4">
         {STEPS.map(({ icon: Icon, title, text }, i) => (
           <li key={title} className="rounded-xl border bg-card p-4">
-            <Icon aria-hidden className="size-5 text-primary" />
+            <Icon aria-hidden className="size-5 text-link" />
             <p className="mt-2 font-semibold">{i + 1}. {title}</p>
             <p className="text-sm text-muted-foreground">{text}</p>
           </li>

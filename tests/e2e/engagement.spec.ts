@@ -117,3 +117,15 @@ test("data export downloads only the viewer's data", async ({ page }) => {
   expect(body.account.email).toBe("resident@demo.bridgeconnect.test");
   expect(JSON.stringify(body)).not.toContain("capecoast@demo");
 });
+
+test("business sets a separate WhatsApp number and social links that show on its public page", async ({ page }) => {
+  await signIn(page, "business@demo.bridgeconnect.test", `/workspace/${ENTITY.freshFarms}/profile`);
+  await page.getByLabel("WhatsApp number").fill("+233 24 555 0101");
+  await page.locator("#social-instagram").fill("https://instagram.com/kwamankesefreshfarms");
+  await page.getByRole("button", { name: "Save profile" }).click();
+  await expect(page.getByRole("button", { name: "Save profile" })).toBeEnabled({ timeout: 20_000 });
+  await page.goto("/directory/kwamankese-fresh-farms");
+  await expect(page.getByRole("link", { name: "Instagram" })).toHaveAttribute("href", "https://instagram.com/kwamankesefreshfarms");
+  await expect(page.getByRole("link", { name: "WhatsApp" }).first()).toHaveAttribute("href", /wa\.me\/233245550101/);
+  await expect(page.getByRole("link", { name: "Directions" })).toHaveAttribute("href", /google\.com\/maps/);
+});

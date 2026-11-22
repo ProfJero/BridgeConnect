@@ -24,7 +24,7 @@ export default async function WorkspaceEventsPage({ params }: PageProps<"/worksp
           {events.map((e) => (
             <li key={e.id} className="flex items-center justify-between gap-3 p-4">
               <span>
-                {e.status === "removed" ? <span className="font-semibold">{e.title}</span> : <Link href={`${base}/${e.id}`} className="font-semibold text-primary hover:underline">{e.title}</Link>}
+                {e.status === "removed" ? <span className="font-semibold">{e.title}</span> : <Link href={`${base}/${e.id}`} className="font-semibold text-link hover:underline">{e.title}</Link>}
                 <span className="block text-sm text-muted-foreground">{formatDateTime(e.starts_at)} · {e.going_count}{e.capacity ? `/${e.capacity}` : ""} going</span>
                 {e.moderation_reason ? <span className="block text-xs text-destructive">Removed: {e.moderation_reason}</span> : null}
               </span>

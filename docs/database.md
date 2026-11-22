@@ -24,6 +24,7 @@ PostgreSQL 17 on Supabase. All changes are migrations in `supabase/migrations/`;
 | `20261121…0200_engagement` | `entity_reviews` (+ ratings, replies, reports, moderation), `entity_follows`, inbox (`conversations`, `conversation_messages`, realtime), `service_bookings`, polls (`poll_options`, `poll_votes`), support desk (`support_tickets`, `support_ticket_messages`, `support.manage`, Support Agent role), `delete_my_account`, platform-owner bootstrap |
 | `20261122…0100_mobility_rentals_enums` | `moderation_target` value `rental` |
 | `20261122…0200_mobility_rentals` | `fast_track_entity_application` (platform owners only, own applications); `rental_listings`, `rental_media`, `rental_inquiries` (+ reports/moderation); `rider_profiles` (column grants hide coordinates), `trips` (realtime) with `request_trip`, `open_trip_requests`, `accept_trip` (first accept wins), `update_trip_status`, `rate_trip`, `set_rider_online`, `available_riders`, `admin_review_rider`; `mobility.manage` permission |
+| `20261122…0300_contact_location` | `private.valid_social_links`; `entities.social_links/latitude/longitude`; `entity_applications.whatsapp/website/social_links/latitude/longitude`; `rental_listings.latitude/longitude`; review/fast-track RPCs copy them (WhatsApp is never derived from the phone) |
 | `20261121…0300_public_entity_features` | `entity_public_features()` — the three engagement flags anonymous visitors may see |
 
 ## Conventions

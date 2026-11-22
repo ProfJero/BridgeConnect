@@ -72,7 +72,7 @@ export function DocumentUploader({
                 <FileText aria-hidden className="size-4 shrink-0 text-muted-foreground" />
                 <span className="min-w-0">
                   {d.url ? (
-                    <a href={d.url} target="_blank" rel="noopener noreferrer" className="block truncate text-sm font-medium text-primary underline">{d.file_name}</a>
+                    <a href={d.url} target="_blank" rel="noopener noreferrer" className="block truncate text-sm font-medium text-link underline">{d.file_name}</a>
                   ) : (
                     <span className="block truncate text-sm font-medium">{d.file_name}</span>
                   )}

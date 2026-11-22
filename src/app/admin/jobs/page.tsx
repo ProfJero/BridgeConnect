@@ -22,7 +22,7 @@ export default async function AdminJobsPage({ searchParams }: PageProps<"/admin/
           <TableBody>
             {items.map((i) => (
               <TableRow key={i.id}>
-                <TableCell>{i.status === "open" ? <Link className="font-medium text-primary hover:underline" href={`/jobs/${i.slug}`}>{i.title}</Link> : i.title}</TableCell>
+                <TableCell>{i.status === "open" ? <Link className="font-medium text-link hover:underline" href={`/jobs/${i.slug}`}>{i.title}</Link> : i.title}</TableCell>
                 <TableCell>{i.entities?.name}</TableCell>
                 <TableCell>{i.communities?.name}</TableCell>
                 <TableCell>{formatDate(i.created_at)}</TableCell>

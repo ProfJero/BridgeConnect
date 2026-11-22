@@ -18,8 +18,8 @@ export function PageHeader({
   return (
     <header className={cn("flex flex-wrap items-start justify-between gap-x-3 gap-y-2", className)}>
       <div className="min-w-0 flex-1 space-y-0.5">
-        {eyebrow ? <div className="text-xs font-semibold tracking-wide text-primary uppercase">{eyebrow}</div> : null}
-        <h1 className="text-2xl font-extrabold tracking-tight text-balance sm:text-[28px]">{title}</h1>
+        {eyebrow ? <div className="text-xs font-semibold tracking-wide text-link uppercase">{eyebrow}</div> : null}
+        <h1 className="text-2xl font-extrabold tracking-tight text-balance text-heading sm:text-[28px]">{title}</h1>
         {description ? <p className="max-w-2xl text-sm text-muted-foreground">{description}</p> : null}
       </div>
       {actions ? <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div> : null}
@@ -41,7 +41,7 @@ export function Section({
   return (
     <section className={cn("min-w-0 space-y-3", className)}>
       <div className="flex items-center justify-between gap-2">
-        <h2 className="min-w-0 text-[17px] font-bold tracking-tight">{title}</h2>
+        <h2 className="min-w-0 text-[17px] font-bold tracking-tight text-heading">{title}</h2>
         {action}
       </div>
       {children}

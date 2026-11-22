@@ -1,5 +1,6 @@
 import { Bike, Clock, MessageCircle, Phone, ShieldCheck, Star, Wallet } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { UserAvatar } from "@/components/shared/avatars";
 import { PageHeader, Section } from "@/components/shared/page-header";
@@ -10,10 +11,10 @@ import { ActiveTripControls, AutoRefresh, OnlineSwitch, OpenRequestCard, RiderPr
 import { PlaceLine } from "@/features/mobility/components/trip-tracker";
 import { getMyRiderProfile, listOpenRequests, listRiderTrips } from "@/features/mobility/queries";
 import { requireActiveViewer } from "@/lib/auth/session";
-import { formatDateTime, formatMoney } from "@/lib/format";
+import { formatMoney } from "@/lib/format";
 import { noIndex } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Rider dashboard", robots: noIndex };
+export const metadata: Metadata = { title: "Overview", robots: noIndex };
 
 export default async function RiderPage() {
   const viewer = await requireActiveViewer("/rider");
@@ -39,18 +40,6 @@ export default async function RiderPage() {
     );
   }
 
-  const initial = {
-    vehicleType: profile.vehicle_type,
-    vehicleDescription: profile.vehicle_description,
-    plateNumber: profile.plate_number ?? "",
-    offersRides: profile.offers_rides,
-    offersDelivery: profile.offers_delivery,
-    communityId: profile.community_id,
-    serviceArea: profile.service_area ?? "",
-    phone: profile.phone,
-    whatsapp: profile.whatsapp ?? "",
-    bio: profile.bio ?? "",
-  };
 
   if (profile.status !== "approved") {
     return (
@@ -64,10 +53,9 @@ export default async function RiderPage() {
               : profile.status_reason ?? "Contact DBI support for details."}
           </p>
         </div>
-        <details className="rounded-2xl border bg-card p-4">
-          <summary className="cursor-pointer font-semibold">Edit my details</summary>
-          <div className="pt-4"><RiderProfileForm communities={communities} initial={initial} /></div>
-        </details>
+        <Link href="/rider/profile" className="pressable flex items-center justify-between rounded-2xl border bg-card p-4 text-sm font-semibold text-heading">
+          Edit my details <span aria-hidden>→</span>
+        </Link>
       </div>
     );
   }
@@ -104,7 +92,7 @@ export default async function RiderPage() {
                 <p className="text-sm text-muted-foreground">{current.kind === "ride" ? "Ride" : "Delivery"} #{current.trip_number} · {formatMoney(current.offered_fare, current.currency)} {current.payment_method === "cash" ? "cash" : "MoMo"}</p>
               </div>
               <a href={`tel:${current.customer_phone.replace(/\s/g, "")}`} aria-label="Call the customer" className="flex size-11 items-center justify-center rounded-full bg-brand-green text-brand-green-foreground"><Phone aria-hidden className="size-5" /></a>
-              <a href={`https://wa.me/${current.customer_phone.replace(/[^0-9]/g, "").replace(/^0/, "233")}`} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp the customer" className="flex size-11 items-center justify-center rounded-full border"><MessageCircle aria-hidden className="size-5" /></a>
+              <a href={`sms:${current.customer_phone.replace(/[^0-9+]/g, "")}`} aria-label="Text the customer" className="flex size-11 items-center justify-center rounded-full border"><MessageCircle aria-hidden className="size-5" /></a>
             </div>
             <PlaceLine from={current.pickup_address} to={current.dropoff_address} />
             {current.package_description ? <p className="text-sm"><span className="font-medium">Package:</span> {current.package_description}{current.recipient_name ? ` → ${current.recipient_name}` : ""}{current.recipient_phone ? ` (${current.recipient_phone})` : ""}</p> : null}
@@ -125,29 +113,9 @@ export default async function RiderPage() {
         </Section>
       ) : null}
 
-      {history.length ? (
-        <Section title="Recent trips">
-          <ul className="divide-y overflow-hidden rounded-2xl border bg-card">
-            {history.slice(0, 10).map((t) => (
-              <li key={t.id} className="flex items-center justify-between gap-3 p-3 text-sm">
-                <span className="min-w-0">
-                  <span className="block truncate font-medium">#{t.trip_number} · {t.dropoff_address}</span>
-                  <span className="block text-xs text-muted-foreground">{formatDateTime(t.created_at)}{t.customer_rating ? ` · ${t.customer_rating}★` : ""}</span>
-                </span>
-                <span className="shrink-0 text-right">
-                  <span className="block font-semibold">{formatMoney(t.final_fare ?? t.offered_fare, t.currency)}</span>
-                  <StatusBadge status={t.status === "in_progress" ? "under_review" : t.status === "accepted" || t.status === "arrived" ? "confirmed" : t.status} />
-                </span>
-              </li>
-            ))}
-          </ul>
-        </Section>
-      ) : null}
-
-      <details className="rounded-2xl border bg-card p-4">
-        <summary className="cursor-pointer font-semibold">Edit rider profile</summary>
-        <div className="pt-4"><RiderProfileForm communities={communities} initial={initial} /></div>
-      </details>
+      <Link href="/rider/trips" className="pressable flex items-center justify-between rounded-2xl border bg-gradient-to-br from-card to-tint p-4 text-sm font-semibold text-heading">
+        Trips & earnings history <span aria-hidden>→</span>
+      </Link>
     </div>
   );
 }

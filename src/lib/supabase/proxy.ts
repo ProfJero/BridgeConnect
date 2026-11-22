@@ -22,6 +22,7 @@ const PROTECTED_PREFIXES = [
   "/settings",
   "/account",
   "/rider",
+  "/dashboards",
   "/rides/history",
   "/rentals/new",
   "/rentals/mine",
@@ -39,6 +40,21 @@ export function isProtectedPath(pathname: string): boolean {
  * pages, actions and the database all re-check identity and permissions.
  */
 export async function updateSession(request: NextRequest) {
+  // Fast path: no Supabase auth cookie means there is no session to refresh.
+  // Skipping the auth client here keeps anonymous traffic (and crawlers) cheap
+  // on Workers' per-request CPU budget.
+  const hasSessionCookie = request.cookies.getAll().some((c) => c.name.startsWith("sb-") && c.name.includes("-auth-token"));
+  if (!hasSessionCookie) {
+    if (isProtectedPath(request.nextUrl.pathname)) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/sign-in";
+      url.search = "";
+      url.searchParams.set("next", `${request.nextUrl.pathname}${request.nextUrl.search}`);
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next({ request });
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient<Database>(

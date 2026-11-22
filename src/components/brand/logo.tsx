@@ -32,8 +32,8 @@ export function Logo({
     <span className={cn("inline-flex items-center gap-2", className)}>
       <LogoMark className={markClassName} priority />
       <span className={cn("flex flex-col leading-none", wordmarkClassName)}>
-        <span className="text-lg font-extrabold tracking-tight text-brand-navy">
-          Bridge<span className="text-brand-green">Connect</span>
+        <span className="text-lg font-extrabold tracking-tight text-heading">
+          Bridge<span className="text-price">Connect</span>
         </span>
         {showTagline ? (
           <span className="mt-1 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">

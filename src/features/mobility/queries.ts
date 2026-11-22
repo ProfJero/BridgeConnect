@@ -82,3 +82,19 @@ export async function adminListRiders(status?: Enums["rider_status"]) {
   if (error) throw error;
   return data ?? [];
 }
+
+/** Earnings summary for the rider dashboard (completed trips in rolling windows). */
+export function summariseEarnings(trips: { status: string; completed_at: string | null; final_fare: number | null; customer_rating: number | null }[]) {
+  const now = Date.now();
+  const done = trips.filter((t) => t.status === "completed");
+  const within = (days: number) =>
+    done.filter((t) => t.completed_at && now - Date.parse(t.completed_at) <= days * 86_400_000).reduce((s, t) => s + Number(t.final_fare ?? 0), 0);
+  const rated = done.filter((t) => t.customer_rating);
+  return {
+    week: within(7),
+    month: within(30),
+    completed: done.length,
+    rating: rated.length ? rated.reduce((s, t) => s + (t.customer_rating ?? 0), 0) / rated.length : null,
+    ratings: rated.length,
+  };
+}

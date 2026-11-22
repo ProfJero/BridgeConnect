@@ -39,6 +39,7 @@ export default async function EditRentalPage({ params }: PageProps<"/rentals/[sl
             furnished: rental.furnished,
             amenities: rental.amenities,
             locationNote: rental.location_note ?? "",
+            location: rental.latitude != null && rental.longitude != null ? { lat: Number(rental.latitude), lng: Number(rental.longitude) } : null,
             contactPhone: rental.contact_phone,
             whatsapp: rental.whatsapp ?? "",
             availableFrom: rental.available_from ?? "",

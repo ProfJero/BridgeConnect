@@ -1,6 +1,6 @@
 "use client";
 
-import { ThumbsUp } from "lucide-react";
+import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useOptimistic, useTransition } from "react";
 import { toast } from "sonner";
@@ -46,11 +46,11 @@ export function ReactionButton({
       size="sm"
       onClick={toggle}
       aria-pressed={state.reacted}
-      aria-label={state.reacted ? "Remove helpful" : "Mark as helpful"}
-      className={cn(state.reacted && "text-primary")}
+      aria-label={state.reacted ? `Unlike (${state.count} likes)` : `Like (${state.count} likes)`}
+      className={cn(state.reacted && "text-destructive")}
     >
-      <ThumbsUp aria-hidden className={cn(state.reacted && "fill-primary/20")} />
-      {state.count > 0 ? state.count : "Helpful"}
+      <Heart aria-hidden className={cn("transition-transform duration-200", state.reacted && "scale-110 fill-current")} />
+      {state.count > 0 ? state.count : "Like"}
     </Button>
   );
 }

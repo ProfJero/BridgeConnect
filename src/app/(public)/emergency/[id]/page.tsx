@@ -1,6 +1,4 @@
-import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { SeverityBadge, StatusBadge } from "@/components/shared/status-badge";
@@ -19,7 +17,6 @@ export default async function AlertPage({ params }: PageProps<"/emergency/[id]">
   if (!alert) notFound();
   return (
     <article className="mx-auto max-w-2xl space-y-5">
-      <Button asChild variant="ghost" size="sm"><Link href="/emergency"><ArrowLeft aria-hidden /> Emergency</Link></Button>
       <div className="flex flex-wrap items-center gap-2">
         <SeverityBadge severity={alert.severity} />
         <StatusBadge status={alert.status} />

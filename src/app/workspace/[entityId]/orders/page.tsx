@@ -38,7 +38,7 @@ export default async function WorkspaceOrdersPage({ params, searchParams }: Page
             <TableBody>
               {orders.map((o) => (
                 <TableRow key={o.id}>
-                  <TableCell><Link href={`${base}/${o.id}`} className="font-semibold text-primary hover:underline">#{o.order_number}</Link><span className="block text-xs text-muted-foreground">{humanize(o.fulfilment)}</span></TableCell>
+                  <TableCell><Link href={`${base}/${o.id}`} className="font-semibold text-link hover:underline">#{o.order_number}</Link><span className="block text-xs text-muted-foreground">{humanize(o.fulfilment)}</span></TableCell>
                   <TableCell>{o.profiles?.display_name}</TableCell>
                   <TableCell>{formatMoney(o.subtotal, o.currency)}</TableCell>
                   <TableCell>{formatDateTime(o.created_at)}</TableCell>

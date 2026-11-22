@@ -1,10 +1,8 @@
-import { ArrowLeft, Package, Star } from "lucide-react";
+import { Package, Star } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { UserAvatar } from "@/components/shared/avatars";
-import { Button } from "@/components/ui/button";
 import { PlaceLine, RateTrip, RiderContact, TripTracker } from "@/features/mobility/components/trip-tracker";
 import { getRiderPublic, getTrip } from "@/features/mobility/queries";
 import { isUuid, requireViewer } from "@/lib/auth/session";
@@ -24,9 +22,8 @@ export default async function TripPage({ params }: PageProps<"/rides/[id]">) {
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <Button asChild variant="ghost" size="sm"><Link href="/rides"><ArrowLeft aria-hidden /> Rides</Link></Button>
       <header className="space-y-1">
-        <p className="text-xs font-semibold tracking-wide text-primary uppercase">{trip.kind === "ride" ? "Ride" : "Delivery"} #{trip.trip_number}</p>
+        <p className="text-xs font-semibold tracking-wide text-link uppercase">{trip.kind === "ride" ? "Ride" : "Delivery"} #{trip.trip_number}</p>
         <h1 className="text-2xl font-extrabold">
           {trip.status === "requested" ? "Finding you a rider…" : trip.status === "completed" ? "Trip completed" : trip.status === "cancelled" ? "Cancelled" : "Your rider is on the way"}
         </h1>

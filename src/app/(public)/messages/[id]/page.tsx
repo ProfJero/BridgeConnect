@@ -1,4 +1,3 @@
-import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -6,7 +5,6 @@ import { notFound } from "next/navigation";
 import { EntityAvatar } from "@/components/shared/avatars";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { VerifiedBadge } from "@/components/shared/verified-badge";
-import { Button } from "@/components/ui/button";
 import { ConversationActions } from "@/features/messages/components/conversation-actions";
 import { MessageThread } from "@/features/messages/components/message-thread";
 import { getConversation, listMessages } from "@/features/messages/queries";
@@ -29,9 +27,6 @@ export default async function ConversationPage({ params }: PageProps<"/messages/
   return (
     <div className="mx-auto max-w-2xl space-y-3">
       <div className="flex items-center gap-2">
-        <Button asChild variant="ghost" size="icon" aria-label="Back to messages">
-          <Link href="/messages"><ArrowLeft aria-hidden /></Link>
-        </Button>
         {entity ? (
           <Link href={`/directory/${entity.slug}`} className="flex min-w-0 flex-1 items-center gap-3">
             <EntityAvatar name={entity.name} path={entity.logo_path} className="size-10" />

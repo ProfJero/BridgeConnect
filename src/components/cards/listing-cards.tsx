@@ -44,7 +44,7 @@ export type ServiceCardProps = {
 import { formatDate, formatDateTime, formatMoney, humanize } from "@/lib/format";
 
 const cardClass =
-  "group pressable relative flex gap-3 rounded-2xl border bg-card p-4 shadow-xs transition-shadow focus-within:ring-[3px] focus-within:ring-ring/40 hover:shadow-md";
+  "group pressable relative flex gap-3 rounded-2xl border bg-gradient-to-br from-card to-tint p-4 shadow-xs transition-shadow focus-within:ring-[3px] focus-within:ring-ring/40 hover:shadow-md";
 const stretched = "after:absolute after:inset-0 focus-visible:outline-none";
 
 export function salaryText(job: Pick<JobCardProps, "salary_min" | "salary_max" | "salary_period" | "currency">) {
@@ -74,7 +74,7 @@ export function JobCard({ job, action }: { job: JobCardProps; action?: React.Rea
             <span className="inline-flex items-center gap-0.5"> · <MapPin aria-hidden className="size-3" /> {job.communities.name}</span>
           ) : null}
         </p>
-        {salary ? <p className="pt-0.5 text-sm font-bold text-brand-green">{salary}</p> : null}
+        {salary ? <p className="pt-0.5 text-sm font-bold text-price">{salary}</p> : null}
         {job.application_deadline ? (
           <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
             <Clock aria-hidden className="size-3" /> Apply by {formatDate(job.application_deadline)}
@@ -100,7 +100,7 @@ export function EventCard({ event, interested }: { event: EventCardProps; intere
   const start = new Date(event.starts_at);
   return (
     <article className={cardClass}>
-      <div className="flex size-16 shrink-0 flex-col items-center justify-center rounded-xl bg-gradient-to-br from-brand-navy to-primary text-white shadow-sm">
+      <div className="flex size-16 shrink-0 flex-col items-center justify-center rounded-xl bg-gradient-to-br from-hero-1 to-hero-2 text-white shadow-sm">
         <span className="text-[11px] font-semibold tracking-wide uppercase opacity-90">
           {start.toLocaleString("en-GH", { month: "short", timeZone: "Africa/Accra" })}
         </span>
@@ -121,7 +121,7 @@ export function EventCard({ event, interested }: { event: EventCardProps; intere
           {event.going_count ? (
             <span className="inline-flex items-center gap-1 text-muted-foreground"><Users aria-hidden className="size-3" /> {event.going_count} going</span>
           ) : null}
-          {interested ? <span className="font-semibold text-brand-green">Interested</span> : null}
+          {interested ? <span className="font-semibold text-price">Interested</span> : null}
           {event.status === "cancelled" ? <Badge variant="destructive">Cancelled</Badge> : null}
         </div>
       </div>
@@ -136,7 +136,7 @@ export function ServiceCard({ service }: { service: ServiceCardProps }) {
         <Wrench aria-hidden className="size-5" />
       </div>
       <div className="min-w-0 flex-1 space-y-1">
-        <h3 className="font-semibold group-hover:text-primary">{service.name}</h3>
+        <h3 className="font-semibold group-hover:text-link">{service.name}</h3>
         <p className="text-sm text-muted-foreground">{service.entities.name}</p>
         {service.description ? <p className="line-clamp-2 text-sm text-muted-foreground">{service.description}</p> : null}
         <p className="pt-1 text-xs font-medium">

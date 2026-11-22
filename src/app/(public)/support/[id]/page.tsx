@@ -1,11 +1,8 @@
-import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
-import { Button } from "@/components/ui/button";
 import { RequesterTicketControls } from "@/features/support/components/ticket-controls";
 import { TicketThread } from "@/features/support/components/ticket-thread";
 import { getTicket } from "@/features/support/queries";
@@ -25,7 +22,6 @@ export default async function TicketPage({ params }: PageProps<"/support/[id]">)
   const closed = ticket.status === "closed";
   return (
     <div className="mx-auto max-w-2xl space-y-5">
-      <Button asChild variant="ghost" size="sm"><Link href="/support"><ArrowLeft aria-hidden /> Support</Link></Button>
       <PageHeader
         eyebrow={`Ticket #${ticket.ticket_number} · ${TICKET_CATEGORY_LABEL[ticket.category]}`}
         title={ticket.subject}

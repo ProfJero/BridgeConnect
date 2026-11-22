@@ -87,7 +87,7 @@ export function AccountMenu({ displayName, avatarPath, isAdmin, workspaces }: Ac
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/admin"><Shield aria-hidden /> DBI Administration</Link>
+              <Link href="/admin"><Shield aria-hidden /> Administration</Link>
             </DropdownMenuItem>
           </>
         ) : null}

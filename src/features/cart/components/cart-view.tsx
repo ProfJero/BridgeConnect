@@ -59,7 +59,7 @@ function SellerCheckout({ entityId, entityName, items, signedIn }: { entityId: s
   return (
     <section className="overflow-hidden rounded-2xl border bg-card shadow-xs" aria-labelledby={`seller-${id}`}>
       <h2 id={`seller-${id}`} className="flex items-center gap-2 border-b bg-muted/50 px-4 py-3 text-sm font-semibold">
-        <Store aria-hidden className="size-4 text-primary" /> {entityName}
+        <Store aria-hidden className="size-4 text-link" /> {entityName}
       </h2>
       <ul className="divide-y">
         {items.map((i) => (
@@ -69,7 +69,7 @@ function SellerCheckout({ entityId, entityName, items, signedIn }: { entityId: s
             </div>
             <div className="min-w-0 flex-1">
               <Link href={`/marketplace/${i.slug}`} className="line-clamp-1 text-sm font-semibold hover:underline">{i.name}</Link>
-              <p className="text-sm font-bold text-brand-green">{formatMoney(i.price, i.currency)}</p>
+              <p className="text-sm font-bold text-price">{formatMoney(i.price, i.currency)}</p>
             </div>
             <div className="flex items-center gap-1 rounded-full border p-0.5">
               <Button type="button" variant="ghost" size="icon-sm" className="rounded-full" aria-label={`Decrease ${i.name}`} onClick={() => cart.setQuantity(i.productId, i.quantity - 1)}>

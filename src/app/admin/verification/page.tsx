@@ -52,7 +52,7 @@ export default async function VerificationQueuePage({ searchParams }: PageProps<
               {items.map((a) => (
                 <TableRow key={a.id}>
                   <TableCell>
-                    <Link href={`/admin/verification/${a.id}`} className="font-semibold text-primary hover:underline">{a.proposed_name}</Link>
+                    <Link href={`/admin/verification/${a.id}`} className="font-semibold text-link hover:underline">{a.proposed_name}</Link>
                     <span className="block text-xs text-muted-foreground">{a.profiles?.display_name}</span>
                   </TableCell>
                   <TableCell>{ENTITY_TYPE_LABEL[a.entity_type]}</TableCell>

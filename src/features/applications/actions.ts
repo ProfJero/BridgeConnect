@@ -32,6 +32,11 @@ export async function submitApplicationAction(
       address: v.address || null,
       contact_phone: v.contactPhone,
       contact_email: v.contactEmail || null,
+      whatsapp: v.whatsapp || null,
+      website: v.website || null,
+      social_links: v.socialLinks ?? {},
+      latitude: v.location?.lat ?? null,
+      longitude: v.location?.lng ?? null,
       registration_number: v.registrationNumber || null,
       applicant_position: v.applicantPosition || null,
     })

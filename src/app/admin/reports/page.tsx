@@ -60,7 +60,7 @@ export default async function AdminReportsPage({ searchParams }: PageProps<"/adm
                 {r.details ? <p className="text-sm">{r.details}</p> : null}
                 {r.resolution_note ? <p className="text-sm text-muted-foreground">Resolution: {r.resolution_note}</p> : null}
                 <div className="flex flex-wrap items-center gap-3">
-                  {t.href ? <Link href={t.href} className="text-sm font-medium text-primary hover:underline">View reported {t.type}</Link> : null}
+                  {t.href ? <Link href={t.href} className="text-sm font-medium text-link hover:underline">View reported {t.type}</Link> : null}
                   {actionable && t.type !== "entity" && t.type !== "profile" ? <ModerationButtons targetType={t.type} targetId={t.id} reportId={r.id} /> : null}
                   {actionable && (t.type === "entity" || t.type === "profile") ? <ReportResolutionButtons reportId={r.id} /> : null}
                 </div>

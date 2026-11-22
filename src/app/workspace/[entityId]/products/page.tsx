@@ -30,7 +30,7 @@ export default async function WorkspaceProductsPage({ params }: PageProps<"/work
               {products.map((p) => (
                 <TableRow key={p.id}>
                   <TableCell>
-                    {p.status === "removed" ? <span className="font-medium">{p.name}</span> : <Link className="font-medium text-primary hover:underline" href={`${base}/${p.id}`}>{p.name}</Link>}
+                    {p.status === "removed" ? <span className="font-medium">{p.name}</span> : <Link className="font-medium text-link hover:underline" href={`${base}/${p.id}`}>{p.name}</Link>}
                     <span className="block text-xs text-muted-foreground">{p.listing_categories?.name ?? "Uncategorised"}</span>
                     {p.moderation_reason ? <span className="block text-xs text-destructive">Removed: {p.moderation_reason}</span> : null}
                   </TableCell>
